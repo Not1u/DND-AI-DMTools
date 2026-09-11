@@ -1,5 +1,7 @@
 # SoloTRPG
 
+> **Windows 桌面版 0.2.0**：`npm ci` 后运行 `npm run build:exe`，产物在 `dist/`；独立窗口、免安装 EXE、用户存档与程序分离。使用与更新见 [桌面版说明](docs/DESKTOP.md)。
+
 项目仓库：[Not1u/DND-AI-DMTools](https://github.com/Not1u/DND-AI-DMTools)。从 2026-09-11 起，本目录直接作为开发源，后续更新统一提交到该仓库。
 
 开发前请阅读 [结构与改进评估](docs/PROJECT_REVIEW.md) 和 [开发工作流](docs/DEVELOPMENT.md)。下方功能说明保留自初始版本，部分功能存在评估中列出的已知缺陷，不能视为全部通过验收。

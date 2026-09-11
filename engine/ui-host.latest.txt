@@ -1,11 +1,12 @@
 console.log('DND-UI host starting (v17)')
 const ROOT = (typeof DND5E_ROOT === 'string' && DND5E_ROOT.length) ? DND5E_ROOT.replace(/[\\/]+$/, '') : 'E:/HarnessTarvern/dnd5e'
+const ASSETS = typeof DND5E_ASSETS === 'string' ? DND5E_ASSETS : ROOT
 const CHAR_DIR = ROOT + '/characters'
-const RULES_PATH = ROOT + '/rules/dnd5e-srd.json'
-const SPELLS_PATH = ROOT + '/rules/spells.json'
-const FEATURES_PATH = ROOT + '/rules/features.json'
-const SUB_PATH = ROOT + '/rules/subclasses.json'
-const FEATS_PATH = ROOT + '/rules/feats.json'
+const RULES_PATH = ASSETS + '/rules/dnd5e-srd.json'
+const SPELLS_PATH = ASSETS + '/rules/spells.json'
+const FEATURES_PATH = ASSETS + '/rules/features.json'
+const SUB_PATH = ASSETS + '/rules/subclasses.json'
+const FEATS_PATH = ASSETS + '/rules/feats.json'
 const AB = ['str', 'dex', 'con', 'int', 'wis', 'cha']
 const ABF = { str: '力量', dex: '敏捷', con: '体质', int: '智力', wis: '感知', cha: '魅力' }
 const modOf = (s) => Math.floor((s - 10) / 2)
@@ -533,7 +534,7 @@ return {
       } catch (e) { return { ok: false, error: String(e && e.message || e) } }
     }))
     // —— 规则书检索（读取本地索引，索引由 tools/index-rules.mjs 生成）——
-    const INDEX_DIR = ROOT + '/data/rules-index'
+    const INDEX_DIR = ASSETS + '/data/rules-index'
     let manifestCache = null
     let entriesCache = null
     const loadManifest = async () => {
@@ -568,7 +569,7 @@ return {
     let packDefs = null
     const loadPacks = async () => {
       if (packDefs) return packDefs
-      try { packDefs = JSON.parse(await fsRead(ROOT + '/rules/packs.json')).packs || {} } catch (e) { packDefs = {} }
+      try { packDefs = JSON.parse(await fsRead(ASSETS + '/rules/packs.json')).packs || {} } catch (e) { packDefs = {} }
       return packDefs
     }
     const packItemsOf = (it, defs) => {
@@ -656,9 +657,9 @@ return {
     unreg.push(harness.handle('ui.source', async ({ file }) => {
       try {
         const name = String(file || 'ui-client.latest.txt').replace(/[^A-Za-z0-9._-]/g, '')
-        const src = await fsRead(ROOT + '/engine/' + name)
+        const src = await fsRead(ASSETS + '/engine/' + name)
         let mtimeMs = 0
-        try { const fs2 = ctx.get('fs'); const st = fs2 && fs2.stat ? await fs2.stat(ROOT + '/engine/' + name) : null; if (st && st.mtimeMs) mtimeMs = st.mtimeMs } catch (e) { }
+        try { const fs2 = ctx.get('fs'); const st = fs2 && fs2.stat ? await fs2.stat(ASSETS + '/engine/' + name) : null; if (st && st.mtimeMs) mtimeMs = st.mtimeMs } catch (e) { }
         return { ok: true, file: name, source: src, bytes: src.length, mtimeMs: mtimeMs }
       } catch (e) { return { ok: false, error: String(e && e.message || e) } }
     }))

@@ -1,5 +1,7 @@
 # 开发与 GitHub 工作流
 
+> **桌面封装已更新**：`npm run desktop` 启动独立窗口；`npm run build:exe` 生成包含全部应用资源的便携 EXE。存档放在 `%APPDATA%/SoloTRPG/campaign`，每次修改后重新封装并替换 EXE。详见 [DESKTOP.md](DESKTOP.md)。
+
 本目录是 SoloTRPG 独立版的开发源。唯一默认远程是 `origin`：
 
 https://github.com/Not1u/DND-AI-DMTools.git
@@ -12,7 +14,7 @@ https://github.com/Not1u/DND-AI-DMTools.git
 node server.mjs
 ```
 
-默认访问 http://127.0.0.1:4620 。开发启动不需要安装 npm 运行依赖。首次使用在设置面板配置 AI；本地 `data/ai.json` 不入库。也可通过 `DND5E_AI_KEY` 提供密钥。源码 clone 不包含 exe，Windows 可运行 `npm run build:exe` 生成；exe 必须与应用文件夹一起使用。
+默认访问 http://127.0.0.1:4620 。开发启动不需要安装 npm 运行依赖。首次使用在设置面板配置 AI；本地 `data/ai.json` 不入库。也可通过 `DND5E_AI_KEY` 提供密钥。源码 clone 不包含 exe，运行 `npm ci` 后可用 `npm run build:exe` 生成独立桌面版。
 
 接口探针需显式指定独立服务地址，因为现有脚本的默认端口仍沿用旧宿主：
 
@@ -46,6 +48,6 @@ git push origin main
 - 不提交 `data/ai.json`、AI 备份、`.env`、凭据文件、日志、`node_modules`、`build`、`dist`、exe。`.gitignore` 已设置相应规则。
 - 规则索引按现有项目约定保留，来源说明见 `NOTICE.md`。本地 `engine/_src-phb/` 参考 HTML 不入库。
 - 不运行会修改真实存档的健康检查/迁移脚本作为普通测试。应复制测试数据，或注入隔离的文件存储。
-- 修改 host 文件后下次请求热加载；修改 client 和 `app/` 文件后刷新页面。`server.mjs` 或监听配置变更后需重启服务。exe 只内嵌启动器及 Node，修改外部 `app/` 无需重新打包；改启动器、内嵌图标或 Node 版本才需重建 exe。
+- 修改 host 文件后下次请求热加载；修改 client 和 `app/` 文件后刷新页面。`server.mjs` 或监听配置变更后需重启服务。桌面 EXE 包含全部程序与规则；修改后重新打包，用户存档不随程序更新覆盖。
 
 当前缺陷、遗留工具限制与重构建议见 `PROJECT_REVIEW.md`。

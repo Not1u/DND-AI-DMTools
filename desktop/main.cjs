@@ -1,0 +1,44 @@
+const { app, BrowserWindow, Menu, shell, dialog } = require('electron');
+const path = require('node:path');
+const fs = require('node:fs/promises');
+const { pathToFileURL } = require('node:url');
+const smoke = process.argv.find(a => a.startsWith('--desktop-smoke='))?.slice(16);
+const home = smoke ? path.resolve(smoke) : path.join(app.getPath('appData'), 'SoloTRPG');
+app.setPath('userData', home);
+let runtime, window;
+if (!app.requestSingleInstanceLock()) app.quit();
+else {
+  app.on('second-instance', () => { if (window) { if (window.isMinimized()) window.restore(); window.focus(); } });
+  app.whenReady().then(async () => {
+    const { initializeData } = await import('./storage.mjs');
+    const dataRoot = await initializeData(home, app.getVersion());
+    const { startServer } = await import(pathToFileURL(path.join(__dirname, '..', 'server.mjs')).href);
+    runtime = await startServer({ dataRoot, port: 0, bind: '127.0.0.1' });
+    window = new BrowserWindow({ width: 1440, height: 960, minWidth: 900, minHeight: 600, title: 'SoloTRPG', icon: path.join(__dirname, '..', 'app', 'icon.ico'), show: false, webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true } });
+    window.webContents.setWindowOpenHandler(({ url }) => {
+      // Exported maps can be viewed in a separate, sandboxed application window.
+      if (url.startsWith(runtime.url + '/files/data/images/')) return { action: 'allow', overrideBrowserWindowOptions: { webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true } } };
+      return { action: 'deny' };
+    });
+    window.webContents.on('will-navigate', (event, url) => { if (new URL(url).origin !== runtime.url) event.preventDefault(); });
+    Menu.setApplicationMenu(Menu.buildFromTemplate([
+      { label: '文件', submenu: [{ label: '打开存档文件夹', click: () => shell.openPath(dataRoot) }, { type: 'separator' }, { label: '退出', role: 'quit' }] },
+      { label: '编辑', submenu: [{ role: 'undo' }, { role: 'redo' }, { type: 'separator' }, { role: 'cut' }, { role: 'copy' }, { role: 'paste' }, { role: 'selectAll' }] },
+      { label: '视图', submenu: [{ label: '刷新界面', role: 'reload' }, { role: 'resetZoom' }, { role: 'zoomIn' }, { role: 'zoomOut' }, { role: 'togglefullscreen' }] },
+      { label: '帮助', submenu: [{ label: '下载新版', click: () => shell.openExternal('https://github.com/Not1u/DND-AI-DMTools/releases') }, { label: '关于 / 更新说明', click: () => dialog.showMessageBox(window, { title: 'SoloTRPG', message: 'SoloTRPG ' + app.getVersion(), detail: '关闭软件后替换新版 EXE，即可完成更新。\n存档保存在：' + dataRoot + '\n更换程序不会覆盖存档；备份时请复制整个存档文件夹。' }) }] }
+    ]));
+    const errors = [];
+    window.webContents.on('console-message', (_event, details) => { if (details?.level === 'error') errors.push(details.message); });
+    await window.loadURL(runtime.url);
+    if (smoke) {
+      await new Promise(r => setTimeout(r, 3500));
+      const state = await window.webContents.executeJavaScript(`({ text: document.body.innerText, node: typeof process, tabs: document.querySelectorAll('button').length })`);
+      const health = await (await fetch(runtime.url + '/health')).json();
+      await fs.writeFile(path.join(home, 'smoke.json'), JSON.stringify({ state, health, errors }, null, 2));
+      await fs.writeFile(path.join(home, 'smoke.png'), (await window.webContents.capturePage()).toPNG());
+      app.quit();
+    } else window.show();
+  }).catch(error => { if (smoke) console.error(error); else dialog.showErrorBox('SoloTRPG 启动失败', error.stack || String(error)); app.exit(1); });
+  app.on('window-all-closed', () => app.quit());
+  app.on('before-quit', () => { runtime?.server.close(); runtime?.server.closeAllConnections(); });
+}

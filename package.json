@@ -1,20 +1,67 @@
 {
   "name": "solo-trpg",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "SoloTRPG — 单人跑团独立运行器（内置规则书/模组/角色卡/战术地图/战斗记录，AI 作为 DM）",
-  "main": "server.mjs",
+  "main": "desktop/main.cjs",
   "scripts": {
     "start": "node server.mjs",
     "icon": "node tools/make-icon.mjs",
-    "build:exe": "node tools/build-exe.mjs",
+    "build:exe": "electron-builder --win portable --x64 --publish never",
     "sync": "node tools/sync-from-repo.mjs",
     "sync:force": "node tools/sync-from-repo.mjs --force",
     "health": "node tools/health.mjs",
     "smoke": "node tools/smoke-ui.mjs",
-    "api": "node tools/dnd-api.mjs"
+    "api": "node tools/dnd-api.mjs",
+    "desktop": "node node_modules/electron/install.js && electron .",
+    "build:installer": "electron-builder --win nsis --x64 --publish never",
+    "build:sea": "node tools/build-exe.mjs",
+    "test:desktop": "node --test tools/desktop.test.mjs tools/settings.test.mjs"
   },
-  "engines": { "node": ">=20" },
-  "license": "MIT"
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "license": "MIT",
+  "build": {
+    "appId": "com.not1u.dndaidmtools",
+    "productName": "SoloTRPG",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "desktop/**",
+      "server.mjs",
+      "app/**",
+      "engine/*.txt",
+      "plugins/*.mjs",
+      "rules/*.json",
+      "data/rules-index/**",
+      "LICENSE",
+      "NOTICE.md",
+      "package.json"
+    ],
+    "win": {
+      "icon": "app/icon.ico",
+      "target": [
+        "portable"
+      ],
+      "signExecutable": false
+    },
+    "portable": {
+      "artifactName": "SoloTRPG-${version}-Windows-x64.exe"
+    },
+    "nsis": {
+      "artifactName": "SoloTRPG-${version}-Setup.exe",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false
+    },
+    "publish": null
+  },
+  "devDependencies": {
+    "electron": "44.3.0",
+    "electron-builder": "26.15.3"
+  }
 }

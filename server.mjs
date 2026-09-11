@@ -22,14 +22,15 @@ import fsp from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
+export async function startServer(options = {}) {
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 let CFG = {}
 try { CFG = JSON.parse(fs.readFileSync(path.join(HERE, 'config.json'), 'utf8')) } catch (e) { }
-const ROOT = CFG.dataRoot ? path.resolve(HERE, CFG.dataRoot) : HERE
-const PORT = Number(process.env.PORT || CFG.port || 4620)
-const BIND = process.env.BIND || CFG.bind || '127.0.0.1'
-const HOST_SRC = path.join(ROOT, 'engine', 'ui-host.latest.txt')
-const CLIENT_SRC = path.join(ROOT, 'engine', 'ui-client.latest.txt')
+const ROOT = options.dataRoot || (CFG.dataRoot ? path.resolve(HERE, CFG.dataRoot) : HERE)
+const PORT = Number(options.port ?? process.env.PORT ?? CFG.port ?? 4620)
+const BIND = options.bind || process.env.BIND || CFG.bind || '127.0.0.1'
+const HOST_SRC = path.join(HERE, 'engine', 'ui-host.latest.txt')
+const CLIENT_SRC = path.join(HERE, 'engine', 'ui-client.latest.txt')
 
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8',
@@ -97,8 +98,8 @@ function ensureEngine() {
   let src = fs.readFileSync(HOST_SRC, 'utf8')
   if (src.charCodeAt(0) === 0xfeff) src = src.slice(1)
   const harness = { handle: (n, f) => { rec[n] = f; return () => { delete rec[n] } } }
-  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', src)
-  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi)
+  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', src)
+  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE)
   if (!plugin || typeof plugin.apply !== 'function') throw new Error('引擎形状不对')
   const d = plugin.apply(miniCtx)
   if (typeof d === 'function') innerDispose = d
@@ -109,7 +110,7 @@ function ensureEngine() {
 // ---------- 插件装载（plugins/*.mjs，按 mtime 热重载）----------
 const pluginCache = new Map()
 async function loadPlugins() {
-  const dir = path.join(ROOT, 'plugins')
+  const dir = path.join(HERE, 'plugins')
   const ops = {}, list = []
   let names = []
   try { names = fs.readdirSync(dir).filter((f) => /\.m?js$/.test(f) && !/^_/.test(f)) } catch (e) { return { ops, list } }
@@ -149,7 +150,8 @@ async function serveFile(res, abs, headers) {
 }
 function safeJoin(base, rel) {
   const p = path.normalize(path.join(base, decodeURIComponent(rel).replace(/^[/\\]+/, '')))
-  return p.startsWith(base) ? p : null
+  const relative = path.relative(base, p)
+  return relative !== '..' && !relative.startsWith('..' + path.sep) && !path.isAbsolute(relative) ? p : null
 }
 
 async function handleApi(req, res) {
@@ -181,6 +183,7 @@ async function handleApi(req, res) {
 }
 
 const server = http.createServer(async (req, res) => {
+  if (req.headers.origin && req.headers.origin !== 'http://' + req.headers.host) return send(res, 403, 'forbidden origin')
   const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'))
   const p = url.pathname
   try {
@@ -194,7 +197,7 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, {
         ok: true, root: ROOT, port: PORT, engineLoadedAt: loadedAt,
         coreOps: Object.keys(rec).length, plugins: ext.list, pluginOps: Object.keys(ext.ops).length,
-        has: { characters: fs.existsSync(path.join(ROOT, 'characters')), rulesIndex: fs.existsSync(path.join(ROOT, 'data', 'rules-index', 'manifest.json')), map: fs.existsSync(path.join(ROOT, 'data', 'map.json')) },
+        has: { characters: fs.existsSync(path.join(ROOT, 'characters')), rulesIndex: fs.existsSync(path.join(HERE, 'data', 'rules-index', 'manifest.json')), map: fs.existsSync(path.join(ROOT, 'data', 'map.json')) },
       })
     }
     if (p === '/app/ui-client.js' || p === '/ui-client.js') return serveFile(res, CLIENT_SRC, { 'cache-control': 'no-store', 'content-type': 'text/javascript; charset=utf-8' })
@@ -205,7 +208,8 @@ const server = http.createServer(async (req, res) => {
       return serveFile(res, abs)
     }
     if (p.startsWith('/files/')) {
-      const abs = safeJoin(ROOT, p.slice(7))
+      if (!p.startsWith('/files/data/images/')) return send(res, 403, 'forbidden')
+      const abs = safeJoin(path.join(ROOT, 'data', 'images'), p.slice('/files/data/images/'.length))
       if (!abs) return send(res, 403, 'forbidden')
       return serveFile(res, abs)
     }
@@ -222,13 +226,20 @@ async function warmPlugins() {
     console.log('[solo-trpg] 插件已预热：' + ext.list.length + ' 个（' + ext.list.map(p => p.name).join('、') + '）')
   } catch (e) { }
 }
-warmPlugins()
-
-server.listen(PORT, BIND, () => {
-  console.log('')
-  console.log('  ⚔  SoloTRPG   http://' + BIND + ':' + PORT)
-  console.log('     数据根目录  ' + ROOT)
-  console.log('     引擎源码    engine/ui-host.latest.txt（改完自动热重载）')
-  console.log('     插件目录    plugins/*.mjs（改完自动热重载）')
-  console.log('')
+await warmPlugins()
+await new Promise((resolve, reject) => {
+  server.once('error', reject)
+  server.listen(PORT, BIND, resolve)
 })
+const address = server.address()
+const url = 'http://' + BIND + ':' + address.port
+console.log('[solo-trpg] ' + url)
+return { server, url, close: () => new Promise(resolve => {
+  if (typeof innerDispose === 'function') innerDispose()
+  server.close(resolve)
+  server.closeAllConnections()
+}) }
+}
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  await startServer()
+}

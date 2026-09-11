@@ -2025,7 +2025,7 @@ function SettingsPanel(props) {
     setF({ baseUrl: r.config.baseUrl || '', model: r.config.model || '', temperature: String(r.config.temperature), maxSteps: String(r.config.maxSteps), extraPrompt: r.config.extraPrompt || '', toolset: r.config.toolset || 'core' })
   }).catch(e => setMsg(String(e && e.message || e)))
   React.useEffect(() => { load() }, [])
-  const save = async () => {
+  const save = async (opts) => {
     setBusy(true); setMsg('')
     const patch = { baseUrl: f.baseUrl, model: f.model, temperature: f.temperature, maxSteps: f.maxSteps, extraPrompt: f.extraPrompt, toolset: f.toolset }
     if (key) patch.apiKey = key

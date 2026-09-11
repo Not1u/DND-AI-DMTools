@@ -77,7 +77,7 @@
         h('div', { className: 'solo-tabs' }, tabs.map((t) => h('button', {
           key: t.id, className: 'solo-tab' + (tab && t.id === tab.id ? ' on' : ''), onClick: () => setCur(t.id),
         }, t.title))),
-        h('span', { className: 'dim' }, 'http://127.0.0.1:' + (location.port || '4620'))),
+        h('span', { className: 'dim' }, '独立跑团工作台')),
       h('div', { className: 'solo-body' }, tab ? tab.component() : null))
   }
 
