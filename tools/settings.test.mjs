@@ -15,4 +15,3 @@ test('settings save button completes and releases busy state', async () => {
  const save=buttons.find(n=>n.children.includes('保存'));assert.ok(save);
  await save.props.onClick(); assert.ok(calls.includes('settings.set'));assert.equal(values[4],false);assert.equal(values[3],'saved');
 });
-
