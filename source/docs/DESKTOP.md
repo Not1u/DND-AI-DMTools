@@ -1,79 +1,49 @@
-# Windows 桌面测试版
+# Windows 桌面版 0.5.0
 
-当前版本：0.4.0。桌面版使用 Electron 独立窗口，已内置运行环境、界面、规则资料和 PDF 文字提取组件，无需安装 Node.js，也无需打开浏览器。
+## 启动和分发
 
-## 给测试者
+日常双击仓库外层 `SoloTRPG.exe`。0.5.0 改用免解压启动结构，避免旧便携单文件每次启动提取 Electron 与 PDF 依赖。
 
-日常启动可直接双击工作区最外层的 `SoloTRPG.exe`。对外发送时也可以把这个文件重命名为带版本号的名称；它与 `source/dist/SoloTRPG-0.4.0-Windows-x64.exe` 内容相同。支持 Windows 10/11 x64，首次解压运行可能需要稍等。当前测试包未做代码签名。
+发送 `source/dist/SoloTRPG-0.5.0-Windows-x64.zip` 给测试者。完整解压后双击 EXE，不需要安装 Node.js。**不能只发一个 EXE**，必须保留旁边的 `runtime/` 和 `library/`。Windows 10/11 x64；程序尚未签名。
 
-首次启动为空白战役，请创建角色并在设置面板填写自己的 AI 接口与密钥。规则与离线功能可直接使用；AI 请求需要联网及有效的服务配置。测试包不包含开发者的密钥、聊天记录或私人战役存档。
+```text
+SoloTRPG.exe                  很小的固定启动入口
+runtime/                      Electron 和应用代码
+library/
+  rules/                      结构化规则 JSON
+  data/rules-index/           内置规则书和模组文字索引
+  data/modules/               用户导入模组的提取文本
+source/                       仅开发机器需要，不发给测试者
+```
 
-## 更新和存档
+角色、AI 配置、聊天、战斗状态、地图 JSON 和外观设置在 `%APPDATA%/SoloTRPG/campaign/`。菜单“文件”可分别打开存档目录和资源库目录。旧 AppData 下的上传模组首次启动时迁移到同级 library；逐个比较文件内容相同后才删除旧副本，冲突会保留原件并提示。
 
-### 外观与动态效果（0.4.0）
+内置资源只含本项目现有的文字条目，不代表每个模组都含完整原书。导入 PDF 提取文字和页码，不提取原 PDF 地图插图；扫描件需要先做 OCR。模组文件上限 50 MB。
 
-顶部“外观”页集中设置主题；AI 设置面板也保留内嵌外观入口。背景色、面板色、正文颜色、辅助文字颜色、强调色及按钮文字颜色都支持系统取色器和 `#RRGGBB` 输入。点击“自动”恢复该项自动配色。选择预设或切换深浅模式时会恢复自动配色；自定义调整会实时预览并自动保存，状态显示“外观已保存”后可关闭程序。
+## 更新与备份
 
-外观保存在 `campaign/data/theme.json`，沿用旧版存档；旧主题中没有的新字段自动补默认值。界面包括滑动页签、按压光晕、面板进入与菜单过渡。选择“减少动效”或开启系统减少动态效果时，会关闭这些动画。
+退出软件后，用新版包覆盖 `SoloTRPG.exe`、`runtime/` 和内置规则目录，保留自己的 `library/data/modules/`。AppData 存档不会被程序包覆盖。备份时同时备份 AppData 战役目录和 library 用户模组目录。软件仍会使用少量 AppData 缓存；该版不承诺 C 盘完全零占用。
 
-悬浮详情使用独立实色背景和高对比文字，较长内容可移入鼠标滚动阅读；详情卡片也支持键盘聚焦，Esc 关闭。它不再依赖父面板的颜色继承。
+## 模组与 AI
 
-### 上传模组
+设置 AI 地址、模型和密钥后，“保存并测试”会发送一条最小对话，而非仅查询模型列表。错误显示在界面；请求有超时。DeepSeek 中旧的 `deepseek` 模型名兼容修正为已验证的 `deepseek-chat`。
 
-点击顶部“模组库 / 上传”，选择本机 PDF、TXT、MD 或 JSON 文件（每个文件最多 50 MB）。PDF 按页提取文字，再切分为可检索片段；中文字符映射组件已打包。上传完成后可在同页搜索、点结果读正文，也可以让 AI 使用现有 `mod.search` / `mod.read` 工具查阅。重复的同内容文件不会重复导入。
+在 AI 旁选择已上传模组，点击“确认并筹备首场景”。AI 会研究开场、检索资料，并用连通房间/通道生成第一张战术地图；筹备期间只有资料读取和地图生成工具可用，不会放玩家或开始战斗。AI 依据文字生成的地图需要 DM 核对，不是原书地图图片复刻。
 
-扫描图片 PDF 需先 OCR，受密码保护的 PDF 需先解除保护。本版导入文字，不导入插图、战术地图或 PDF 排版；多栏、表格等复杂排版可能需要人工核对。文件在本机提取，不上传到文件托管服务；使用 AI 时，被工具检索的文字片段会随对话发给用户配置的 AI 服务。
+推进到战斗时，AI 查询敌人规则条目并放置敌人，开始战斗再放已有角色卡的玩家单位。不会凭空创建玩家角色。敌人浮层显示 AC、HP、先攻修正、豁免和来源；找不到的数据标为待核对。地图工具栏支持按名称检索并将条目应用到选中敌人。
 
-导入保存的是提取后的文字索引及文件名，不额外备份原 PDF，请自行保留原文件。JSON 格式为 `{ "title": "章节名", "text": "正文" }`，也支持这类条目的数组或 `{ "entries": [...] }`。文本文件须为 UTF-8。
+战斗记录上方显示先攻顺序；悬浮先攻数值可看投骰与修正。投骰操作集中在独立骰子面板。
 
-### 内置内容与目录
+## 构建和测试
 
-EXE 包含 `rules/*.json` 和 `data/rules-index/`：6,803 条文字索引，其中模组分组有 624 条记录、37 个名称分组。内含玩家手册、城主指南、怪物图鉴等资料；这些是已有可检索文字内容，不等于每本原书的完整 PDF，也不保证每个模组含完整冒险正文。
-
-| 位置 | 内容 |
-| --- | --- |
-| `%APPDATA%/SoloTRPG/campaign/characters/` | 角色卡 JSON |
-| `%APPDATA%/SoloTRPG/campaign/data/maps/`、`maps.json`、`map.json` | 地图与地图目录；后两项位于 `data/` 下 |
-| `%APPDATA%/SoloTRPG/campaign/data/ai.json` | AI 配置、密钥和对话 |
-| `%APPDATA%/SoloTRPG/campaign/data/modules/` | 上传模组的文字索引，每个文件对应独立 JSON |
-| `%APPDATA%/SoloTRPG/campaign/data/` | 另含战斗、骰子、布局与主题 JSON，使用后按需生成 |
-| `%APPDATA%/SoloTRPG/` 下其他目录 | Electron 缓存和浏览器本地存储等 |
-| `%TEMP%/随机目录/` | 便携 EXE 自动解压的程序、规则和依赖，退出时由启动器清理；不要把它当存档备份 |
-
-在当前电脑，永久目录通常是 `C:/Users/DELL/AppData/Roaming/SoloTRPG/campaign`；其他电脑用自己的 Windows 用户名。应用菜单“文件 → 打开存档文件夹”可直接定位。备份整个 `campaign` 即可保留角色、地图、AI 对话和已上传模组。
-
-### 替换新版
-
-1. 关闭所有 SoloTRPG 窗口。
-2. 用菜单“文件 → 打开存档文件夹”定位存档，更新前建议复制备份。
-3. 将新版 EXE 放到任意目录并运行，旧 EXE 可删除。
-
-存档固定保存在 `%APPDATA%/SoloTRPG/campaign`，不会随程序路径、文件名或版本变化。便携指程序免安装；数据保存在当前 Windows 用户目录，不在 EXE 旁。同一用户下所有版本共用该存档。菜单“帮助”可查看版本和打开 GitHub Releases 下载页；本版采用手动替换更新，不会自动下载或安装。
-
-旧浏览器版存档不会自动迁入。需要沿用时，先退出新旧程序，备份目标目录，再将旧项目的 `characters` 和 `data` 复制到 `campaign` 下（无需复制 `data/rules-index`）；其中 `data/ai.json` 含密钥和聊天，仅在自己的电脑迁移，不要发给测试者。
-
-## 开发者重新封装
+在 `source/` 执行：
 
 ```powershell
 npm ci
 npm run test:desktop
 npm run smoke
-npm run build:exe
-npm run release:local
+npm run build:release  # 生成暂存包并更新本机外层入口，需先关闭旧版
+npm run build:zip      # 生成供测试者完整解压的 ZIP
 ```
 
-源码统一在仓库的 `source/` 目录。构建输出为 `source/dist/SoloTRPG-<version>-Windows-x64.exe`；`npm run release:local` 会将它复制为仓库最外层的 `SoloTRPG.exe` 并生成校验文件，`npm run build:release` 可连续执行这两步。每次发布先提高 `package.json` 版本（例如 `npm version patch --no-git-tag-version`），验证后重新构建。`npm run build:installer` 可另外生成安装器；默认分发免安装版。桌面开发用 `npm run desktop`，浏览器开发仍可用 `npm start`。
-
-代码与锁文件提交到当前 GitHub 仓库。二进制通过 GitHub Releases 分发，不提交进源码历史。构建命令默认不自动发布；发布时将构建产物和校验值上传至对应版本的 Release。
-
-旧 `tools/build-exe.mjs` 是历史 Node SEA 浏览器启动器，只通过 `npm run build:sea` 显式调用；它的旧本地产物已归档到 `source/local-archive/old-executables/`，不再作为启动入口。
-
-## 实现与后续版本
-
-- `desktop/main.cjs`：窗口、单实例、菜单、本地服务生命周期；渲染进程启用 sandbox/contextIsolation，关闭 Node 集成。
-- `desktop/storage.mjs`：创建用户存档目录，记录数据格式版本，不覆盖已有存档。
-- `server.mjs`：可独立启动或由桌面入口调用；桌面使用回环随机端口，规则/引擎从只读程序资源加载，状态写入用户存档。
-- `package.json` 的打包白名单只包含程序和规则，不包含开发目录中的角色、密钥和日志。
-- 后续修改存档结构时，需要增加带备份的明确迁移步骤。现阶段更新仅替换程序，不能假定任意未来数据结构都兼容旧版本。
-
-GitHub 仓库的 Actions → Windows desktop test build 支持手动构建，推送 `v*` 标签也会触发；完成后可下载 `SoloTRPG-Windows-x64` 构建附件。该流程不自动创建 Release。
+本地发布会保留 library 中用户导入模组；ZIP 只从干净暂存目录打包，拒绝包含上传模组目录。EXE、ZIP、依赖、缓存、密钥和用户模组均不提交 Git。

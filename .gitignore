@@ -34,3 +34,6 @@ engine/_src-phb/
 data/modules/
 source/engine/_src-phb/
 source/data/modules/
+
+/runtime/
+/library/

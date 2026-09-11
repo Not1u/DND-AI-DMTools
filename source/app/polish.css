@@ -15,7 +15,7 @@ html .dndp-ws{background:transparent;padding:10px;box-sizing:border-box;gap:6px}
 html .dndp-ws-head{background:transparent;border:0;padding:8px 12px 14px}
 html .dndp-ws-top{background:transparent;border:0;box-shadow:none;padding:4px 10px 12px}html .dndp-ws-top .logo{display:none}
 html .dndp-ws-col{border-color:transparent;background:transparent;border-radius:20px}html .dndp-panel::before{display:none}
-html .dndp-panel{border-radius:20px;border:1px solid var(--solo-border);background:color-mix(in srgb,var(--solo-surface) 94%,transparent);box-shadow:0 10px 32px #00000016,inset 0 1px 0 #ffffff06;overflow:hidden;animation:solo-reveal .5s var(--spring);transition:box-shadow .35s var(--spring),border-color .3s,background .3s}
+html .dndp-panel{border-radius:20px;border:1px solid var(--solo-border);background:color-mix(in srgb,var(--solo-surface) 94%,transparent);box-shadow:0 10px 32px #00000016,inset 0 1px 0 #ffffff06;overflow:hidden;animation:solo-panel-enter .5s var(--spring);transition:box-shadow .35s var(--spring),border-color .3s,background .3s}
 html .dndp-panel:hover{border-color:color-mix(in srgb,var(--solo-accent) 28%,var(--solo-border));box-shadow:0 14px 38px #00000020}
 html .dndp-ptitle{padding:12px 14px;background:transparent;border-bottom:1px solid var(--solo-border);min-height:22px}
 html .dndp-pbody{scrollbar-gutter:stable}
@@ -66,3 +66,23 @@ html .module-results pre{background:var(--solo-surface);border-radius:18px;paddi
 @media(max-width:1000px){.appearance-layout{grid-template-columns:1fr}.appearance-preview{position:relative}.solo-top .dim{display:none}.appearance-page{padding:24px}.module-results{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){html *,html *::before,html *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 html[data-motion=reduced] *,html[data-motion=reduced] *::before,html[data-motion=reduced] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+
+/* Native form controls do not inherit foreground automatically. */
+html .dndp-ws button,html .dndp-root button,html .dndp-sec,html .dndp-field select{color:var(--solo-text)}
+html .dndp-ws .primary,html .dndp-root .primary,html .dndp-opt.sel{color:var(--solo-on-accent)}
+html .dndp-sec{background:var(--solo-raised)}
+html .dndp-note,html .dndp-sub,html .dndp-label,html .dndp-chip{color:var(--solo-muted)}
+html .dndp-name,html .dndp-ptitle,html .dndp-stat b,html .dndp-ab b{color:var(--solo-text)}
+.adventure-picker{display:flex;flex-wrap:wrap;gap:8px;padding:12px;border-bottom:1px solid var(--solo-border);background:var(--solo-surface)}
+.adventure-picker select{flex:1;min-width:140px}.adventure-picker small{flex-basis:100%;color:var(--solo-muted)}
+html .dndp-mapgrid{box-shadow:0 20px 60px #0005;border:1px solid #ffffff25;border-radius:8px;isolation:isolate}
+html .dndp-cell{border-color:#ffffff0d;box-shadow:inset 0 1px #ffffff06;background-image:radial-gradient(ellipse at 20% 30%,#ffffff08,transparent 65%)}
+html .dndp-cell.g-wall{box-shadow:inset 0 2px 1px #ffffff17,inset 0 -5px 6px #0006;background-image:repeating-linear-gradient(0deg,transparent 0 45%,#0003 46% 50%)}
+html .dndp-cell.g-water{background-image:repeating-radial-gradient(ellipse at 20% 40%,transparent 0 5px,#ffffff0c 6px 7px,transparent 8px 14px)}
+html .dndp-cell.g-tree{border-radius:28%;box-shadow:inset -4px -6px 8px #0005,0 3px 6px #0003}
+html .dndp-tok{border-radius:50%;border:2px solid #ffffffba;box-shadow:0 3px 8px #0009,inset 0 2px 3px #ffffff30;font-weight:700;color:white;text-shadow:0 1px 3px #000}
+html .dndp-tok.sel{outline:2px solid var(--solo-accent);outline-offset:3px}
+
+@keyframes solo-panel-enter{from{transform:translateY(5px) scale(.995)}to{transform:none}}
+
+.log-initiative{padding:10px 0 14px;border-bottom:1px solid var(--solo-border);margin-bottom:12px}.log-initiative>.dndp-fill{height:auto;max-height:260px}.log-initiative>b{display:block;padding:0 10px 8px;color:var(--solo-text)}

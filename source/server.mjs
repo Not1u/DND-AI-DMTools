@@ -21,6 +21,7 @@ import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { composeMap } from './src/cartography.mjs'
 import { createModuleStore, MAX_MODULE_BYTES } from './src/modules.mjs'
 
 export async function startServer(options = {}) {
@@ -28,7 +29,8 @@ const HERE = path.dirname(fileURLToPath(import.meta.url))
 let CFG = {}
 try { CFG = JSON.parse(fs.readFileSync(path.join(HERE, 'config.json'), 'utf8')) } catch (e) { }
 const ROOT = options.dataRoot || (CFG.dataRoot ? path.resolve(HERE, CFG.dataRoot) : HERE)
-const modules = createModuleStore(ROOT)
+const libraryRoot = options.libraryRoot || HERE
+const modules = createModuleStore(options.libraryRoot || ROOT)
 const PORT = Number(options.port ?? process.env.PORT ?? CFG.port ?? 4620)
 const BIND = options.bind || process.env.BIND || CFG.bind || '127.0.0.1'
 const HOST_SRC = path.join(HERE, 'engine', 'ui-host.latest.txt')
@@ -100,8 +102,8 @@ function ensureEngine() {
   let src = fs.readFileSync(HOST_SRC, 'utf8')
   if (src.charCodeAt(0) === 0xfeff) src = src.slice(1)
   const harness = { handle: (n, f) => { rec[n] = f; return () => { delete rec[n] } } }
-  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', 'DND5E_MODULES', src)
-  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE, modules)
+  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', 'DND5E_MODULES', 'DND5E_LIBRARY', 'DND5E_COMPOSE', src)
+  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE, modules, libraryRoot, composeMap)
   if (!plugin || typeof plugin.apply !== 'function') throw new Error('引擎形状不对')
   const d = plugin.apply(miniCtx)
   if (typeof d === 'function') innerDispose = d
@@ -212,7 +214,7 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, {
         ok: true, root: ROOT, port: PORT, engineLoadedAt: loadedAt,
         coreOps: Object.keys(rec).length, plugins: ext.list, pluginOps: Object.keys(ext.ops).length,
-        has: { characters: fs.existsSync(path.join(ROOT, 'characters')), rulesIndex: fs.existsSync(path.join(HERE, 'data', 'rules-index', 'manifest.json')), map: fs.existsSync(path.join(ROOT, 'data', 'map.json')) },
+        has: { characters: fs.existsSync(path.join(ROOT, 'characters')), rulesIndex: fs.existsSync(path.join(libraryRoot, 'data', 'rules-index', 'manifest.json')), map: fs.existsSync(path.join(ROOT, 'data', 'map.json')) },
       })
     }
     if (p === '/app/ui-client.js' || p === '/ui-client.js') return serveFile(res, CLIENT_SRC, { 'cache-control': 'no-store', 'content-type': 'text/javascript; charset=utf-8' })

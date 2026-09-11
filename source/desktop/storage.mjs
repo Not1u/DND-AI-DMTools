@@ -15,3 +15,19 @@ export async function initializeData(home, version) {
   await fs.writeFile(marker, JSON.stringify({ schemaVersion: 1, appVersion: version }, null, 2));
   return root;
 }
+
+// Large imported texts live beside the application, with verified cross-volume migration.
+export async function initializeLibrary(library, campaign) {
+  await fs.mkdir(path.join(library,'data','modules'),{recursive:true});
+  const old=path.join(campaign,'data','modules'), target=path.join(library,'data','modules');
+  if(path.resolve(old)===path.resolve(target))return library;
+  let names=[];try{names=await fs.readdir(old)}catch(e){if(e.code!=='ENOENT')throw e}
+  for(const name of names.filter(n=>/^[a-f0-9]{64}\.json$/.test(n))){
+    const original=path.join(old,name),dest=path.join(target,name),bytes=await fs.readFile(original);
+    try{await fs.writeFile(dest,bytes,{flag:'wx'})}catch(e){if(e.code!=='EEXIST')throw e}
+    const copied=await fs.readFile(dest);
+    if(!bytes.equals(copied))throw new Error('模组迁移冲突，已保留原件：'+name);
+    await fs.unlink(original);
+  }
+  return library;
+}

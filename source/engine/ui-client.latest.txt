@@ -508,7 +508,7 @@ function StatusPanel(props) {
   const [msg, setMsg] = React.useState('')
   const cat = s.conditionCatalog || []
   const cur = s.conditions || []
-  const call = async (payload) => {
+  const act = async (payload) => {
     setBusy(true); setMsg('')
     try {
       const r = await call('sheet.condition.set', { json: JSON.stringify(Object.assign({ id: s.id }, payload)) })
@@ -516,7 +516,7 @@ function StatusPanel(props) {
     } catch (e) { setMsg(String(e && e.message || e)) }
     setBusy(false)
   }
-  const chips = cur.map((c, i) => h(Card, { key: i, title: c.name + (c.level != null ? ' ' + c.level : '') + (c.note ? '（' + c.note + '）' : ''), tipTitle: c.name, items: [{ name: c.name, desc: c.desc || c.note || '（自定义状态）' }], onClick: () => call({ remove: c.key }) }))
+  const chips = cur.map((c, i) => h(Card, { key: i, title: c.name + (c.level != null ? ' ' + c.level : '') + (c.note ? '（' + c.note + '）' : ''), tipTitle: c.name, items: [{ name: c.name, desc: c.desc || c.note || '（自定义状态）' }], onClick: () => act({ remove: c.key }) }))
   const kids = [h('div', { key: 'h', style: { display: 'flex', alignItems: 'center', gap: 8 } }, h('b', null, '状态'), h('div', { className: 'dndp-sp' }), cur.length ? h('span', { className: 'dndp-chip' }, cur.length + ' 项') : h('span', { className: 'dndp-chip' }, '无'), h('button', { className: 'dndp-btn', onClick: () => setOpen(!open) }, open ? '收起' : '手动修改'))]
   kids.push(h('div', { key: 'c', className: 'dndp-tags', style: { marginTop: 6 } }, chips))
   if (open) {
@@ -526,8 +526,8 @@ function StatusPanel(props) {
       h('div', { key: 'lv', className: 'dndp-field', style: { marginBottom: 0 } }, h('label', null, '等级（仅力竭）'), h('input', { className: 'dndp-input', value: level, onChange: e => setLevel(e.target.value) })),
       h('div', { key: 'nt', className: 'dndp-field', style: { marginBottom: 0 } }, h('label', null, '备注（如来源/剩余回合）'), h('input', { className: 'dndp-input', value: note, onChange: e => setNote(e.target.value) }))))
     kids.push(h('div', { key: 'go', style: { marginTop: 8, display: 'flex', gap: 6 } },
-      h('button', { key: 'a', className: 'dndp-btn primary', disabled: busy || !skey, onClick: () => call({ key: skey, level: level, note: note }) }, '添加状态'),
-      h('button', { key: 'b', className: 'dndp-btn', disabled: busy, onClick: () => call({ clear: true }) }, '清空全部')))
+      h('button', { key: 'a', className: 'dndp-btn primary', disabled: busy || !skey, onClick: () => act({ key: skey, level: level, note: note }) }, '添加状态'),
+      h('button', { key: 'b', className: 'dndp-btn', disabled: busy, onClick: () => act({ clear: true }) }, '清空全部')))
   }
   if (msg) kids.push(h('div', { key: 'm', className: 'dndp-note hl' }, msg))
   return h('div', { className: 'dndp-panel' }, kids)
@@ -538,7 +538,7 @@ function EquipPanel(props) {
   const [busy, setBusy] = React.useState(false)
   const [msg, setMsg] = React.useState('')
   const ws = s.weaponStats || {}
-  const call = async (slot, key) => {
+  const act = async (slot, key) => {
     setBusy(true); setMsg('')
     try {
       const r = await call('sheet.equip', { json: JSON.stringify({ id: s.id, slot: slot, key: key || null, clear: !key }) })
@@ -548,7 +548,7 @@ function EquipPanel(props) {
   }
   const row = (label, slot, entry) => h('div', { key: slot, className: 'dndp-item' },
     h('div', { className: 'dndp-main' }, h('div', { className: 'dndp-name' }, label + '：' + (entry ? entry.name : '（空）')), h('div', { className: 'dndp-sub' }, entry ? (entry.damage ? (entry.damage + ' ' + (entry.dmgType || '')) : (entry.base != null ? ('AC 基础 ' + entry.base + '｜敏捷上限 ' + (entry.dexCap == null ? '无' : entry.dexCap)) : ('AC +' + (entry.acBonus || 0)))) + (entry.magicBonus ? ' 魔法 +' + entry.magicBonus : '') : '未装备')),
-    h('button', { className: 'dndp-btn', disabled: busy || !entry, onClick: () => call(slot, null) }, '卸下'))
+    h('button', { className: 'dndp-btn', disabled: busy || !entry, onClick: () => act(slot, null) }, '卸下'))
   const kids = [h('div', { key: 'h', style: { display: 'flex', alignItems: 'center', gap: 8 } }, h('b', null, '装备栏'), h('div', { className: 'dndp-sp' }), h('span', { className: 'dndp-chip' }, 'AC ' + s.ac))]
   kids.push(row('护甲', 'armor', eq.armor))
   kids.push(row('盾牌', 'shield', eq.shield))
@@ -573,7 +573,7 @@ function Bag(props) {
   const [msg, setMsg] = React.useState('')
   const [openPack, setOpenPack] = React.useState('')
   const inv = s.inventory || []
-  const call = async (name2, payload) => {
+  const act = async (name2, payload) => {
     setBusy(true); setMsg('')
     try {
       const r = await call(name2, { json: JSON.stringify(Object.assign({ id: s.id }, payload)) })
@@ -584,7 +584,7 @@ function Bag(props) {
   const slotsFor = (it) => { const k = it.kind || 'gear'; if (k === 'armor') return [['armor', '装备为护甲']]; if (k === 'shield') return [['shield', '持盾']]; if (k === 'weapon') return [['mainHand', '主手'], ['offHand', '副手']]; return [['worn', '随身佩戴']] }
   const packRow = (it, c) => h('div', { key: c.key, className: 'dndp-item' },
     h('div', { className: 'dndp-main' }, h('div', { className: 'dndp-name' }, c.name), h('div', { className: 'dndp-sub' }, c.qty > 1 ? ('×' + c.qty) : '单个')),
-    h('button', { className: 'dndp-btn', disabled: busy, onClick: () => call('sheet.pack.take', { packKey: it.key, itemKey: c.key }) }, '取出'))
+    h('button', { className: 'dndp-btn', disabled: busy, onClick: () => act('sheet.pack.take', { packKey: it.key, itemKey: c.key }) }, '取出'))
   const card = (it, i) => {
     const isContainer = !!it.container
     const expanded = openPack === it.key
@@ -598,13 +598,13 @@ function Bag(props) {
       const contents = it.contents || []
       body.push(h('div', { key: 'hint', className: 'dndp-note' }, contents.length ? '套装内物品（点「取出」后进入背包成为独立物品）' : '（套装已清空）'))
       contents.forEach(c => body.push(packRow(it, c)))
-      if (contents.length) body.push(h('div', { key: 'all', style: { marginTop: 6 } }, h('button', { className: 'dndp-btn', disabled: busy, onClick: () => call('sheet.pack.take', { packKey: it.key, all: true }) }, '全部取出')))
+      if (contents.length) body.push(h('div', { key: 'all', style: { marginTop: 6 } }, h('button', { className: 'dndp-btn', disabled: busy, onClick: () => act('sheet.pack.take', { packKey: it.key, all: true }) }, '全部取出')))
     } else {
       if (it.damage || it.acBonus || it.base != null) body.push(h('div', { key: 'st', className: 'dndp-note' }, [it.damage ? ('伤害 ' + it.damage + ' ' + (it.dmgType || '')) : '', it.base != null ? ('AC ' + it.base + '（敏捷上限 ' + (it.dexCap == null ? '无' : it.dexCap) + '）') : '', it.acBonus ? ('AC +' + it.acBonus) : ''].filter(Boolean).join('｜')))
       if (it.desc) body.push(h('div', { key: 'de', className: 'dndp-note' }, it.desc))
       body.push(h('div', { key: 'act', style: { display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 } },
-        slotsFor(it).map(p => h('button', { key: p[0], className: 'dndp-btn', disabled: busy, onClick: () => call('sheet.equip', { slot: p[0], key: it.key }) }, p[1])),
-        h('button', { key: 'rm', className: 'dndp-btn', disabled: busy, onClick: () => call('sheet.item.remove', { key: it.key }) }, '移除')))
+        slotsFor(it).map(p => h('button', { key: p[0], className: 'dndp-btn', disabled: busy, onClick: () => act('sheet.equip', { slot: p[0], key: it.key }) }, p[1])),
+        h('button', { key: 'rm', className: 'dndp-btn', disabled: busy, onClick: () => act('sheet.item.remove', { key: it.key }) }, '移除')))
     }
     return h('div', { key: it.key || i, className: 'dndp-sect', style: { marginTop: 6 } }, head, expanded || !isContainer ? h('div', { className: 'dndp-body' }, body) : null)
   }
@@ -618,7 +618,7 @@ function Bag(props) {
     h('div', { key: 'd', className: 'dndp-field', style: { marginBottom: 0 } }, h('label', null, '伤害骰（如 1d8）'), h('input', { className: 'dndp-input', value: damage, onChange: e => setDamage(e.target.value) })),
     h('div', { key: 't', className: 'dndp-field', style: { marginBottom: 0 } }, h('label', null, '伤害类型'), h('input', { className: 'dndp-input', value: dmgType, onChange: e => setDmgType(e.target.value) })),
     h('div', { key: 'x', className: 'dndp-field', style: { marginBottom: 0, gridColumn: '1 / span 2' } }, h('label', null, '说明'), h('input', { className: 'dndp-input', value: desc, onChange: e => setDesc(e.target.value) }))))
-  kids.push(h('div', { key: 'go', style: { marginTop: 8 } }, h('button', { className: 'dndp-btn primary', disabled: busy || !name, onClick: () => { const item = { name: name, kind: kind, desc: desc }; if (acBonus !== '') { if (kind === 'armor') item.base = Number(acBonus); else item.acBonus = Number(acBonus) } if (damage) item.damage = damage; if (dmgType) item.dmgType = dmgType; call('sheet.item.add', { item: item }).then(() => { setName(''); setAcBonus(''); setDamage(''); setDmgType(''); setDesc('') }) } }, '加入背包')))
+  kids.push(h('div', { key: 'go', style: { marginTop: 8 } }, h('button', { className: 'dndp-btn primary', disabled: busy || !name, onClick: () => { const item = { name: name, kind: kind, desc: desc }; if (acBonus !== '') { if (kind === 'armor') item.base = Number(acBonus); else item.acBonus = Number(acBonus) } if (damage) item.damage = damage; if (dmgType) item.dmgType = dmgType; act('sheet.item.add', { item: item }).then(() => { setName(''); setAcBonus(''); setDamage(''); setDmgType(''); setDesc('') }) } }, '加入背包')))
   if (msg) kids.push(h('div', { key: 'm', className: 'dndp-note hl' }, msg))
   return h('div', { className: 'dndp-panel' }, kids)
 }
@@ -1200,7 +1200,7 @@ function LogView(props) {
   ]
   const filters = [['all', '全部'], ['dice', '只看骰子'], ['dm', '只看推进']].concat(party.map(p => [p.name, p.name]))
   const body = []
-  body.push(h(DiceBar, { key: 'dice', party: party, pcId: pcId, actorName: actorName, presets: logPresets(sheet), onPick: setPcId, onDone: load }))
+  body.push(h('section',{key:'initiative',className:'log-initiative'},h('b',null,'先攻顺序'),h(CombatPanel,{})))
   body.push(h('div', { key: 'f', className: 'dndp-filters' }, filters.map(f => h('button', { key: f[0], className: 'dndp-btn tiny' + (only === f[0] ? ' primary' : ''), onClick: () => setOnly(f[0]) }, f[1]))))
   if (msg) body.push(h('div', { key: 'm', className: 'dndp-note hl' }, msg))
   if (err) body.push(h('div', { key: 'e', className: 'dndp-err' }, err))
@@ -1272,6 +1272,8 @@ function MapPanel(props) {
   const [fit, setFit] = React.useState(!!props.bare)
   const [maps, setMaps] = React.useState(null)
   const [nameDraft, setNameDraft] = React.useState(null)
+  const [enemyQuery,setEnemyQuery]=React.useState('')
+  const [enemyResult,setEnemyResult]=React.useState(null)
   const loadMaps = () => call('map.list', {}).then(r => { if (r && r.ok) setMaps(r) }).catch(() => { })
   const load = () => call('map.get', {}).then(r => { if (r && r.ok) { setMap(r); setErr('') } else setErr((r && r.error) || '读取地图失败') }).catch(e => setErr(String(e && e.message || e)))
   React.useEffect(() => { load(); loadMaps() }, [])
@@ -1382,6 +1384,8 @@ function MapPanel(props) {
         className: 'dndp-tok k-' + (tk.kind || 'enemy') + (isDrag ? ' drag' : '') + (sel === tk.id ? ' sel' : ''),
         style: { left: px * tile + 2, top: py * tile + 2, width: size * tile - 4, height: size * tile - 4, background: tk.color || undefined, zIndex: isDrag ? 20 : 5 },
         onPointerDown: e => onTokDown(e, tk),
+        onMouseEnter: e => tipShow(e, tk.name, [{name:'AC / HP',desc:(tk.ac ?? '—')+' / '+(tk.hp ?? '—')+'/'+(tk.max ?? '—')},{name:'先攻',desc:tk.dex == null?'待查证':'1d20 '+(tk.dex>=0?'+':'')+tk.dex},{name:'豁免',desc:typeof tk.saves==='string'?tk.saves:tk.saves?Object.entries(tk.saves).map(([k,v])=>(ABF[k]||k)+(v>=0?'+':'')+v).join(' · '):'待查证'},{name:'来源',desc:tk.source||'进入战斗时检索'}]),
+        onMouseLeave: tipHide, onFocus: e => tipShow(e,tk.name,[{name:'AC / HP',desc:(tk.ac ?? '—')+' / '+(tk.hp ?? '—')+'/'+(tk.max ?? '—')},{name:'来源',desc:tk.source||'待查证'}]),onBlur:tipHide,tabIndex:0,
         title: tk.name + ' @ ' + cellName(px, py) + (tk.hp != null ? ('｜HP ' + tk.hp + (tk.max ? '/' + tk.max : '')) : '') + (tk.speed ? ('｜速度 ' + tk.speed + ' 尺') : '') + (tk.note ? ('｜' + tk.note) : '') + (isDrag ? ('｜正在移动 ' + d.feetStandard + ' 尺') : ''),
       }, h('span', { className: 'tkname' }, tk.name.slice(0, 4)), bar)
     }),
@@ -1408,10 +1412,13 @@ function MapPanel(props) {
   }
   const newMap = async () => {
     const id = 'map-' + Date.now().toString(36)
-    const r = await call('map.create', { id: id, name: '新地图', w: map.w || 24, h: map.h || 16 })
+    const r = await call('map.compose', { name: '探索地图', biome:'ruins', w:32, h:24 })
     if (r && r.ok) { setMap(r); loadMaps(); setMsg(r.summary || '已新建'); setNameDraft('新地图') } else setMsg('新建失败：' + ((r && r.error) || ''))
   }
   const tools = h('div', { className: 'dndp-maptools' },
+    h('input',{className:'dndp-input',style:{width:110},placeholder:'敌人名称',value:enemyQuery,onChange:e=>setEnemyQuery(e.target.value),'aria-label':'敌人检索'}),
+    h('button',{className:'dndp-btn tiny',disabled:!enemyQuery.trim(),onClick:async()=>{const r=await call('mod.statblock',{query:enemyQuery});setEnemyResult(r.ok?r:null);setMsg(r.ok?r.summary:r.error)}},'检索简表'),
+    enemyResult?h('button',{className:'dndp-btn tiny',disabled:!sel,onClick:async()=>{const r=await call('enemy.bind',{tokenId:sel,statblockId:enemyResult.id});setMsg(r.summary||r.error);load()}},'应用到选中敌人'):null,
     maps && maps.items && maps.items.length ? h('select', {
       className: 'dndp-input', style: { width: 150, flex: 'none' }, value: maps.current || '',
       title: '切换地图（AI 也能用 map.use 切）',
@@ -1461,7 +1468,7 @@ const DEFAULT_LAYOUT = {
   slots: {
     left: { size: 230, panels: ['roster'] },
     center: { size: 0, panels: ['map', 'sheet'] },
-    right: { size: 430, panels: ['combat', 'ai', 'log'] },
+    right: { size: 430, panels: ['ai', 'log'] },
     bottom: { size: 210, panels: ['dice'] },
   },
   weights: { left: [1], center: [3, 2], right: [2, 3, 3], bottom: [1] },
@@ -1631,6 +1638,10 @@ function Workspace() {
   const [activeId, setActiveId] = React.useState(null)
   const [party, setParty] = React.useState([])
   const [toolCount, setToolCount] = React.useState(null)
+  const [adventure, setAdventure] = React.useState({modules:[]})
+  const [moduleId, setModuleId] = React.useState('')
+  const reloadAdventure = () => call('campaign.get', {}).then(r=>{if(r.ok){setAdventure(r);setModuleId(r.moduleId||'')}})
+  React.useEffect(()=>{reloadAdventure().catch(()=>{})},[])
   const [xpMap, setXpMap] = React.useState({})
   const [xpReady, setXpReady] = React.useState([])
   const [autoLevelOpened, setAutoLevelOpened] = React.useState(false)
@@ -1696,7 +1707,7 @@ function Workspace() {
       call('ws.set', { layout: next }).then(r => { if (r && r.ok && r.saved === false) setMsg(r.summary || '布局未落盘') }).catch(() => { })
     }, 400)
   }
-  const pick = (id) => { setActiveId(id); const n = cloneLayout(layout); n.activeSheet = id; commit(n) }
+  const pick = (id) => { setActiveId(id); const n = cloneLayout(layout); n.activeSheet = id; n.collapsed=n.collapsed.filter(p=>p!=='sheet'); commit(n) }
   // 用函数声明（会提升）：effect 里会在组件体执行后立刻调用它，const 箭头函数会踩 TDZ
   function openPanel(pid) {
     const n = cloneLayout(layout)
@@ -2014,9 +2025,11 @@ function applyThemeGlobally(t) {
       const de = document.documentElement
       for (const [key, value] of Object.entries(themeStyleOf(th))) de.style.setProperty(key, value)
       de.dataset.motion = th.motion
+      de.dataset.theme = th.mode
       de.style.setProperty('--solo-accent', th.accent)
       de.style.setProperty('--solo-on-accent', th.onAccent || onAccentOf(th.accent))
       de.style.setProperty('--solo-mode', th.mode)
+      document.querySelectorAll('.dndp-ws,.dndp-root,.dndp-overlay').forEach(el => { for (const [key,value] of Object.entries(themeStyleOf(th))) el.style.setProperty(key,value); el.classList.toggle('dndp-light',th.mode === 'light') })
     }
     if (typeof window !== 'undefined' && window.dispatchEvent) window.dispatchEvent(new CustomEvent('solotrpg-theme', { detail: th }))
   } catch (e) { }
@@ -2117,6 +2130,10 @@ function AIPanel(props) {
   const [msg, setMsg] = React.useState('')
   const [st, setSt] = React.useState(null)
   const [toolCount, setToolCount] = React.useState(null)
+  const [adventure, setAdventure] = React.useState({modules:[]})
+  const [moduleId, setModuleId] = React.useState('')
+  const reloadAdventure = () => call('campaign.get', {}).then(r=>{if(r.ok){setAdventure(r);setModuleId(r.moduleId||'')}})
+  React.useEffect(()=>{reloadAdventure().catch(()=>{})},[])
   const bodyRef = React.useRef(null)
   const load = () => call('ai.history', {}).then(r => { if (r && r.ok) setMsgs(r.messages || []) }).catch(() => { })
   React.useEffect(() => {
@@ -2142,7 +2159,6 @@ function AIPanel(props) {
       }
     } catch (e) { setMsgs(m => m.concat([{ role: 'assistant', content: '⚠ ' + String(e && e.message || e), err: true }])) }
     setBusy(false)
-    load()
   }
   const clear = async () => { const r = await call('ai.clear', {}); setMsg(r && r.ok ? '已清空' : '清空失败'); load() }
   const quick = ['读取当前战役状态，并简短说明接下来该发生什么', '继续推进剧情（由我扮演图里尔，你先描述场景）', '把当前遭遇摆到战术地图上']
@@ -2168,6 +2184,10 @@ function AIPanel(props) {
   if (busy) list.push(h('div', { key: 'b', className: 'dndp-msg' }, h('div', { className: 'dndp-who' }, 'DM'), h('div', { className: 'dndp-bubble' }, '正在思考（会先调用工具查资料）…')))
   return h('div', { className: 'dndp-ai' },
     bar,
+    h('div', {className:'adventure-picker'},
+      h('select',{className:'dndp-input',value:moduleId,disabled:busy,'aria-label':'当前冒险模组',onChange:e=>setModuleId(e.target.value)},h('option',{value:''},'选择已导入模组'),(adventure.modules||[]).map(m=>h('option',{key:m.id,value:m.id},m.name))),
+      h('button',{className:'dndp-btn',disabled:busy||!moduleId,onClick:async()=>{setBusy(true);setMsg('正在确认模组并研究开场…');try{const picked=await call('campaign.select',{moduleId});if(!picked.ok)throw new Error(picked.error);const r=await call('campaign.prepare',{});setMsg(r.ok?r.summary:r.error);await reloadAdventure();load()}catch(e){setMsg(e.message)}finally{setBusy(false)}}},'确认并筹备首场景'),
+      h('small',null,adventure.name?'当前：'+adventure.name+' · '+(adventure.phase==='prepared'?'地图已就绪':'待筹备'):'先导入模组，再确认本次冒险。')),
     h('div', { className: 'dndp-aibody', ref: bodyRef }, list),
     msg ? h('div', { className: 'dndp-note hl', style: { padding: '2px 10px' } }, msg) : null,
     h('div', { className: 'dndp-aiinput' },
@@ -2215,7 +2235,7 @@ function CombatPanel(props) {
       key: e.id, className: 'dndp-crow' + (e.active ? ' on' : '') + (sel === e.id ? ' sel' : ''),
       onClick: () => setSel(e.id), title: (e.note || '') + (e.pcId ? ('｜角色卡 ' + e.pcId) : '') + (e.tokenId ? ('｜地图单位 ' + e.tokenId) : ''),
     },
-      h('span', { className: 'dndp-chip', style: { minWidth: 26, textAlign: 'center' } }, e.init),
+      h('span', { className: 'dndp-chip', title: e.roll!=null ? '1d20 ('+e.roll+') '+(e.dex>=0?'+':'')+e.dex+' = '+e.init : '手动先攻 / 历史记录', style: { minWidth: 26, textAlign: 'center' } }, e.init),
       h('div', { className: 'dndp-main' },
         h('div', { className: 'dndp-name' }, (e.active ? '▶ ' : '') + e.name),
         h('div', { className: 'dndp-sub' },

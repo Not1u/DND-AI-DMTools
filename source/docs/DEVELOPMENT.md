@@ -1,6 +1,6 @@
 # 开发与 GitHub 工作流
 
-> **桌面封装已更新**：`npm run desktop` 启动独立窗口；`npm run build:exe` 生成包含全部应用资源的便携 EXE。存档放在 `%APPDATA%/SoloTRPG/campaign`，每次修改后重新封装并替换 EXE。详见 [DESKTOP.md](DESKTOP.md)。
+> **桌面封装已更新**：`npm run desktop` 启动独立窗口；`npm run build:exe` 生成无需每次解压的桌面程序目录。存档放在 `%APPDATA%/SoloTRPG/campaign`，每次修改后重新封装并更新完整发布包。详见 [DESKTOP.md](DESKTOP.md)。
 
 仓库的 `source/` 目录是 SoloTRPG 独立版的开发源。先进入该目录再运行本文命令。仓库最外层的 `SoloTRPG.exe` 是本地测试启动入口。唯一默认远程是 `origin`：
 
@@ -48,6 +48,6 @@ git push origin main
 - 不提交 `data/ai.json`、AI 备份、`.env`、凭据文件、日志、`node_modules`、`build`、`dist`、exe。`.gitignore` 已设置相应规则。
 - 规则索引按现有项目约定保留，来源说明见 `NOTICE.md`。本地 `engine/_src-phb/` 参考 HTML 不入库。
 - 不运行会修改真实存档的健康检查/迁移脚本作为普通测试。应复制测试数据，或注入隔离的文件存储。
-- 修改 host 文件后下次请求热加载；修改 client 和 `app/` 文件后刷新页面。`server.mjs` 或监听配置变更后需重启服务。桌面 EXE 包含全部程序与规则；修改后重新打包，用户存档不随程序更新覆盖。
+- 修改 host 文件后下次请求热加载；修改 client 和 `app/` 文件后刷新页面。`server.mjs` 或监听配置变更后需重启服务。桌面发布包包含 runtime 程序目录与 library 规则库；修改后重新打包，用户存档不随程序更新覆盖。
 
 当前缺陷、遗留工具限制与重构建议见 `PROJECT_REVIEW.md`。

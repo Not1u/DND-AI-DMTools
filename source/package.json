@@ -1,6 +1,6 @@
 {
   "name": "solo-trpg",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "description": "SoloTRPG — 单人跑团独立运行器（内置规则书/模组/角色卡/战术地图/战斗记录，AI 作为 DM）",
@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node server.mjs",
     "icon": "node tools/make-icon.mjs",
-    "build:exe": "electron-builder --win portable --x64 --publish never",
+    "build:exe": "electron-builder --dir --win --x64 --publish never",
     "sync": "node tools/sync-from-repo.mjs",
     "sync:force": "node tools/sync-from-repo.mjs --force",
     "health": "node tools/health.mjs",
@@ -19,7 +19,8 @@
     "release:local": "node tools/publish-local.mjs",
     "build:release": "npm run build:exe && npm run release:local",
     "build:sea": "node tools/build-exe.mjs",
-    "test:desktop": "node --test tools/desktop.test.mjs tools/settings.test.mjs tools/modules.test.mjs tools/theme.test.mjs"
+    "test:desktop": "node --test tools/desktop.test.mjs tools/settings.test.mjs tools/modules.test.mjs tools/theme.test.mjs tools/adventure.test.mjs",
+    "build:zip": "npm run build:exe && node tools/publish-local.mjs --stage && node tools/archive-release.mjs"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -40,8 +41,6 @@
       "app/**",
       "engine/*.txt",
       "plugins/*.mjs",
-      "rules/*.json",
-      "data/rules-index/**",
       "LICENSE",
       "NOTICE.md",
       "package.json"

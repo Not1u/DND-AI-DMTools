@@ -21,9 +21,11 @@ jobs:
         working-directory: source
       - run: npm run smoke
         working-directory: source
-      - run: npm run build:exe
+      - run: npm run build:zip
         working-directory: source
       - uses: actions/upload-artifact@v4
         with:
           name: SoloTRPG-Windows-x64
-          path: source/dist/SoloTRPG-*-Windows-x64.exe
+          path: |
+            source/dist/SoloTRPG-*-Windows-x64.zip
+            source/dist/SoloTRPG-*-Windows-x64.zip.sha256

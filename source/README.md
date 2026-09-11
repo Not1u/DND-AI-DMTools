@@ -1,3 +1,5 @@
+> 当前桌面版 **0.5.0**：完整解压 ZIP 后使用外层 SoloTRPG.exe；保留同级 runtime 和 library。文件存放、更新及模组筹备流程见 [桌面说明](docs/DESKTOP.md)。下方旧版单文件说明仅供历史参考。
+
 # SoloTRPG
 
 > **Windows 桌面版 0.4.0**：全新动态界面、自由主题配色、清晰详情浮层，支持 PDF 模组上传与即时检索。`npm ci` 后运行 `npm run build:exe`，产物在 `dist/`；独立窗口、免安装 EXE、用户存档与程序分离。使用与更新见 [桌面版说明](docs/DESKTOP.md)。
