@@ -16,6 +16,8 @@
     "api": "node tools/dnd-api.mjs",
     "desktop": "node node_modules/electron/install.js && electron .",
     "build:installer": "electron-builder --win nsis --x64 --publish never",
+    "release:local": "node tools/publish-local.mjs",
+    "build:release": "npm run build:exe && npm run release:local",
     "build:sea": "node tools/build-exe.mjs",
     "test:desktop": "node --test tools/desktop.test.mjs tools/settings.test.mjs tools/modules.test.mjs tools/theme.test.mjs"
   },

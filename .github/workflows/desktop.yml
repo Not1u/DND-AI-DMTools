@@ -12,12 +12,18 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+          cache-dependency-path: source/package-lock.json
       - run: npm ci
+        working-directory: source
       - run: npm run test:desktop
+        working-directory: source
       - run: node --test tools/settings.test.mjs
+        working-directory: source
       - run: npm run smoke
+        working-directory: source
       - run: npm run build:exe
+        working-directory: source
       - uses: actions/upload-artifact@v4
         with:
           name: SoloTRPG-Windows-x64
-          path: dist/SoloTRPG-*-Windows-x64.exe
+          path: source/dist/SoloTRPG-*-Windows-x64.exe

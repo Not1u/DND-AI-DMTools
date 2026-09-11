@@ -4,7 +4,7 @@
 
 ## 给测试者
 
-发送 `dist/SoloTRPG-0.4.0-Windows-x64.exe` 即可。支持 Windows 10/11 x64；双击启动。首次解压运行可能需要稍等。当前测试包未做代码签名。
+日常启动可直接双击工作区最外层的 `SoloTRPG.exe`。对外发送时也可以把这个文件重命名为带版本号的名称；它与 `source/dist/SoloTRPG-0.4.0-Windows-x64.exe` 内容相同。支持 Windows 10/11 x64，首次解压运行可能需要稍等。当前测试包未做代码签名。
 
 首次启动为空白战役，请创建角色并在设置面板填写自己的 AI 接口与密钥。规则与离线功能可直接使用；AI 请求需要联网及有效的服务配置。测试包不包含开发者的密钥、聊天记录或私人战役存档。
 
@@ -59,13 +59,14 @@ npm ci
 npm run test:desktop
 npm run smoke
 npm run build:exe
+npm run release:local
 ```
 
-输出为 `dist/SoloTRPG-<version>-Windows-x64.exe`。每次发布先提高 `package.json` 版本（例如 `npm version patch --no-git-tag-version`），验证后重新构建。`npm run build:installer` 可另外生成安装器；默认分发免安装版。桌面开发用 `npm run desktop`，浏览器开发仍可用 `npm start`。
+源码统一在仓库的 `source/` 目录。构建输出为 `source/dist/SoloTRPG-<version>-Windows-x64.exe`；`npm run release:local` 会将它复制为仓库最外层的 `SoloTRPG.exe` 并生成校验文件，`npm run build:release` 可连续执行这两步。每次发布先提高 `package.json` 版本（例如 `npm version patch --no-git-tag-version`），验证后重新构建。`npm run build:installer` 可另外生成安装器；默认分发免安装版。桌面开发用 `npm run desktop`，浏览器开发仍可用 `npm start`。
 
 代码与锁文件提交到当前 GitHub 仓库。二进制通过 GitHub Releases 分发，不提交进源码历史。构建命令默认不自动发布；发布时将构建产物和校验值上传至对应版本的 Release。
 
-旧 `tools/build-exe.mjs` 是历史 Node SEA 浏览器启动器，只通过 `npm run build:sea` 显式调用；根目录旧 `SoloTRPG.exe` 不是新桌面测试包。
+旧 `tools/build-exe.mjs` 是历史 Node SEA 浏览器启动器，只通过 `npm run build:sea` 显式调用；它的旧本地产物已归档到 `source/local-archive/old-executables/`，不再作为启动入口。
 
 ## 实现与后续版本
 

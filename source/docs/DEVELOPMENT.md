@@ -2,7 +2,7 @@
 
 > **桌面封装已更新**：`npm run desktop` 启动独立窗口；`npm run build:exe` 生成包含全部应用资源的便携 EXE。存档放在 `%APPDATA%/SoloTRPG/campaign`，每次修改后重新封装并替换 EXE。详见 [DESKTOP.md](DESKTOP.md)。
 
-本目录是 SoloTRPG 独立版的开发源。唯一默认远程是 `origin`：
+仓库的 `source/` 目录是 SoloTRPG 独立版的开发源。先进入该目录再运行本文命令。仓库最外层的 `SoloTRPG.exe` 是本地测试启动入口。唯一默认远程是 `origin`：
 
 https://github.com/Not1u/DND-AI-DMTools.git
 
