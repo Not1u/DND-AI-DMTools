@@ -105,3 +105,14 @@ html .pdf-background.grid-hidden .pdf-cell{border-color:transparent}
 
 html .pdf-background .pdf-cell{border-color:#47729b66}
 html .dndp-btn.primary:hover{background:var(--solo-accent);color:var(--solo-on-accent)}
+/* Gameplay requests and readable combat details */
+.player-wait,.map-request{padding:10px 12px;border:1px solid var(--solo-accent);border-radius:12px;background:color-mix(in srgb,var(--solo-accent) 12%,var(--solo-surface));color:var(--solo-text)}
+.map-request{display:flex;flex-wrap:wrap;align-items:center;gap:8px;flex-basis:100%}.map-request>span{flex:1;font-size:12px}
+.effect-list{display:flex;gap:6px;flex-wrap:wrap;flex-basis:100%}.effect-list>span{padding:5px 9px;border-radius:8px;background:#7354a133;color:var(--solo-text);border:1px solid #b598d766;font-size:12px}
+.effect-cell{position:absolute;z-index:3;background:#9167cc40;border:1px solid #b69edd70;pointer-events:none}
+html .dndp-tok{overflow:visible!important}.token-ac{position:absolute;top:100%;left:50%;transform:translateX(-50%);padding:1px 4px;white-space:nowrap;font-size:10px;line-height:14px;color:#fff;background:#101827;border:1px solid #a7b9d5;border-radius:4px;pointer-events:none;z-index:9;text-shadow:none}
+.temp-hp-card{display:grid;grid-template-columns:1fr auto;gap:5px;padding:12px 16px;border:1px solid #59c6b7;border-radius:15px;background:color-mix(in srgb,#59c6b7 12%,var(--solo-surface));margin:10px 0;color:var(--solo-text)}.temp-hp-card strong{font-size:26px;grid-row:span 3}.temp-hp-card small{font-size:12px;color:var(--solo-muted)}
+.speech-avatar{display:inline-grid;place-items:center;border-radius:50%;width:28px;height:28px;background:var(--solo-raised);color:var(--solo-text);border:1px solid var(--solo-border);margin-right:7px;font-size:11px}.npc-speech .dndp-bubble{border-left:3px solid var(--solo-accent)}
+.battle-archives{border:1px solid var(--solo-border);border-radius:12px;margin:8px;padding:10px;color:var(--solo-text)}.battle-archives summary{cursor:pointer;font-size:13px}.archive-cards{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.archive-cards button{display:grid;gap:5px;padding:10px;text-align:left;border-radius:10px;background:var(--solo-raised);color:var(--solo-text);border:1px solid var(--solo-border)}.archive-cards small{font-size:11px;color:var(--solo-muted)}.archive-replay{max-height:260px;overflow:auto;font-size:12px;line-height:1.6}.archive-replay>button{float:right}.racial-cantrip{display:grid;gap:6px;margin-top:8px}.racial-cantrip select{background:var(--solo-raised);color:var(--solo-text);padding:8px;border-radius:8px}
+
+.roster-temp{margin-top:5px;padding:5px 7px;border:1px solid #59c6b7;border-radius:8px;background:#59c6b722;color:var(--solo-text);font-size:12px;white-space:nowrap}

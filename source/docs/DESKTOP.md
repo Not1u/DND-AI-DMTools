@@ -1,10 +1,12 @@
-# Windows 桌面版 0.6.0
+# Windows 桌面版 0.7.0
+
+> 0.7.0 的回合交互、投骰约定、法术效果与新存档位置详见 [战斗交互说明](GAMEPLAY.md)。
 
 ## 启动和分发
 
 日常双击仓库外层 `SoloTRPG.exe`。0.5.0 改用免解压启动结构，避免旧便携单文件每次启动提取 Electron 与 PDF 依赖。
 
-发送 `source/dist/SoloTRPG-0.6.0-Windows-x64.zip` 给测试者。完整解压后双击 EXE，不需要安装 Node.js。**不能只发一个 EXE**，必须保留旁边的 `runtime/` 和 `library/`。Windows 10/11 x64；程序尚未签名。
+发送 `source/dist/SoloTRPG-0.7.0-Windows-x64.zip` 给测试者。完整解压后双击 EXE，不需要安装 Node.js。**不能只发一个 EXE**，必须保留旁边的 `runtime/` 和 `library/`。Windows 10/11 x64；程序尚未签名。
 
 ```text
 SoloTRPG.exe                  很小的固定启动入口
@@ -17,7 +19,7 @@ library/
 source/                       仅开发机器需要，不发给测试者
 ```
 
-角色、AI 配置、聊天、战斗状态、地图 JSON 和外观设置在 `%APPDATA%/SoloTRPG/campaign/`。菜单“文件”可分别打开存档目录和资源库目录。旧 AppData 下的上传模组首次启动时迁移到同级 library；逐个比较文件内容相同后才删除旧副本，冲突会保留原件并提示。
+聊天、战役快照和战斗回放在 EXE 同级 `saves/`；角色工作副本、AI 配置、战斗工作状态、地图工作 JSON 和外观设置在 `%APPDATA%/SoloTRPG/campaign/`。菜单“文件”可分别打开存档目录和资源库目录。旧 AppData 下的上传模组首次启动时迁移到同级 library；逐个比较文件内容相同后才删除旧副本，冲突会保留原件并提示。
 
 内置资源只含本项目现有的文字条目，不代表每个模组都含完整原书。新上传 PDF 保留原件，同时提取文字和页码。扫描件可以制作原图地图；文字检索与 AI 研究需要先做 OCR。旧版已导入 PDF 需要补传同一个文件，补齐原件时不会重复增加条目。模组文件上限 50 MB。
 
@@ -32,7 +34,7 @@ source/                       仅开发机器需要，不发给测试者
 
 ## 更新与备份
 
-退出软件后，用新版包覆盖 `SoloTRPG.exe`、`runtime/` 和内置规则目录，保留自己的 `library/data/modules/` 和 `library/data/map-images/`。AppData 存档不会被程序包覆盖。备份时同时备份 AppData 战役目录和 整个 library 目录。软件仍会使用少量 AppData 缓存；该版不承诺 C 盘完全零占用。
+退出软件后，用新版包覆盖 `SoloTRPG.exe`、`runtime/` 和内置规则目录，保留自己的 `saves/`、`library/data/modules/` 和 `library/data/map-images/`。AppData 存档不会被程序包覆盖。备份时同时备份 AppData 战役目录和 整个 library 目录。软件仍会使用少量 AppData 缓存；该版不承诺 C 盘完全零占用。
 
 ## 模组与 AI
 

@@ -27,7 +27,7 @@ else {
     });
     window.webContents.on('will-navigate', (event, url) => { if (new URL(url).origin !== runtime.url) event.preventDefault(); });
     Menu.setApplicationMenu(Menu.buildFromTemplate([
-      { label: '文件', submenu: [{ label: '打开存档文件夹', click: () => shell.openPath(dataRoot) }, { label: '打开模组和规则书文件夹', click: () => shell.openPath(libraryRoot) }, { type: 'separator' }, { label: '退出', role: 'quit' }] },
+      { label: '文件', submenu: [{ label: '打开存档文件夹', click: () => shell.openPath(dataRoot) }, { label: '打开模组和规则书文件夹', click: () => shell.openPath(libraryRoot) }, { label: '打开战役对话与回放', click: () => shell.openPath(path.resolve(libraryRoot,'..','saves')) }, { type: 'separator' }, { label: '退出', role: 'quit' }] },
       { label: '编辑', submenu: [{ role: 'undo' }, { role: 'redo' }, { type: 'separator' }, { role: 'cut' }, { role: 'copy' }, { role: 'paste' }, { role: 'selectAll' }] },
       { label: '视图', submenu: [{ label: '刷新界面', role: 'reload' }, { role: 'resetZoom' }, { role: 'zoomIn' }, { role: 'zoomOut' }, { role: 'togglefullscreen' }] },
       { label: '帮助', submenu: [{ label: '下载新版', click: () => shell.openExternal('https://github.com/Not1u/DND-AI-DMTools/releases') }, { label: '关于 / 更新说明', click: () => dialog.showMessageBox(window, { title: 'SoloTRPG', message: 'SoloTRPG ' + app.getVersion(), detail: '关闭软件后用新版发布包覆盖程序文件，保留 library 中导入的模组。\n存档保存在：' + dataRoot + '\n更换程序不会覆盖存档；备份时请复制整个存档文件夹。' }) }] }
@@ -40,6 +40,8 @@ else {
     if (smoke) {
       await new Promise(r => setTimeout(r, 3500));
       if (process.argv.includes('--ui-smoke')) await require('./ui-smoke.cjs')(window, runtime, home);
+      const gameplayFile=process.argv.find(a=>a.startsWith('--gameplay-smoke='))?.slice(17);
+      if(gameplayFile)await require('./gameplay-smoke.cjs')(window,runtime,home,gameplayFile);
       const pdfMapFile=process.argv.find(a=>a.startsWith('--pdf-map-smoke='))?.slice(16);
       if(pdfMapFile)await require('./pdf-map-smoke.cjs')(window,runtime,home,pdfMapFile);
       const moduleFile = process.argv.find(a => a.startsWith('--module-smoke='))?.slice(15);

@@ -21,6 +21,7 @@ import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import {installGameplay,gameplayTools,gameplayPrompt,sessionFiles,migrateSession} from './src/gameplay.mjs'
 import { createPdfMapStore } from './src/pdf-maps.mjs'
 import { composeMap } from './src/cartography.mjs'
 import { createModuleStore, MAX_MODULE_BYTES } from './src/modules.mjs'
@@ -31,6 +32,9 @@ let CFG = {}
 try { CFG = JSON.parse(fs.readFileSync(path.join(HERE, 'config.json'), 'utf8')) } catch (e) { }
 const ROOT = options.dataRoot || (CFG.dataRoot ? path.resolve(HERE, CFG.dataRoot) : HERE)
 const libraryRoot = options.libraryRoot || HERE
+const sessionRoot=options.sessionRoot || (options.libraryRoot ? path.resolve(options.libraryRoot,'..','saves') : path.join(ROOT,'saves'))
+const sessionStorage=sessionFiles(sessionRoot)
+await migrateSession(ROOT,sessionRoot)
 const modules = createModuleStore(options.libraryRoot || ROOT)
 const pdfMaps = createPdfMapStore(options.libraryRoot || ROOT,modules)
 const PORT = Number(options.port ?? process.env.PORT ?? CFG.port ?? 4620)
@@ -105,8 +109,8 @@ function ensureEngine() {
   let src = fs.readFileSync(HOST_SRC, 'utf8')
   if (src.charCodeAt(0) === 0xfeff) src = src.slice(1)
   const harness = { handle: (n, f) => { rec[n] = f; return () => { delete rec[n] } } }
-  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', 'DND5E_MODULES', 'DND5E_LIBRARY', 'DND5E_COMPOSE', 'DND5E_PDFMAPS', src)
-  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE, modules, libraryRoot, composeMap, pdfMaps)
+  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', 'DND5E_MODULES', 'DND5E_LIBRARY', 'DND5E_COMPOSE', 'DND5E_PDFMAPS', 'DND5E_GAMEPLAY', 'DND5E_GAME_TOOLS', 'DND5E_GAME_PROMPT', 'DND5E_SESSION_ROOT', 'DND5E_SESSION_STORAGE', src)
+  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE, modules, libraryRoot, composeMap, pdfMaps, installGameplay, gameplayTools, gameplayPrompt, sessionRoot, sessionStorage)
   if (!plugin || typeof plugin.apply !== 'function') throw new Error('引擎形状不对')
   const d = plugin.apply(miniCtx)
   if (typeof d === 'function') innerDispose = d

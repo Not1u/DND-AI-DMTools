@@ -188,10 +188,22 @@ return {
         if (typeof fs.listDir === 'function') { const es = await fs.listDir(dir); names = es.filter(e => /[.]json$/i.test(e.name)).map(e => e.name) }
         else { const es = await fs.readDir(dir); names = es.filter(n => /[.]json$/i.test(n)).map(n => n) }
         await loadSrd(); const items = []
-        for (const n of names) { try { const id0 = n.replace(/[.]json$/i, ''); const pc = await readPc(n); items.push({ id: pc.id || n.replace(/[.]json$/i, ''), name: pc.name, race: raceNameMap[pc.race] || pc.race, cls: (function () { try { const nc = normClasses(pc, srdCache).classes; return nc.map(c => ((c.class && (srdCache.classes[c.class] || {}).name) || (c.class ? c.class : '未知职业')) + (Number(c.level) || 1)).join('/') } catch (e) { return (pc.classes || []).map(c => String((c && c.class) || '?')).join('/') } })(), level: pc.level, hp: pc.hp && pc.hp.current, max: pc.hp && pc.hp.max }) } catch (e) { } }
+        for (const n of names) { try { const id0 = n.replace(/[.]json$/i, ''); const pc = await readPc(n); items.push({ id: pc.id || n.replace(/[.]json$/i, ''), name: pc.name, race: raceNameMap[pc.race] || pc.race, cls: (function () { try { const nc = normClasses(pc, srdCache).classes; return nc.map(c => ((c.class && (srdCache.classes[c.class] || {}).name) || (c.class ? c.class : '未知职业')) + (Number(c.level) || 1)).join('/') } catch (e) { return (pc.classes || []).map(c => String((c && c.class) || '?')).join('/') } })(), level: pc.level, hp: pc.hp && pc.hp.current, max: pc.hp && pc.hp.max,temp:pc.hp?.temp||0 }) } catch (e) { } }
         return { ok: true, items: jclean(items) }
       } catch (e) { return { ok: false, error: String(e && e.message || e) } }
     }))
+    const spellsOf = pc => {
+      const known=[...(pc.spellcasting?.cantrips||[]),...(pc.spellcasting?.spells||[])];
+      const racial=[...(pc.racialSpells||[]),...(pc.spellcasting?.racialCantrips||[]),...(pc.spellcasting?.racialSpells||[])];
+      if(pc.choices?.racialCantrip)racial.push(pc.choices.racialCantrip)
+      if(pc.race==='elf/drow'){racial.push('dancingLights');if(pc.level>=3)racial.push('faerieFire');if(pc.level>=5)racial.push('darkness')}
+      if(pc.race==='gnome/forest')racial.push('minorIllusion')
+      if(pc.race==='tiefling'){racial.push('thaumaturgy');if(pc.level>=3)racial.push('hellishRebuke');if(pc.level>=5)racial.push('darkness')}
+      const m=smap(),ids=[...new Set([...known,...racial].map(v=>typeof v==='string'?v:v.key).filter(Boolean))]
+      return ids.map(k=>({...m[k],key:k,name:m[k]?.name||k,level:m[k]?.level??0,source:racial.includes(k)?'种族施法':'职业施法'}))
+    }
+    unreg.push(harness.handle('party.spells',async a=>{await loadSpells();const pc=await readPc(a.id);return {ok:true,id:pc.id,spells:spellsOf(pc)}}))
+    unreg.push(harness.handle('sheet.racialCantrip',async a=>{await loadSpells();const pc=await readPc(a.id);if(pc.race!=='elf/high'||!spellList.some(sp=>sp.key===a.key&&sp.level===0&&sp.classes?.includes('wizard')))return {ok:false,error:'请选择高等精灵可用的法师戏法。'};pc.choices={...pc.choices,racialCantrip:a.key};return persist(pc)}))
     unreg.push(harness.handle('party.sheet', async ({ id }) => {
       try {
         const srd = await loadSrd(); await loadSpells(); await loadFeatures(); await loadSubs()
@@ -266,7 +278,8 @@ return {
           if (bgKeys.length) { const bd = srd.backgrounds[pc.background]; if (bd && bd.feature) out.features.background = resolved([[bd.feature[0], bd.feature[1]]]) }
         }
         if (pc.subclass && pc.subclass.key) { const so = subOptions(clsKey); const nm = ((so && so.options) || []).find(o => o.key === pc.subclass.key); out.subclass = { key: pc.subclass.key, name: (nm && nm.name) || pc.subclass.name || pc.subclass.key, features: subFeatures(clsKey, pc.subclass.key, level), picks: pc.subclass.picks || {} } }
-        if (pc.spellcasting) { const keys = [].concat(pc.spellcasting.cantrips || [], pc.spellcasting.spells || []); const m = smap(); out.spells = keys.map(k => m[k]).filter(Boolean) }
+        out.spells = spellsOf(pc)
+        out.racialSpellChoice=pc.race==='elf/high' ? {key:pc.choices?.racialCantrip||'',options:spellList.filter(sp=>sp.level===0&&sp.classes?.includes('wizard')).map(sp=>({key:sp.key,name:sp.name}))} : null
         out.slots = slotsForClasses(srd, pc.classes)
         const map = {}
         ;(pc.inventory || []).forEach(it => { const key = it.key || it.name || '?'; const q = Number(it.qty) || 1; if (map[key]) map[key].qty += q; else map[key] = { key, name: it.name || key, qty: q, cat: it.cat || '', kind: it.kind || it.cat || 'gear', contents: it.contents || null, damage: it.damage || '', dmgType: it.dmgType || '', acBonus: Number(it.acBonus) || 0, base: (it.base === undefined ? null : it.base), dexCap: (it.dexCap === undefined ? null : it.dexCap), props: it.props || [], desc: it.desc || '', magicBonus: Number(it.magicBonus) || 0, custom: !!it.custom } })
@@ -729,7 +742,7 @@ return {
       } catch (e) { return { ok: false, error: String(e && e.message || e) } }
     }))
     // ===== 战斗记录 + 骰子（侧栏与 AI DM 共用同一份 data/combat-log.json）=====
-    const LOG_PATH = ROOT + '/data/combat-log.json'
+    const LOG_PATH = DND5E_SESSION_ROOT + '/combat-log.json'
     const readLog = async () => {
       try {
         const j = JSON.parse(await fsRead(LOG_PATH))
@@ -834,7 +847,7 @@ return {
         const adv = (a.advantage === 'adv' || a.advantage === 'dis') ? a.advantage : null
         const r = rollExpr(a.expr, adv)
         if (!r.ok) return r
-        if (a.append === false) return { ok: true, total: r.total, detail: r.detail, entry: null }
+        if (a.append === false) return { ...r, ok: true, entry: null }
         const entry = { kind: a.kind || 'roll', actor: a.actor || '', text: a.label || '', expr: r.expr, advantage: r.advantage, dice: r.dice, dropped: r.dropped, flat: r.flat, total: r.total, detail: r.detail }
         const res = await pushLog([entry], {})
         return { ok: true, total: r.total, detail: r.detail, entry: res.made[0] || null, round: res.round, saved: res.saved, saveError: res.saveError || '' }
@@ -1003,7 +1016,7 @@ return {
       return { ok: false, error: '写入 data/map.json 失败（无可用写通道）' }
     }
     const mapView = (map) => ({
-      ok: true, name: map.name, campaign: map.campaign, w: map.w, h: map.h, cell: map.cell,
+      ok: true, id:map.id, name: map.name, campaign: map.campaign, w: map.w, h: map.h, cell: map.cell,
       terrain: map.terrain, tokens: map.tokens, background:normalizeBackground(map.background), updatedAt: map.updatedAt,
       legend: [
         ['.', '地面'], ['#', '岩壁/墙'], ['~', '溪水·困难'], [',', '荆棘·困难+半掩体'], ['^', '高地/崖顶'],
@@ -1520,10 +1533,13 @@ return {
       const cfg = Object.assign({}, AI_DEFAULTS, (j && j.config) || {})
       if (/api\.deepseek\.com/.test(cfg.baseUrl) && cfg.model === 'deepseek') cfg.model = 'deepseek-chat'
       cfg.baseUrl = String(cfg.baseUrl || '').replace(/\/chat\/completions\/?$/, '').replace(/\/+$/, '')
-      return { config: cfg, messages: (j && Array.isArray(j.messages)) ? j.messages : [] }
+      const messages=await DND5E_SESSION_STORAGE.readChat((j && Array.isArray(j.messages)) ? j.messages : [])
+      if(j?.messages?.length)await writeRaw(AI_PATH,JSON.stringify({config:cfg,messages:[]}))
+      return {config:cfg,messages}
     }
     const writeAi = async (ai) => {
-      const txt = JSON.stringify({ config: ai.config, messages: (ai.messages || []).slice(-200) }, null, 2)
+      await DND5E_SESSION_STORAGE.writeChat(ai.messages||[])
+      const txt = JSON.stringify({ config: ai.config, messages: [] }, null, 2)
       if (typeof DND5E_WRITE === 'function') { try { const r = await DND5E_WRITE(AI_PATH, txt); if (r && r.ok) return { ok: true } } catch (e) { } }
       try { const fs = ctx.get('fs'); const t = await fs.resolve(AI_PATH); if (fs && typeof fs.writeText === 'function') { await fs.writeText(t, txt); return { ok: true } } } catch (e) { }
       return { ok: false, error: '写入 data/ai.json 失败' }
@@ -1672,11 +1688,15 @@ return {
           out.push({ type: 'function', function: { name: p.name.replace(/[^A-Za-z0-9_]/g, '_'), description: '[扩展插件' + (p.plugin ? '·' + p.plugin : '') + '] ' + (p.desc || '插件能力'), parameters: { type: 'object', additionalProperties: true, properties: {} } } })
         }
       }
+      for(const [name,description,parameters] of DND5E_GAME_TOOLS)out.push({type:'function',function:{name:name.replaceAll('.','_'),description,parameters}})
+      out.push({type:'function',function:{name:'party_spells',description:'读取角色全部法术，含种族施法，返回紧凑清单。',parameters:{type:'object',properties:{id:{type:'string'}},required:['id']}}})
       return out
     }
     const safeName = (n) => String(n).replace(/[^A-Za-z0-9_]/g, '_')
     // 模型看到的函数名是净化过的（roll.dice → roll_dice），派发前映射回真实 op 名
     const opForName = (fnName) => {
+      for(const [name] of DND5E_GAME_TOOLS)if(name.replaceAll('.','_')===fnName)return name
+      if(fnName==='party_spells')return 'party.spells'
       const cat = toolCatalog()
       for (const t of cat.tools) if (safeName(t.name) === fnName) return t.name
       if (EXT && typeof EXT.list === 'function') for (const p of (EXT.list() || [])) if (safeName(p.name) === fnName) return p.name
@@ -1713,7 +1733,7 @@ return {
       '',
       '铁律：',
       '1) 涉及规则条文、怪物数值、模组内容、角色状态、地图位置时，先调用工具拿事实，不要凭记忆编造。',
-      '2) 一切掷骰都用 roll.dice（优势 adv / 劣势 dis），不要自己编数字；关键结果用 log.append 写进战斗记录。',
+      '2) 玩家判定使用 dice.request 并等待；NPC 使用 roll.dice；秘密信息使用 dice.secret。禁止编骰子结果。',
       '3) 伤害/治疗/状态变化用 pc.apply（hp 用增量，log 写一句说明）；地图上的移动用 map.token.move。',
       '3b) 敌人/NPC 的一整个回合用 map.batch 一次做完（多个 move/update/add/remove + log），可带 actor 与 log 文本。',
       '3c) 换场景：map.list 看已有地图，map.use 切换；新场地用 map.create（或 map.set 直接铺地形与单位）。地形字符先查 map.tiles。',
@@ -1726,7 +1746,7 @@ return {
       '    玩家的骰子面板会亮起按钮，他点一下投完；你用 dice.results 读结果（最新的一条排最前）。',
       '    注意：玩家侧的战斗判定骰只能由你发起，不要让他自己掷了再告诉你数字。',
       '    你用 dice.results 读结果（含成功/失败判定）。不要自己替玩家掷这类骰子。',
-      '    建议顺序：先 map.los 确认能打（掩体会给 AC 加值），再 map.area 拿命中名单，然后让每个目标掷豁免（roll.dice）、用 pc.apply / map.batch 结算。',
+      '    建议顺序：先 map.los 确认能打（掩体会给 AC 加值），再 map.area 拿命中名单，然后玩家目标用 dice.request、NPC 用 roll.dice 掷豁免、用 pc.apply / map.batch 结算。',
       '4) 需要摆场景时用 map.set / map.token.add 把地形与单位放到地图上，玩家就能在侧栏直接看到并拖动。',
       '5) 叙事用中文，简洁有画面感。推进到需要玩家做决定的地方就停下，把选择交给玩家，不要替玩家决定行动。',
       '6) 玩家操纵的角色由玩家说了算；NPC 与怪物由你代为行动与判定。',
@@ -1820,11 +1840,12 @@ return {
           const status = await aiStatusLine()
           return { ok: true, dryRun: true, tools: specs.length, system: aiSystemPrompt(status, cfg.extraPrompt), status: status, summary: '干跑：' + specs.length + ' 个工具，系统提示 ' + aiSystemPrompt(status, cfg.extraPrompt).length + ' 字' }
         }
-        if (a.message) ai.messages.push({ role: 'user', content: String(a.message), t: nowIso() })
+        if (a.message && !a.prepare && !a.internal) {ai.messages.push({ role: 'user', content: String(a.message), t: nowIso() });await writeAi(ai)}
         const status = await aiStatusLine()
         const campaignContext = await getCampaignContext()
-        const msgs = [{ role: 'system', content: aiSystemPrompt(status, cfg.extraPrompt) + campaignContext + (a.prepare ? (a.keepMap ? '\n保留当前 PDF 原图地图，仅研究对应场景，不调用任何地图写入工具，不放角色或开战。' : '\n现在仅筹备首个场景。查阅模组首章，用 map.compose 新建对应地形。不推进剧情、不开始战斗、不放任何玩家角色或虚构角色。完成后说明来源与待确认项。') : '\n进入战斗前先 mod.statblock 查询敌人，map.token.add/update 写入 statblockId，再 combat.start；没有角色卡绝不虚构玩家。') }]
-        for (const m of ai.messages.slice(-40)) msgs.push({ role: m.role, content: m.content })
+        const msgs = [{ role: 'system', content: aiSystemPrompt(status, cfg.extraPrompt) + DND5E_GAME_PROMPT + campaignContext + (a.prepare ? (a.keepMap ? '\n保留当前 PDF 原图地图，仅研究对应场景，不调用任何地图写入工具，不放角色或开战。' : '\n现在仅筹备首个场景。查阅模组首章，用 map.compose 新建对应地形。不推进剧情、不开始战斗、不放任何玩家角色或虚构角色。完成后说明来源与待确认项。') : '\n进入战斗前先 mod.statblock 查询敌人，map.token.add/update 写入 statblockId，再 combat.start；没有角色卡绝不虚构玩家。') }]
+        for (const m of ai.messages.slice(-40)) msgs.push({ role: m.role, content: m.speaker ? m.speaker+'：'+m.content : m.content })
+        if(a.prepare||a.internal)msgs.push({role:'user',content:String(a.message||'继续')})
         const tools = buildToolSpecs(cfg).filter(t => (!a.prepare || /^(mod_|rules_|map_compose$|map_tiles$|map_get$|party_list$)/.test(t.function.name)) && !(a.keepMap && t.function.name==='map_compose'))
         const steps = []
         let totalUsage = { prompt_tokens: 0, completion_tokens: 0 }
@@ -1833,6 +1854,7 @@ return {
         const maxSteps = Math.max(1, Math.min(20, Number(a.maxSteps) || cfg.maxSteps || 6))
         const url = cfg.baseUrl.replace(/\/+$/, '') + '/chat/completions'
         for (let step = 0; step < maxSteps; step++) {
+          if(!a.prepare){const scene=await OPS['scene.get']({});msgs[0].content=aiSystemPrompt(status,cfg.extraPrompt)+DND5E_GAME_PROMPT+campaignContext+'\n权威实时场景（只把用户可见事实用于叙述）：'+JSON.stringify(scene)}
           const body = { model: cfg.model, messages: msgs, temperature: cfg.temperature, tools: tools, tool_choice: 'auto' }
           let res, data
           try {
@@ -1858,7 +1880,9 @@ return {
             let out, okAll = true
             try {
               if (!tools.some(t => t.function.name === fnName)) throw new Error('未授权的工具：' + fnName)
-              out = await callAny(opName, fnArgs)
+              const pending=await OPS['session.pending']({})
+              if(!a.prepare&&(pending.request||pending.dice.length)&&!/^((scene|map|combat|campaign)\.get|party\.|rules\.|mod\.|dice\.(request|pending|results)|tools\.list|narration\.say)/.test(opName))throw new Error('等待玩家请求完成，不能继续结算。')
+              if(opName==='roll.dice'&&!a.prepare){const party=await OPS['party.list']({});const pc=(party.items||[]).find(p=>p.id===fnArgs.actorId||p.name===fnArgs.actor);out=pc?await OPS['dice.request']({...fnArgs,actorId:pc.id,label:fnArgs.label||'玩家判定'}):await callAny(opName,fnArgs)}else out = await callAny(opName, fnArgs)
               if (out && out.ok === false) okAll = false
             } catch (e) { out = { ok: false, error: String(e && e.message || e) }; okAll = false }
             const compact = JSON.stringify(out)
@@ -1866,12 +1890,14 @@ return {
             steps.push({ name: opName, args: fnArgs, ok: okAll, summary: (out && (out.summary || out.error)) || '', chars: compact.length })
             msgs.push({ role: 'tool', tool_call_id: c.id, content: clipped })
           }
+          const pending=await OPS['session.pending']({});if(pending.request||pending.dice.length){finish='waiting_player';break}
         }
         if (!reply && !steps.length) return {ok:false,error:'模型没有返回文本或工具调用，请检查模型是否支持 Chat Completions。'}
-        if (reply) ai.messages.push({ role: 'assistant', content: reply, t: nowIso(), steps: steps.map(s => s.name) })
-        else if (steps.length) ai.messages.push({ role: 'assistant', content: '（只调用了工具，没有输出文本：' + steps.map(s => s.name).join('、') + '）', t: nowIso() })
+        ai.messages=(await readAi()).messages
+        if (!a.prepare && reply) ai.messages.push({ role: 'assistant', content: reply, t: nowIso(), steps: steps.map(s => s.name) })
+        else if (!a.prepare && steps.length) ai.messages.push({ role: 'assistant', content: '（只调用了工具，没有输出文本：' + steps.map(s => s.name).join('、') + '）', t: nowIso() })
         ai.config = (await readAi()).config
-        const w = await writeAi(ai)
+        const w = a.prepare ? {ok:true} : await writeAi(ai)
         return jclean({
           ok: true, reply: reply || '（模型没有返回文本）', steps: steps, finish: finish, model: cfg.model,
           usage: totalUsage, saved: !!w.ok, saveError: w.error || '',
@@ -2545,7 +2571,7 @@ return {
       } catch (e) { return { ok: false, error: String(e && e.message || e) } }
     }))
 
-    const CAMPAIGN_PATH = ROOT + '/data/adventure.json'
+    const CAMPAIGN_PATH = DND5E_SESSION_ROOT + '/adventure.json'
     const readAdventure = async () => { try { return JSON.parse(await fsRead(CAMPAIGN_PATH)) } catch { return {} } }
     const getCampaignContext = async () => {
       const state = await readAdventure(); if (!state.moduleId) return ''
@@ -2585,6 +2611,14 @@ return {
         return {...result,summary:'首个场景已准备，推进到遭遇时再放置角色。'}
       }finally{preparing=false}
     }))
+    unreg.push(harness.handle('campaign.start',async()=>{
+      const state=await readAdventure();if(!state.moduleId)return {ok:false,error:'先选择模组。'}
+      if(state.phase==='playing')return {ok:true,summary:'冒险已开始，继续当前对话即可。'}
+      if(state.phase!=='prepared'){const prep=await OPS['campaign.prepare']({keepMap:!!(await readMap()).background});if(!prep.ok)return prep}
+      const result=await OPS['ai.chat']({internal:true,message:'开始冒险。用玩家视角描述眼前场景和可采取的行动，不透露筹备资料、暗门、未发现敌人与幕后剧情。'})
+      if(result.ok)await writeRaw(CAMPAIGN_PATH,JSON.stringify({...await readAdventure(),phase:'playing'}))
+      return result
+    }))
     unreg.push(harness.handle('map.compose',async a=>{
       const plan=DND5E_COMPOSE(a); const result=await OPS['map.create'](plan)
       return {...result,entry:plan.entry,rooms:plan.rooms,summary:'已生成连通地图：'+plan.name+'，'+plan.rooms.length+' 个区域。'}
@@ -2594,7 +2628,7 @@ return {
       for(const tk of map.tokens||[]){
         if(tk.kind!=='enemy')continue
         const sb=await OPS['mod.statblock'](tk.statblockId?{id:tk.statblockId,title:tk.name.replace(/[0-9]+$/,'').trim()}:{query:tk.name.replace(/[\d０-９]+$/,'').trim()})
-        if(sb.ok){tk.ac=sb.ac;tk.max=sb.hp;tk.hp=tk.hp??sb.hp;tk.dex=sb.mods?.dex??null;tk.saves=sb.saves||sb.mods;tk.statblockId=sb.id;tk.source=sb.book+' / '+sb.title}
+        if(sb.ok){tk.ac=tk.ac??sb.ac;tk.max=tk.max??sb.hp;tk.hp=tk.hp??tk.max;tk.dex=sb.mods?.dex??null;tk.saves=sb.saves||sb.mods;tk.statblockId=sb.id;tk.source=sb.book+' / '+sb.title}
         else tk.source='未检索到可靠数据，请手动核对';
       }
       const party=await OPS['party.list']({})
@@ -2623,6 +2657,7 @@ return {
       map.background.terrainReady=!!a.confirmed;const wr=await writeMap(map);return {...mapView(map),ok:!!wr.ok,summary:map.background.terrainReady?'地形已确认，掩体计算已启用。':'已恢复待标注状态。'}
     }))
 
+    DND5E_GAMEPLAY({ops:OPS,register:(n,f)=>unreg.push(harness.handle(n,f)),root:DND5E_SESSION_ROOT,readMap,writeMap,readCombat,writeCombat,combatView,readDice,writeDice,readPc,persist,readLog,writeLog,pushLog,rollExpr,readAi,writeAi})
     return () => { unreg.forEach(f => f()) }
   }
 }
