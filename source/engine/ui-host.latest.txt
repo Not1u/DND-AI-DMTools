@@ -96,6 +96,7 @@ return {
       }
       return JSON.parse(await fsRead(path))
     }
+    const xpTable=async srd=>{try{const a=JSON.parse(await fsRead(DND5E_SESSION_ROOT+'/adventure.json'));const p=JSON.parse(await fsRead(DND5E_SESSION_ROOT+'/progression.json'));if(p.profiles[a.moduleId]?.thresholds)return p.profiles[a.moduleId].thresholds}catch{}return srd.core.xpByLevel}
     const loadSrd = async () => { if (!srdCache) { srdCache = JSON.parse(await fsRead(RULES_PATH)); srdCache.races.forEach(r => { raceNameMap[r.key] = r.name }) } return srdCache }
     const loadSpells = async () => { if (!spellList.length) { try { spellList = JSON.parse(await fsRead(SPELLS_PATH)).spells || [] } catch (e) { spellList = [] } } return spellList }
     const loadFeatures = async () => { if (!Object.keys(featMap).length) { try { const f = JSON.parse(await fsRead(FEATURES_PATH)); Object.keys(f.features || {}).forEach(k => { featMap[k] = f.features[k] }) } catch (e) { } } return featMap }
@@ -243,7 +244,8 @@ return {
         const saves = {}; for (const a of AB) saves[a] = mods[a] + (saveProfs.includes(a) ? pb : 0)
         const ncInfo = normClasses(pc, srd)
         if (ncInfo.changed) { try { pc.classes = ncInfo.classes.filter(c => c.class); pc.level = ncInfo.total } catch (e) { } }
-        const out = { id: pc.id, name: pc.name, level, xp: Number(pc.xp) || 0, xpNext: level < 20 ? srd.core.xpByLevel[level] : null, xpPrev: srd.core.xpByLevel[level - 1] || 0, race: raceNameMap[pc.race] || pc.race, classes: ncInfo.classes.map(c => ((c.class && (srd.classes[c.class] || {}).name) || (c.class || '未知职业')) + ' Lv' + c.level), clsKeys: ncInfo.classes.map(c => c.class).filter(Boolean), classFix: ncInfo.fixed, hp: { cur: pc.hp.current, max: pc.hp.max, temp: pc.hp.temp || 0 }, ac, acOverride: pc.acOverride || null, equipment: equipView, conditions: condList, conditionCatalog: CONDITIONS, acBreakdown: acBreakdown, weaponStats: weaponStats, pb, mods, saves, saveProfs, dc: pc.spellcasting ? pc.spellcasting.dc : null, attack: pc.spellcasting ? pc.spellcasting.attackBonus : null, hitDice: (pc.hp && pc.hp.hitDiceTotal) || '', conditions: pc.conditions || [], spells: [], slots: [], inventory: [], features: { race: [], class: [], background: [] }, subclass: null, choices: { pactBoon: null, invocations: [], feats: (pc.feats || []).map(f => f.name) }, resources: resourcesOf(srd, pc.classes, pc) }
+        const advancement=await xpTable(srd)
+        const out = { id: pc.id, name: pc.name, level, xp: Number(pc.xp) || 0, xpNext: level < 20 ? advancement[level] : null, xpPrev: advancement[level - 1] || 0, race: raceNameMap[pc.race] || pc.race, classes: ncInfo.classes.map(c => ((c.class && (srd.classes[c.class] || {}).name) || (c.class || '未知职业')) + ' Lv' + c.level), clsKeys: ncInfo.classes.map(c => c.class).filter(Boolean), classFix: ncInfo.fixed, hp: { cur: pc.hp.current, max: pc.hp.max, temp: pc.hp.temp || 0 }, ac, acOverride: pc.acOverride || null, equipment: equipView, conditions: condList, conditionCatalog: CONDITIONS, acBreakdown: acBreakdown, weaponStats: weaponStats, pb, mods, saves, saveProfs, dc: pc.spellcasting ? pc.spellcasting.dc : null, attack: pc.spellcasting ? pc.spellcasting.attackBonus : null, hitDice: (pc.hp && pc.hp.hitDiceTotal) || '', conditions: pc.conditions || [], spells: [], slots: [], inventory: [], features: { race: [], class: [], background: [] }, subclass: null, choices: { pactBoon: null, invocations: [], feats: (pc.feats || []).map(f => f.name) }, resources: resourcesOf(srd, pc.classes, pc) }
         if (pc.choices && pc.choices.pactBoon) { const b = ((subData.extraChoices.warlock || {}).pactBoons || []).find(x => x.key === pc.choices.pactBoon); out.choices.pactBoon = b ? b.name : pc.choices.pactBoon }
         // 特性/祈愿明细（带说明），给角色卡的「职业特性与祈愿」栏位用
         out.choicesDetail = []
@@ -365,7 +367,7 @@ return {
         const cur = Number(pc.level) || 1
         const clsKey = (pc.classes || [])[0] && (pc.classes || [])[0].class
         const t = Math.max(1, Math.min(20, Number(target) || cur))
-        const tbl = (srd.core && srd.core.xpByLevel) || []
+        const tbl = await xpTable(srd)
         const xp = Number(pc.xp) || 0
         const xpNext = cur < 20 ? (tbl[cur] == null ? null : Number(tbl[cur])) : null
         const xpInfo = { xp: xp, xpNext: xpNext, canLevel: xpNext == null ? false : (xp >= xpNext), xpShort: xpNext == null ? 0 : Math.max(0, xpNext - xp) }
@@ -417,7 +419,7 @@ return {
         const hpPer = (Number(cd.levelUpHitDieAverage) || 5) + conMod
         const notes = []
         if (spec.setXp) {
-          const table = (srd.core && srd.core.xpByLevel) || []
+          const table = await xpTable(srd)
           const need = table[target - 1]
           if (need != null) { pc.xp = Math.max(0, Number(need)); notes.push('经验设为 ' + pc.xp + '（Lv' + target + ' 门槛）') }
         }
@@ -1735,18 +1737,18 @@ return {
       '1) 涉及规则条文、怪物数值、模组内容、角色状态、地图位置时，先调用工具拿事实，不要凭记忆编造。',
       '2) 玩家判定使用 dice.request 并等待；NPC 使用 roll.dice；秘密信息使用 dice.secret。禁止编骰子结果。',
       '3) 伤害/治疗/状态变化用 pc.apply（hp 用增量，log 写一句说明）；地图上的移动用 map.token.move。',
-      '3b) 敌人/NPC 的一整个回合用 map.batch 一次做完（多个 move/update/add/remove + log），可带 actor 与 log 文本。',
+      '3b) 敌人/NPC 当前回合用 map.token.move、combat.damage、combat.economy 分别结算；战斗中不能 map.batch 覆盖状态。',
       '3c) 换场景：map.list 看已有地图，map.use 切换；新场地用 map.create（或 map.set 直接铺地形与单位）。地形字符先查 map.tiles。',
       '3d) 放范围法术/技能：map.area（shape+size 或直接给 spell 名）算出覆盖格与命中单位；判掩体与视线用 map.los。',
       '3e) 战斗流程：combat.start（auto 会自己掷先攻）→ 每轮用 combat.next 推进；combat.damage 结算伤害（会同步地图与角色卡）；',
       '    combat.conditions 能加带持续回合的状态（到该单位回合会自动递减并提示结束）；combat.economy 记录动作/附赠/反应/移动。',
-      '3g) 战斗结束/完成任务后记得发经验：pc.awardXp（reason 写清楚，default 每人全额，per:"split" 才平分）；',
-      '    返回值里的 levelUps 表示可以升级——这时告诉玩家「你升级了」并让他在「升级」面板里做选择，不要自己替他选子职/法术。',
+      '3g) 完成遭遇或目标，无论战斗或非战斗方式，都查模组原文奖励并 campaign.resolve 结算，禁止重复发放；',
+      '    用 party.xp 查询 canLevel 判断是否可以升级——这时告诉玩家「你升级了」并让他在「升级」面板里做选择，不要自己替他选子职/法术。',
       '3f) 需要玩家自己掷骰时（豁免、检定、命中），**必须**用 dice.request 发起（expr + label 写清用途 + dc），',
       '    玩家的骰子面板会亮起按钮，他点一下投完；你用 dice.results 读结果（最新的一条排最前）。',
       '    注意：玩家侧的战斗判定骰只能由你发起，不要让他自己掷了再告诉你数字。',
       '    你用 dice.results 读结果（含成功/失败判定）。不要自己替玩家掷这类骰子。',
-      '    建议顺序：先 map.los 确认能打（掩体会给 AC 加值），再 map.area 拿命中名单，然后玩家目标用 dice.request、NPC 用 roll.dice 掷豁免、用 pc.apply / map.batch 结算。',
+      '    建议顺序：先 map.los 确认能打（掩体会给 AC 加值），再 map.area 拿命中名单，然后玩家目标用 dice.request、NPC 用 roll.dice 掷豁免、用 combat.damage / effect.add 结算。',
       '4) 需要摆场景时用 map.set / map.token.add 把地形与单位放到地图上，玩家就能在侧栏直接看到并拖动。',
       '5) 叙事用中文，简洁有画面感。推进到需要玩家做决定的地方就停下，把选择交给玩家，不要替玩家决定行动。',
       '6) 玩家操纵的角色由玩家说了算；NPC 与怪物由你代为行动与判定。',
@@ -1846,32 +1848,36 @@ return {
         const msgs = [{ role: 'system', content: aiSystemPrompt(status, cfg.extraPrompt) + DND5E_GAME_PROMPT + campaignContext + (a.prepare ? (a.keepMap ? '\n保留当前 PDF 原图地图，仅研究对应场景，不调用任何地图写入工具，不放角色或开战。' : '\n现在仅筹备首个场景。查阅模组首章，用 map.compose 新建对应地形。不推进剧情、不开始战斗、不放任何玩家角色或虚构角色。完成后说明来源与待确认项。') : '\n进入战斗前先 mod.statblock 查询敌人，map.token.add/update 写入 statblockId，再 combat.start；没有角色卡绝不虚构玩家。') }]
         for (const m of ai.messages.slice(-40)) msgs.push({ role: m.role, content: m.speaker ? m.speaker+'：'+m.content : m.content })
         if(a.prepare||a.internal)msgs.push({role:'user',content:String(a.message||'继续')})
-        const tools = buildToolSpecs(cfg).filter(t => (!a.prepare || /^(mod_|rules_|map_compose$|map_tiles$|map_get$|party_list$)/.test(t.function.name)) && !(a.keepMap && t.function.name==='map_compose'))
+        const tools = buildToolSpecs(cfg).filter(t => (!a.prepare || /^(mod_|rules_|map_compose$|map_tiles$|map_get$|party_list$|campaign_progression_)/.test(t.function.name)) && !(a.keepMap && t.function.name==='map_compose'))
         const steps = []
         let totalUsage = { prompt_tokens: 0, completion_tokens: 0 }
         let reply = ''
-        let finish = ''
-        const maxSteps = Math.max(1, Math.min(20, Number(a.maxSteps) || cfg.maxSteps || 6))
+        let finish = '';let textTransport=false;let repairAttempted=false;let forceAction=a.requestAction||null
+        const maxSteps = Math.max(2, Math.min(20, Number(a.maxSteps) || cfg.maxSteps || 6))
         const url = cfg.baseUrl.replace(/\/+$/, '') + '/chat/completions'
         for (let step = 0; step < maxSteps; step++) {
           if(!a.prepare){const scene=await OPS['scene.get']({});msgs[0].content=aiSystemPrompt(status,cfg.extraPrompt)+DND5E_GAME_PROMPT+campaignContext+'\n权威实时场景（只把用户可见事实用于叙述）：'+JSON.stringify(scene)}
-          const body = { model: cfg.model, messages: msgs, temperature: cfg.temperature, tools: tools, tool_choice: 'auto' }
+          const body = { model: cfg.model, messages: msgs, temperature: cfg.temperature, tools: tools, tool_choice: forceAction ? {type:'function',function:{name:'dm_action'}} : 'auto' }
+          if(textTransport){delete body.tools;delete body.tool_choice;body.messages=msgs.map(m=>({role:m.role==='tool'?'user':m.role,content:(m.role==='tool'?'工具执行结果：':'')+(m.content||'')}));body.messages[0].content+='\n当前接口不接受原生 tools：实际交互必须以 ```dm-action 换行 JSON 换行 ``` 输出。'+(forceAction?'本次 action 必须为 '+forceAction:'')}
           let res, data
           try {
             res = await fetch(url, { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, key ? { authorization: 'Bearer ' + key } : {}), body: JSON.stringify(body), signal: AbortSignal.timeout(90000) })
             data = await res.json()
           } catch (e) { return { ok: false, error: '请求失败：' + (e && e.message || e), url: url, steps: steps, reply: reply } }
           if (!res.ok || !data || data.error) {
+            if(!a.prepare&&!textTransport&&[400,422].includes(res.status)&&/tools?|tool_choice|function.call/i.test(JSON.stringify(data?.error||{}))){textTransport=true;step--;continue}
             return { ok: false, error: 'HTTP ' + res.status + '：' + ((data && data.error && (data.error.message || JSON.stringify(data.error))) || '未知错误'), url: url, steps: steps, reply: reply }
           }
           if (data.usage) { totalUsage.prompt_tokens += Number(data.usage.prompt_tokens) || 0; totalUsage.completion_tokens += Number(data.usage.completion_tokens) || 0 }
           const choice = (data.choices || [])[0] || {}
           const m = choice.message || {}
           finish = choice.finish_reason || ''
+          const parsed=DND5E_CAMPAIGN.extractActions(m.content)
+          if(!a.prepare){m.content=parsed.text;for(const error of parsed.errors)steps.push({name:'dm.action',ok:false,summary:'动作格式错误：'+error});if(!m.tool_calls?.length&&parsed.actions.length)m.tool_calls=parsed.actions.map((args,i)=>({id:'compat-'+step+'-'+i,type:'function',function:{name:'dm_action',arguments:JSON.stringify(args)}}))}
           if (m.content) reply += (reply ? '\n' : '') + String(m.content)
           msgs.push(m)
           const calls = m.tool_calls || []
-          if (!calls.length) break
+          if (!calls.length){const pending=await OPS['session.pending']({});if(!a.prepare&&!repairAttempted&&!pending.request&&!pending.dice.length&&(forceAction||DND5E_CAMPAIGN.missedRoll(m.content))&&step+1<maxSteps){repairAttempted=true;forceAction=forceAction||'roll';msgs.push({role:'user',content:'你刚才的动作尚未执行。现在必须调用 dm_action，action='+forceAction+'。如为投骰，依据角色与规则填 expr、actorId、label，建立真正的玩家骰子请求；不能仅输出口头提示。'});continue}if(forceAction)steps.push({name:'dm.action',ok:false,summary:'模型未建立请求，请用“补建骰子请求”或重新让 DM 发起。'});break}
           for (const c of calls) {
             const fnName = (c.function && c.function.name) || ''
             const opName = opForName(fnName)
@@ -1879,14 +1885,16 @@ return {
             try { fnArgs = c.function && c.function.arguments ? JSON.parse(c.function.arguments) : {} } catch (e) { fnArgs = { _parseError: String(e && e.message || e) } }
             let out, okAll = true
             try {
+              if(forceAction&&opName==='dm.action'&&fnArgs.action!==forceAction)throw new Error('本次只允许 '+forceAction+' 动作');
               if (!tools.some(t => t.function.name === fnName)) throw new Error('未授权的工具：' + fnName)
               const pending=await OPS['session.pending']({})
-              if(!a.prepare&&(pending.request||pending.dice.length)&&!/^((scene|map|combat|campaign)\.get|party\.|rules\.|mod\.|dice\.(request|pending|results)|tools\.list|narration\.say)/.test(opName))throw new Error('等待玩家请求完成，不能继续结算。')
+              if(!a.prepare&&(pending.request||pending.dice.length)&&!(opName==='dm.action'&&fnArgs.action==='roll')&&!/^((scene|map|combat|campaign)\.get|party\.|rules\.|mod\.|dice\.(request|pending|results)|tools\.list|narration\.say)/.test(opName))throw new Error('等待玩家请求完成，不能继续结算。')
               if(opName==='roll.dice'&&!a.prepare){const party=await OPS['party.list']({});const pc=(party.items||[]).find(p=>p.id===fnArgs.actorId||p.name===fnArgs.actor);out=pc?await OPS['dice.request']({...fnArgs,actorId:pc.id,label:fnArgs.label||'玩家判定'}):await callAny(opName,fnArgs)}else out = await callAny(opName, fnArgs)
               if (out && out.ok === false) okAll = false
             } catch (e) { out = { ok: false, error: String(e && e.message || e) }; okAll = false }
             const compact = JSON.stringify(out)
             const clipped = compact.length > (cfg.maxToolChars || 4000) ? JSON.stringify({ truncated: true, excerpt: compact.slice(0, cfg.maxToolChars || 4000), hint: '请缩小查询范围或按条目读取。' }) : compact
+            if(okAll&&opName==='dm.action')forceAction=null;
             steps.push({ name: opName, args: fnArgs, ok: okAll, summary: (out && (out.summary || out.error)) || '', chars: compact.length })
             msgs.push({ role: 'tool', tool_call_id: c.id, content: clipped })
           }
@@ -1894,8 +1902,8 @@ return {
         }
         if (!reply && !steps.length) return {ok:false,error:'模型没有返回文本或工具调用，请检查模型是否支持 Chat Completions。'}
         ai.messages=(await readAi()).messages
-        if (!a.prepare && reply) ai.messages.push({ role: 'assistant', content: reply, t: nowIso(), steps: steps.map(s => s.name) })
-        else if (!a.prepare && steps.length) ai.messages.push({ role: 'assistant', content: '（只调用了工具，没有输出文本：' + steps.map(s => s.name).join('、') + '）', t: nowIso() })
+        if (!a.prepare && reply) ai.messages.push({ role: 'assistant', content: reply, t: nowIso(), steps: steps.map(s => s.name), actions:steps.map(s=>({name:s.name,ok:s.ok,summary:s.name==='dice.secret'?'DM 判定已记录':s.summary})) })
+        else if (!a.prepare && steps.length) ai.messages.push({ role: 'assistant', content: finish==='waiting_player'?'已准备好，请完成下方投骰或地图选择。':'DM 已更新场景。', actions:steps.map(s=>({name:s.name,ok:s.ok,summary:s.name==='dice.secret'?'DM 判定已记录':s.summary})), t: nowIso() })
         ai.config = (await readAi()).config
         const w = a.prepare ? {ok:true} : await writeAi(ai)
         return jclean({
@@ -2183,10 +2191,10 @@ return {
       } catch (e) { return { ok: false, error: String(e && e.message || e) } }
     }))
     // ===== 经验与升级 =====
-    const xpInfoOf = (srd, pc) => {
+    const xpInfoOf = async (srd, pc) => {
       const level = Math.max(1, Number(pc.level) || 1)
       const xp = Math.max(0, Number(pc.xp) || 0)
-      const table = (srd.core && srd.core.xpByLevel) || []
+      const table = await xpTable(srd)
       const next = level < 20 ? (table[level] || null) : null
       const prev = table[level - 1] || 0
       const pct = next ? Math.max(0, Math.min(100, Math.round((xp - prev) / Math.max(1, next - prev) * 100))) : 100
@@ -2236,10 +2244,10 @@ return {
     unreg.push(harness.handle("party.xp", async () => {
       try {
         const srd = await loadSrd()
-        const list = (await allCharFiles()).map(x => {
-          const info = xpInfoOf(srd, x.pc)
+        const list = await Promise.all((await allCharFiles()).map(async x => {
+          const info = await xpInfoOf(srd, x.pc)
           return Object.assign({ id: x.id, name: x.pc.name, classes: (x.pc.classes || []).map(c => c.class + c.level).join("/") }, info)
-        })
+        }))
         const ready = list.filter(x => x.canLevel)
         return jclean({ ok: true, items: list, ready: ready,
           summary: ready.length ? ("可升级：" + ready.map(x => x.name + " → Lv" + x.targetLevel).join("、")) : "当前无人可升级" })
@@ -2260,10 +2268,10 @@ return {
         const each = per === "split" ? Math.floor(amount / targets.length) : amount
         const awards = []
         for (const t of targets) {
-          const before = xpInfoOf(srd, t.pc)
+          const before = await xpInfoOf(srd, t.pc)
           t.pc.xp = Math.max(0, (Number(t.pc.xp) || 0) + each)
           t.pc.meta = t.pc.meta || {}; t.pc.meta.updatedAt = nowIso()
-          const after = xpInfoOf(srd, t.pc)
+          const after = await xpInfoOf(srd, t.pc)
           const r = await persist(t.pc)
           awards.push({ id: t.id, name: t.pc.name, before: before.xp, after: after.xp, gained: each, level: after.level, next: after.next, pct: after.pct, canLevel: after.canLevel, targetLevel: after.targetLevel, saved: !!r.ok })
         }
@@ -2658,6 +2666,7 @@ return {
     }))
 
     DND5E_GAMEPLAY({ops:OPS,register:(n,f)=>unreg.push(harness.handle(n,f)),root:DND5E_SESSION_ROOT,readMap,writeMap,readCombat,writeCombat,combatView,readDice,writeDice,readPc,persist,readLog,writeLog,pushLog,rollExpr,readAi,writeAi})
+    DND5E_CAMPAIGN.installCampaign({ops:OPS,register:(n,f)=>unreg.push(harness.handle(n,f)),root:DND5E_SESSION_ROOT,readPc,persist,modules:DND5E_MODULES,defaultThresholds:async()=>(await loadSrd()).core.xpByLevel})
     return () => { unreg.forEach(f => f()) }
   }
 }

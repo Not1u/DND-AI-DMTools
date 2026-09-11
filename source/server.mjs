@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import * as campaign from './src/campaign.mjs'
 /**
  * SoloTRPG — 单人跑团独立运行器
  *
@@ -109,8 +110,8 @@ function ensureEngine() {
   let src = fs.readFileSync(HOST_SRC, 'utf8')
   if (src.charCodeAt(0) === 0xfeff) src = src.slice(1)
   const harness = { handle: (n, f) => { rec[n] = f; return () => { delete rec[n] } } }
-  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', 'DND5E_MODULES', 'DND5E_LIBRARY', 'DND5E_COMPOSE', 'DND5E_PDFMAPS', 'DND5E_GAMEPLAY', 'DND5E_GAME_TOOLS', 'DND5E_GAME_PROMPT', 'DND5E_SESSION_ROOT', 'DND5E_SESSION_STORAGE', src)
-  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE, modules, libraryRoot, composeMap, pdfMaps, installGameplay, gameplayTools, gameplayPrompt, sessionRoot, sessionStorage)
+  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', 'DND5E_MODULES', 'DND5E_LIBRARY', 'DND5E_COMPOSE', 'DND5E_PDFMAPS', 'DND5E_GAMEPLAY', 'DND5E_GAME_TOOLS', 'DND5E_GAME_PROMPT', 'DND5E_SESSION_ROOT', 'DND5E_SESSION_STORAGE', 'DND5E_CAMPAIGN', src)
+  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE, modules, libraryRoot, composeMap, pdfMaps, installGameplay, [...gameplayTools,...campaign.campaignTools], gameplayPrompt+campaign.campaignPrompt, sessionRoot, sessionStorage, campaign)
   if (!plugin || typeof plugin.apply !== 'function') throw new Error('引擎形状不对')
   const d = plugin.apply(miniCtx)
   if (typeof d === 'function') innerDispose = d

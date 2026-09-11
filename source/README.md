@@ -1,4 +1,4 @@
-> 当前桌面版 **0.7.0**（玩家回合交互、顺序投骰与战役存档）：完整解压 ZIP 后使用外层 SoloTRPG.exe；保留同级 runtime 和 library。文件存放、更新及模组筹备流程见 [桌面说明](docs/DESKTOP.md)。下方旧版单文件说明仅供历史参考。
+> 当前桌面版 **0.8.0**（DM 排版、AI 动作、模组经验与自由/回合模式）：完整解压 ZIP 后使用外层 SoloTRPG.exe；保留同级 runtime 和 library。文件存放、更新及模组筹备流程见 [桌面说明](docs/DESKTOP.md)。下方旧版单文件说明仅供历史参考。
 
 # SoloTRPG
 

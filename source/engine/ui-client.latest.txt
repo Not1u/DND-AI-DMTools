@@ -1351,6 +1351,7 @@ function MapPanel(props) {
     setMsg('先点一个单位图标选中它（或用拖动直接移动），再点目标格 = 走过去。')
   }
   const onTokDown = (ev, tk) => {
+    if(!live?.combat?.active&&live?.town?.locations?.some(p=>p.id===tk.id)){ev.preventDefault();call('scene.visit',{id:tk.id}).then(r=>{if(r.ok)window.dispatchEvent(new CustomEvent('solo-dm-request',{detail:{message:r.message}}));else setMsg(r.error)}).catch(e=>setMsg(e.message));return}
     if(req?.kind==='target'){ev.preventDefault();setTargets(old=>old.includes(tk.id)?old.filter(id=>id!==tk.id):(req.count||1)===1?[tk.id]:old.length<(req.count||1)?[...old,tk.id]:old);setSel(tk.id);return}
     if(live?.combat?.active&&(req?.kind!=='move'||req.actorId!==tk.id)){setSel(tk.id);setMsg('请选择目标或等待本回合移动请求。');return}
     if (tool !== 'move') { setSel(tk.id); return }
@@ -1402,7 +1403,7 @@ function MapPanel(props) {
         onMouseLeave: tipHide, onFocus: e => tipShow(e,tk.name,[{name:'护甲等级 AC',desc:String(tk.ac??'待查证')},{name:'生命值 HP',desc:(tk.hp??'—')+'/'+(tk.max??'—')},{name:'来源',desc:tk.source||'待查证'}]),onBlur:tipHide,tabIndex:0,
         title: tk.name + ' @ ' + cellName(px, py) + (tk.hp != null ? ('｜HP ' + tk.hp + (tk.max ? '/' + tk.max : '')) : '') + (tk.speed ? ('｜速度 ' + tk.speed + ' 尺') : '') + (tk.note ? ('｜' + tk.note) : '') + (isDrag ? ('｜正在移动 ' + d.feetStandard + ' 尺') : ''),
       'aria-label':tk.name+' · '+tk.id+' · AC '+(tk.ac??'待查证'),
-      }, h('span', { className: 'tkname' }, tk.name.slice(0,3)+(tokens.filter(t=>t.name===tk.name).length>1?tokens.filter(t=>t.name===tk.name).findIndex(t=>t.id===tk.id)+1:'')),h('span',{className:'token-ac'},'AC '+(tk.ac??'?')),bar)
+      }, h('span', { className: 'tkname' }, tk.name.slice(0,3)+(tokens.filter(t=>t.name===tk.name).length>1?tokens.filter(t=>t.name===tk.name).findIndex(t=>t.id===tk.id)+1:'')),(tk.kind==='enemy'||tk.ac!=null)?h('span',{className:'token-ac'},'AC '+(tk.ac??'?')):null,bar,live?.town&&tk.kind!=='pc'?h('span',{className:'town-label'},tk.name):null)
     }),
     (live?.effects||[]).filter(e=>e.area?.cells&&(e.mapId?e.mapId===map.id:e.mapName===map.name)).flatMap(e=>e.area.cells.map(c=>h('div',{key:e.id+'-'+c.x+'-'+c.y,className:'effect-cell',style:{left:c.x*tile,top:c.y*tile,width:tile,height:tile},title:e.name}))),
     (tpl && tpl.cells) ? tpl.cells.filter(c => c.x >= 0 && c.y >= 0 && c.x < map.w && c.y < map.h).map(c => h('div', { key: 't' + c.x + '_' + c.y, style: { position: 'absolute', left: c.x * tile, top: c.y * tile, width: tile, height: tile, background: 'rgba(224,166,74,.28)', border: '1px solid rgba(224,166,74,.55)', pointerEvents: 'none', zIndex: 4 } })) : null,
@@ -1432,6 +1433,9 @@ function MapPanel(props) {
     if (r && r.ok) { setMap(r); loadMaps(); setMsg(r.summary || '已新建'); setNameDraft('新地图') } else setMsg('新建失败：' + ((r && r.error) || ''))
   }
   const tools = h('div', { className: 'dndp-maptools' },
+    h('button',{className:'dndp-btn tiny'+(live?.combat?.active?' primary':''),'aria-label':'切换移动模式',onClick:async()=>{const r=await call('combat.mode',{mode:live?.combat?.active?'free':'turn'});setMsg(r.summary||r.error);if(r.ok){setLive(await call('session.pending',{}));load()}}},live?.combat?.active?'回合制 · 切换自由移动':'自由移动 · 开启回合制'),
+    h('button',{className:'dndp-btn tiny',disabled:!!live?.combat?.active,onClick:()=>{window.dispatchEvent(new CustomEvent('solo-dm-request',{detail:{message:'请根据已读模组和当前所在城镇，绘制包含已知地点与 NPC 的示意图。用 dm.action 的 town 动作；不要添加未发现信息。',requestAction:'town'}}));setMsg('已请求 DM 绘制当前城镇，请查看 AI 对话。')}},'城镇示意图'),
+    live?.town?.locations?.length?h('div',{className:'town-places'},h('span',null,'想去哪里：'),live.town.locations.map(p=>h('button',{key:p.id,className:'dndp-btn tiny',disabled:!!live.combat?.active,title:p.description,onClick:async()=>{const r=await call('scene.visit',{id:p.id});if(r.ok){window.dispatchEvent(new CustomEvent('solo-dm-request',{detail:{message:r.message}}));setMsg('已向 DM 表达前往 '+p.name+' 的意图。')}else setMsg(r.error)}},p.name))):null,
     pdfOpen && typeof window!=='undefined' && window.SoloPdfMap ? h(window.SoloPdfMap,{call,onClose:()=>setPdfOpen(false),onCreated:r=>{setMap(r);loadMaps();setMsg('PDF 地图已建立，请校对网格和墙壁。')}}):null,
     req?h('div',{className:'map-request'},h('b',null,req.label),h('span',null,req.kind==='target'?'点击棋子选择：'+targets.join('、'):req.kind==='area'?'点击地图预览范围':'拖动本回合角色，或点击目的地'),h('button',{className:'dndp-btn primary',disabled:req.kind==='target'?!targets.length:!choice,onClick:async()=>{const r=await call('interaction.answer',{id:req.id,...choice,targetIds:targets});setMsg(r.ok?'已提交，DM 正在分析场面。':r.error);if(r.ok){setChoice(null);setTargets([]);setTpl(null);load();setLive({...live,request:null})}}},'确认提交'),h('button',{className:'dndp-btn',onClick:async()=>{const r=await call('interaction.cancel',{id:req.id});if(r.ok){setLive({...live,request:null});setTpl(null)}}},'取消请求')):null,
     (live?.effects||[]).length?h('div',{className:'effect-list'},live.effects.map(e=>h('span',{key:e.id},e.name+(e.concentration?' · 专注':'')+(e.rounds!=null?' · '+e.rounds+' 回合':'')+(e.expiresAt!=null?' · 剩 '+Math.max(0,Math.ceil((e.expiresAt-live.clock)/60))+' 分钟':'')))):null,
@@ -2171,13 +2175,13 @@ function AIPanel(props) {
   }, [])
   React.useEffect(() => { const el = bodyRef.current; if (el && followBottom.current) el.scrollTop = el.scrollHeight },[msgs.length,busy])
   React.useEffect(()=>{const timer=setInterval(async()=>{try{const r=await call('session.pending',{});if(r.ok)setLive(r);if(r.ready&&!busy&&!resumeLock.current&&Date.now()>retryAt.current){resumeLock.current=true;setBusy(true);try{const reply=await call('session.resume',{});if(!reply.ok){retryAt.current=Date.now()+30000;setMsg('DM 续接失败：'+reply.error+'（30 秒后重试，也可手动发送）');}await load()}finally{resumeLock.current=false;setBusy(false)}}}catch{}},1200);return()=>clearInterval(timer)},[busy])
-  const send = async (text) => {
+  const send = async (text,requestAction) => {
     const t = String(text == null ? input : text).trim()
     if (!t || busy) return
     setInput(''); setBusy(true); setMsg('')
     setMsgs(m => m.concat([{ role: 'user', content: t, t: new Date().toISOString() }]))
     try {
-      const r = await call('ai.chat', { message: t })
+      const r = await call('ai.chat', { message: t, requestAction })
       if (r && r.ok) {
         const steps = (r.steps || []).map(s => '· ' + s.name + (s.ok ? ' ✔' : ' ✘') + (s.summary ? ('  ' + String(s.summary).slice(0, 60)) : '')).join('\n')
         await load()
@@ -2189,6 +2193,9 @@ function AIPanel(props) {
     } catch (e) { setMsgs(m => m.concat([{ role: 'assistant', content: '⚠ ' + String(e && e.message || e), err: true }])) }
     setBusy(false)
   }
+  const sendRef=React.useRef(send);sendRef.current=send;
+  React.useEffect(()=>{if(typeof window==='undefined')return;const handler=e=>sendRef.current(e.detail.message,e.detail.requestAction);window.addEventListener('solo-dm-request',handler);return()=>window.removeEventListener('solo-dm-request',handler)},[]);
+  const [rollOpen,setRollOpen]=React.useState(false);
   const clear = async () => { const r = await call('ai.clear', {}); setMsg(r && r.ok ? '已清空' : '清空失败'); load() }
   const quick = ['读取当前战役状态，并简短说明接下来该发生什么', '继续推进剧情（由我扮演图里尔，你先描述场景）', '把当前遭遇摆到战术地图上']
   const bar = h('div', { className: 'dndp-aibar' },
@@ -2209,17 +2216,19 @@ function AIPanel(props) {
     const me = m.role === 'user'
     list.push(h('div', { key: i, className: 'dndp-msg' + (m.speaker?' npc-speech':'') + (me ? ' me' : '') + (m.err ? ' err' : '') },
       h('div', { className: 'dndp-who' },h('span',{className:'speech-avatar'},me?'你':(m.speaker||'DM').slice(0,2)), me ? '你' : (m.speaker||'DM') + (m.usage ? '（tokens ' + (m.usage.prompt_tokens || 0) + '+' + (m.usage.completion_tokens || 0) + '）' : '')),
-      h('div', { className: 'dndp-bubble' }, m.content),
+      h('div', { className: 'dndp-bubble' }, !me&&typeof window!=='undefined'&&window.SoloMarkdown?h(window.SoloMarkdown,{text:m.content}):m.content, m.actions?.length?h('details',{className:'dm-actions'},h('summary',null,m.actions.some(a=>!a.ok)?'⚠ 部分动作未执行 · 查看原因':'✓ 已执行 '+m.actions.length+' 项操作'),m.actions.map((a,k)=>h('div',{key:k,className:a.ok?'':'failed'},(a.ok?'✓ ':'✕ ')+a.name+' · '+(a.summary||'完成')))):null),
       null))
   })
   if (busy) list.push(h('div', { key: 'b', className: 'dndp-msg' }, h('div', { className: 'dndp-who' }, 'DM'), h('div', { className: 'dndp-bubble' }, '正在思考（会先调用工具查资料）…')))
   return h('div', { className: 'dndp-ai' },
-    bar,
+    h('details',{className:'dm-controls'},h('summary',null,'冒险与工具',h('small',null,adventure.name||'准备 / 投骰 / 存档')),h('div',{className:'dm-controls-content'},bar,
+    rollOpen&&window.SoloRollRequest?h(window.SoloRollRequest,{call,onClose:()=>setRollOpen(false)}):null,
+    h('div',{className:'dm-quick-actions'},h('button',{className:'dndp-btn tiny',disabled:busy||!!live?.dice?.length,onClick:()=>send('请根据上一段已经确定要做的行动和规则，使用 dm.action 发起真实的玩家投骰请求。先核对角色加值。','roll')},'让 DM 发起投骰'),h('button',{className:'dndp-btn tiny',disabled:busy,onClick:()=>setRollOpen(true)},'补建骰子请求')),
     h('div', {className:'adventure-picker'},
       h('select',{className:'dndp-input',value:moduleId,disabled:busy,'aria-label':'当前冒险模组',onChange:e=>setModuleId(e.target.value)},h('option',{value:''},'选择已导入模组'),(adventure.modules||[]).map(m=>h('option',{key:m.id,value:m.id},m.name))),
       h('button',{className:'dndp-btn',disabled:busy||!moduleId,onClick:async()=>{setBusy(true);setMsg('正在确认模组并研究开场…');try{const picked=await call('campaign.select',{moduleId});if(!picked.ok)throw new Error(picked.error);const r=await call('campaign.prepare',{});setMsg(r.ok?r.summary:r.error);await reloadAdventure();load()}catch(e){setMsg(e.message)}finally{setBusy(false)}}},'准备冒险'),
       h('button',{className:'dndp-btn primary',disabled:busy||!adventure.moduleId||adventure.phase==='playing',onClick:async()=>{setBusy(true);try{const r=await call('campaign.start',{});setMsg(r.ok?'冒险已开始。':r.error);await load();await reloadAdventure()}catch(e){setMsg(e.message)}finally{setBusy(false)}}},'开始冒险'),
-      h('small',null,adventure.name?'当前：'+adventure.name+' · '+(adventure.phase==='playing'?'冒险进行中':adventure.phase==='prepared'?'已准备，可以开始':'待筹备'):'先导入模组，再确认本次冒险。')),
+      h('small',null,adventure.name?'当前：'+adventure.name+' · '+(adventure.phase==='playing'?'冒险进行中':adventure.phase==='prepared'?'已准备，可以开始':'待筹备'):'先导入模组，再确认本次冒险。')))),
     live&&(live.request||live.dice?.length)?h('div',{className:'player-wait'},live.dice?.length?'等待投骰 · '+live.dice.length+' 条按顺序处理':'等待地图选择：'+live.request.label):null,
     h('div', { className: 'dndp-aibody', ref: bodyRef,onScroll:e=>{const el=e.currentTarget;followBottom.current=el.scrollHeight-el.scrollTop-el.clientHeight<45} }, list),
     h('button',{className:'dndp-btn tiny',onClick:()=>{followBottom.current=true;if(bodyRef.current)bodyRef.current.scrollTop=bodyRef.current.scrollHeight}},'回到最新消息'),
