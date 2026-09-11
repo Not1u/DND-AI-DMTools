@@ -28,13 +28,49 @@ else {
       { label: '帮助', submenu: [{ label: '下载新版', click: () => shell.openExternal('https://github.com/Not1u/DND-AI-DMTools/releases') }, { label: '关于 / 更新说明', click: () => dialog.showMessageBox(window, { title: 'SoloTRPG', message: 'SoloTRPG ' + app.getVersion(), detail: '关闭软件后替换新版 EXE，即可完成更新。\n存档保存在：' + dataRoot + '\n更换程序不会覆盖存档；备份时请复制整个存档文件夹。' }) }] }
     ]));
     const errors = [];
-    window.webContents.on('console-message', (_event, details) => { if (details?.level === 'error') errors.push(details.message); });
+    window.webContents.on('console-message', event => { if (event.level === 'error') errors.push(event.message); });
     await window.loadURL(runtime.url);
     if (smoke) {
       await new Promise(r => setTimeout(r, 3500));
+      const moduleFile = process.argv.find(a => a.startsWith('--module-smoke='))?.slice(15);
+      let moduleCheck;
+      if (moduleFile) {
+        const encoded = (await fs.readFile(moduleFile)).toString('base64');
+        await window.webContents.executeJavaScript(`document.querySelectorAll('.solo-tab')[2].click()`);
+        await new Promise(r => setTimeout(r, 300));
+        await window.webContents.executeJavaScript(`(() => {
+          const bytes = Uint8Array.from(atob(${JSON.stringify(encoded)}), c => c.charCodeAt(0));
+          const transfer = new DataTransfer(); transfer.items.add(new File([bytes], 'Moonstone.pdf', {type:'application/pdf'}));
+          const input = document.querySelector('input[type=file]'); input.files = transfer.files; input.dispatchEvent(new Event('change', {bubbles:true}));
+        })()`);
+        for (let tries = 0; tries < 120; tries++) {
+          await new Promise(r => setTimeout(r, 500));
+          const message = await window.webContents.executeJavaScript(`document.querySelector('[role=status]').textContent`);
+          if (/导入失败/.test(message)) throw new Error(message);
+          if (/已导入|无需重复/.test(message)) { moduleCheck = { message }; break; }
+        }
+        if (!moduleCheck) throw new Error('PDF upload UI timed out');
+        await window.webContents.executeJavaScript(`(() => {
+          const input = document.querySelector('.module-search input');
+          Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(input, 'Moonstone');
+          input.dispatchEvent(new Event('input', {bubbles:true}));
+        })()`);
+        await new Promise(r => setTimeout(r, 200));
+        await window.webContents.executeJavaScript(`document.querySelector('.module-search button').click()`);
+        for (let tries = 0; tries < 20; tries++) {
+          await new Promise(r => setTimeout(r, 250));
+          if (await window.webContents.executeJavaScript(`!!document.querySelector('.module-hit')`)) break;
+        }
+        await window.webContents.executeJavaScript(`document.querySelector('.module-hit').click()`);
+        await new Promise(r => setTimeout(r, 500));
+        moduleCheck.read = await window.webContents.executeJavaScript(`document.querySelector('.module-results pre').textContent`);
+        if (!moduleCheck.read.includes('secret passage') || !moduleCheck.read.includes('月石洞穴')) throw new Error('Module search/read UI failed');
+        const result = await (await fetch(runtime.url + '/api', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({op:'mod.search',args:{query:'Moonstone'}}) })).json();
+        if (!result.value?.items?.some(item => item.id.startsWith('upload:'))) throw new Error('Imported PDF missing from module search');
+      }
       const state = await window.webContents.executeJavaScript(`({ text: document.body.innerText, node: typeof process, tabs: document.querySelectorAll('button').length })`);
       const health = await (await fetch(runtime.url + '/health')).json();
-      await fs.writeFile(path.join(home, 'smoke.json'), JSON.stringify({ state, health, errors }, null, 2));
+      await fs.writeFile(path.join(home, 'smoke.json'), JSON.stringify({ state, health, errors, moduleCheck }, null, 2));
       await fs.writeFile(path.join(home, 'smoke.png'), (await window.webContents.capturePage()).toPNG());
       app.quit();
     } else window.show();

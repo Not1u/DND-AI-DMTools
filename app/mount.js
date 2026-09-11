@@ -99,6 +99,7 @@
     } catch (e) { boot.textContent = 'UI 源码执行失败：' + e.message; return }
     try {
       plugin.apply(ctx)
+      tabs.push({ id: 'modules', title: '模组库 / 上传', component: () => h(window.SoloModuleLibrary, { call: host.call }) })
     } catch (e) { boot.textContent = 'UI 挂载失败：' + e.message; return }
     if (!tabs.length) { boot.textContent = 'UI 没有注册任何页签'; return }
     boot.style.display = 'none'

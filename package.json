@@ -1,6 +1,6 @@
 {
   "name": "solo-trpg",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "description": "SoloTRPG — 单人跑团独立运行器（内置规则书/模组/角色卡/战术地图/战斗记录，AI 作为 DM）",
@@ -17,7 +17,7 @@
     "desktop": "node node_modules/electron/install.js && electron .",
     "build:installer": "electron-builder --win nsis --x64 --publish never",
     "build:sea": "node tools/build-exe.mjs",
-    "test:desktop": "node --test tools/desktop.test.mjs tools/settings.test.mjs"
+    "test:desktop": "node --test tools/desktop.test.mjs tools/settings.test.mjs tools/modules.test.mjs"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -27,12 +27,14 @@
     "appId": "com.not1u.dndaidmtools",
     "productName": "SoloTRPG",
     "asar": true,
+    "compression": "normal",
     "directories": {
       "output": "dist"
     },
     "files": [
       "desktop/**",
       "server.mjs",
+      "src/**",
       "app/**",
       "engine/*.txt",
       "plugins/*.mjs",
@@ -63,5 +65,8 @@
   "devDependencies": {
     "electron": "44.3.0",
     "electron-builder": "26.15.3"
+  },
+  "dependencies": {
+    "pdf-parse": "2.4.5"
   }
 }

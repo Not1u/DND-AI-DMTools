@@ -27,3 +27,4 @@ Thumbs.db
 .idea/
 # 本地参考语料，运行引擎不依赖这些 HTML
 engine/_src-phb/
+data/modules/

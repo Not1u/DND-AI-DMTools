@@ -21,12 +21,14 @@ import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { createModuleStore, MAX_MODULE_BYTES } from './src/modules.mjs'
 
 export async function startServer(options = {}) {
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 let CFG = {}
 try { CFG = JSON.parse(fs.readFileSync(path.join(HERE, 'config.json'), 'utf8')) } catch (e) { }
 const ROOT = options.dataRoot || (CFG.dataRoot ? path.resolve(HERE, CFG.dataRoot) : HERE)
+const modules = createModuleStore(ROOT)
 const PORT = Number(options.port ?? process.env.PORT ?? CFG.port ?? 4620)
 const BIND = options.bind || process.env.BIND || CFG.bind || '127.0.0.1'
 const HOST_SRC = path.join(HERE, 'engine', 'ui-host.latest.txt')
@@ -98,8 +100,8 @@ function ensureEngine() {
   let src = fs.readFileSync(HOST_SRC, 'utf8')
   if (src.charCodeAt(0) === 0xfeff) src = src.slice(1)
   const harness = { handle: (n, f) => { rec[n] = f; return () => { delete rec[n] } } }
-  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', src)
-  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE)
+  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', 'DND5E_MODULES', src)
+  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE, modules)
   if (!plugin || typeof plugin.apply !== 'function') throw new Error('引擎形状不对')
   const d = plugin.apply(miniCtx)
   if (typeof d === 'function') innerDispose = d
@@ -187,6 +189,19 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'))
   const p = url.pathname
   try {
+    if (p === '/api/modules') {
+      if (req.method === 'GET') return sendJson(res, 200, { ok: true, items: await modules.list() })
+      if (req.method !== 'POST') return sendJson(res, 405, { ok: false, error: 'GET or POST only' })
+      let size = 0
+      const chunks = []
+      for await (const chunk of req) {
+        size += chunk.length
+        if (size > MAX_MODULE_BYTES) return sendJson(res, 413, { ok: false, error: '文件不能超过 50 MB。' })
+        chunks.push(chunk)
+      }
+      try { return sendJson(res, 200, await modules.import(url.searchParams.get('filename') || '', Buffer.concat(chunks))) }
+      catch (error) { return sendJson(res, 400, { ok: false, error: error.message }) }
+    }
     if (p === '/api' || p === '/dnd5e/api') {
       if (req.method !== 'POST') return sendJson(res, 405, { ok: false, error: 'POST only' })
       return handleApi(req, res)

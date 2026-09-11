@@ -542,7 +542,7 @@ return {
       try { manifestCache = JSON.parse(await fsRead(INDEX_DIR + '/manifest.json')) } catch (e) { manifestCache = { books: [], generatedAt: null } }
       return manifestCache
     }
-    const loadEntries = async () => {
+    const loadBuiltinEntries = async () => {
       if (entriesCache) return entriesCache
       const manifest = await loadManifest()
       const entries = []
@@ -554,6 +554,11 @@ return {
       }
       entriesCache = entries
       return entries
+    }
+    const loadEntries = async () => {
+      const builtin = await loadBuiltinEntries()
+      const uploaded = typeof DND5E_MODULES !== 'undefined' ? await DND5E_MODULES.entries() : []
+      return builtin.concat(uploaded)
     }
 
     const countOf = (hay, needle) => { let n = 0, i = 0; const h = String(hay).toLowerCase(), nd = String(needle).toLowerCase(); while ((i = h.indexOf(nd, i)) !== -1) { n++; i += nd.length } return n }
@@ -1137,7 +1142,7 @@ return {
       try {
         const a = args || {}
         const entries = (await loadEntries()).filter(e => e.book === MOD_BOOK)
-        const mods = {}
+        const mods = Object.create(null)
         for (const e of entries) {
           const parts = String(e.file || '').split('/')
           const m = parts[1] || '（未分类）'
