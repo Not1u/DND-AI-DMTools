@@ -14,7 +14,9 @@ else {
     const { initializeData, initializeLibrary } = await import('./storage.mjs');
     const dataRoot = await initializeData(home, app.getVersion());
     const { startServer } = await import(pathToFileURL(path.join(__dirname, '..', 'server.mjs')).href);
-    const libraryRoot = app.isPackaged ? path.resolve(path.dirname(process.execPath), '..', 'library') : path.resolve(__dirname,'..');
+    const shippedLibrary = app.isPackaged ? path.resolve(path.dirname(process.execPath), '..', 'library') : path.resolve(__dirname,'..');
+    const libraryRoot=smoke?path.join(home,'library'):shippedLibrary;
+    if(smoke)for(const folder of ['rules','data/rules-index'])await fs.cp(path.join(shippedLibrary,folder),path.join(libraryRoot,folder),{recursive:true});
     await initializeLibrary(libraryRoot,dataRoot);
     runtime = await startServer({ dataRoot, libraryRoot, port: 0, bind: '127.0.0.1' });
     window = new BrowserWindow({ width: 1440, height: 960, minWidth: 900, minHeight: 600, title: 'SoloTRPG', icon: path.join(__dirname, '..', 'app', 'icon.ico'), show: false, webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true } });
@@ -38,6 +40,8 @@ else {
     if (smoke) {
       await new Promise(r => setTimeout(r, 3500));
       if (process.argv.includes('--ui-smoke')) await require('./ui-smoke.cjs')(window, runtime, home);
+      const pdfMapFile=process.argv.find(a=>a.startsWith('--pdf-map-smoke='))?.slice(16);
+      if(pdfMapFile)await require('./pdf-map-smoke.cjs')(window,runtime,home,pdfMapFile);
       const moduleFile = process.argv.find(a => a.startsWith('--module-smoke='))?.slice(15);
       let moduleCheck;
       if (moduleFile) {

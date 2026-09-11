@@ -30,7 +30,7 @@
         const result = await response.json();
         if (!result.ok) throw new Error(result.error);
         await reload();
-        setMessage(result.duplicate ? '该文件已导入，无需重复上传。' : '已导入「' + result.name + '」：' + result.count + ' 个文字片段，可立即检索或让 AI 查阅。');
+        setMessage(result.imageOnly ? '已导入 PDF 原件，可用于原图地图；文字检索和 AI 研究需要先 OCR。' : result.restoredOriginal ? '已补齐 PDF 原件，可以制作原图地图。' : result.duplicate ? '该文件已导入，无需重复上传。' : '已导入「' + result.name + '」：' + result.count + ' 个文字片段，可立即检索或让 AI 查阅。');
         setHits([]); setBody('');
       } catch (e) { setMessage('导入失败：' + e.message); }
       finally { setBusy(false); }
@@ -53,7 +53,7 @@
       h('h2', null, '模组库'),
       h('p', null, '上传自己的冒险模组，导入后即可检索，AI 也能通过模组工具读取内容。'),
       h('label', { className: 'module-upload' }, '上传模组（PDF / TXT / MD / JSON）', h('input', { type: 'file', accept: '.pdf,.txt,.md,.json', disabled: busy, onChange: upload, 'aria-label': '上传模组' })),
-      h('p', { className: 'module-note' }, '每个文件最多 50 MB。PDF 提取文字与页码，不导入插图或地图；扫描版需先做 OCR。文件只在本机处理。'),
+      h('p', { className: 'module-note' }, '每个文件最多 50 MB。PDF 保留原件，可在战术地图中选择原页制作底图。扫描件可用原图，AI 文字研究需先 OCR。文件只在本机处理。'),
       h('p', { role: 'status', 'aria-live': 'polite' }, message),
       h('h3', null, '我上传的模组（' + uploaded.length + '）'),
       uploaded.length ? h('ul', null, uploaded.map(item => h('li', { key: item.id }, item.name + ' · ' + item.count + ' 个片段 · ' + new Date(item.importedAt).toLocaleDateString()))) : h('p', null, '尚未上传模组。'),

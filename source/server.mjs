@@ -21,6 +21,7 @@ import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
+import { createPdfMapStore } from './src/pdf-maps.mjs'
 import { composeMap } from './src/cartography.mjs'
 import { createModuleStore, MAX_MODULE_BYTES } from './src/modules.mjs'
 
@@ -31,6 +32,7 @@ try { CFG = JSON.parse(fs.readFileSync(path.join(HERE, 'config.json'), 'utf8')) 
 const ROOT = options.dataRoot || (CFG.dataRoot ? path.resolve(HERE, CFG.dataRoot) : HERE)
 const libraryRoot = options.libraryRoot || HERE
 const modules = createModuleStore(options.libraryRoot || ROOT)
+const pdfMaps = createPdfMapStore(options.libraryRoot || ROOT,modules)
 const PORT = Number(options.port ?? process.env.PORT ?? CFG.port ?? 4620)
 const BIND = options.bind || process.env.BIND || CFG.bind || '127.0.0.1'
 const HOST_SRC = path.join(HERE, 'engine', 'ui-host.latest.txt')
@@ -72,6 +74,7 @@ const miniCtx = {
 // 插件的 api（也给引擎用：让 AI 能调用 plugins/*.mjs 的能力）
 const pluginApi = (overrides) => Object.assign({
   repoRoot: ROOT,
+  readMapImage: async id => pdfMaps.imageBytes(id),
   call: async (op, args) => { ensureEngine(); const f = rec[op]; if (typeof f !== 'function') throw new Error('unknown op: ' + op); return f(args || {}) },
   readJson: async (rel) => { let s = await fsp.readFile(path.join(ROOT, rel), 'utf8'); if (s.charCodeAt(0) === 0xfeff) s = s.slice(1); return JSON.parse(s) },
   writeJson: async (rel, obj) => writeText(path.join(ROOT, rel), JSON.stringify(obj, null, 2)),
@@ -102,8 +105,8 @@ function ensureEngine() {
   let src = fs.readFileSync(HOST_SRC, 'utf8')
   if (src.charCodeAt(0) === 0xfeff) src = src.slice(1)
   const harness = { handle: (n, f) => { rec[n] = f; return () => { delete rec[n] } } }
-  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', 'DND5E_MODULES', 'DND5E_LIBRARY', 'DND5E_COMPOSE', src)
-  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE, modules, libraryRoot, composeMap)
+  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', 'DND5E_MODULES', 'DND5E_LIBRARY', 'DND5E_COMPOSE', 'DND5E_PDFMAPS', src)
+  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE, modules, libraryRoot, composeMap, pdfMaps)
   if (!plugin || typeof plugin.apply !== 'function') throw new Error('引擎形状不对')
   const d = plugin.apply(miniCtx)
   if (typeof d === 'function') innerDispose = d
@@ -176,6 +179,7 @@ async function handleApi(req, res) {
       if (typeof fn !== 'function') return sendJson(res, 200, { ok: false, error: 'unknown op: ' + op })
       const value = isCore ? await fn(args || {}) : await fn(args || {}, {
         repoRoot: ROOT,
+  readMapImage: async id => pdfMaps.imageBytes(id),
         call: async (n, a) => { ensureEngine(); const f = rec[n]; if (typeof f !== 'function') throw new Error('unknown op: ' + n); return f(a || {}) },
         readJson: async (rel) => { let s = await fsp.readFile(path.join(ROOT, rel), 'utf8'); if (s.charCodeAt(0) === 0xfeff) s = s.slice(1); return JSON.parse(s) },
         writeJson: async (rel, obj) => writeText(path.join(ROOT, rel), JSON.stringify(obj, null, 2)),
@@ -191,6 +195,7 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'))
   const p = url.pathname
   try {
+    if (/^\/map-images\/[a-f0-9]{64}\.png$/.test(p)) return serveFile(res,pdfMaps.imagePath(p.slice(12,-4)))
     if (p === '/api/modules') {
       if (req.method === 'GET') return sendJson(res, 200, { ok: true, items: await modules.list() })
       if (req.method !== 'POST') return sendJson(res, 405, { ok: false, error: 'GET or POST only' })

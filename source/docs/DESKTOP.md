@@ -1,10 +1,10 @@
-# Windows 桌面版 0.5.0
+# Windows 桌面版 0.6.0
 
 ## 启动和分发
 
 日常双击仓库外层 `SoloTRPG.exe`。0.5.0 改用免解压启动结构，避免旧便携单文件每次启动提取 Electron 与 PDF 依赖。
 
-发送 `source/dist/SoloTRPG-0.5.0-Windows-x64.zip` 给测试者。完整解压后双击 EXE，不需要安装 Node.js。**不能只发一个 EXE**，必须保留旁边的 `runtime/` 和 `library/`。Windows 10/11 x64；程序尚未签名。
+发送 `source/dist/SoloTRPG-0.6.0-Windows-x64.zip` 给测试者。完整解压后双击 EXE，不需要安装 Node.js。**不能只发一个 EXE**，必须保留旁边的 `runtime/` 和 `library/`。Windows 10/11 x64；程序尚未签名。
 
 ```text
 SoloTRPG.exe                  很小的固定启动入口
@@ -12,17 +12,27 @@ runtime/                      Electron 和应用代码
 library/
   rules/                      结构化规则 JSON
   data/rules-index/           内置规则书和模组文字索引
-  data/modules/               用户导入模组的提取文本
+  data/modules/               用户导入模组的文本 JSON 与 PDF 原件
+  data/map-images/            PDF 页面及裁剪底图缓存
 source/                       仅开发机器需要，不发给测试者
 ```
 
 角色、AI 配置、聊天、战斗状态、地图 JSON 和外观设置在 `%APPDATA%/SoloTRPG/campaign/`。菜单“文件”可分别打开存档目录和资源库目录。旧 AppData 下的上传模组首次启动时迁移到同级 library；逐个比较文件内容相同后才删除旧副本，冲突会保留原件并提示。
 
-内置资源只含本项目现有的文字条目，不代表每个模组都含完整原书。导入 PDF 提取文字和页码，不提取原 PDF 地图插图；扫描件需要先做 OCR。模组文件上限 50 MB。
+内置资源只含本项目现有的文字条目，不代表每个模组都含完整原书。新上传 PDF 保留原件，同时提取文字和页码。扫描件可以制作原图地图；文字检索与 AI 研究需要先做 OCR。旧版已导入 PDF 需要补传同一个文件，补齐原件时不会重复增加条目。模组文件上限 50 MB。
+
+## 两种地图方式
+
+- **文字生成**：在 AI 旁选择模组，点击“确认并筹备首场景”，或在 AI 对话中描述所需场景。
+- **PDF 原图**：在地图工具栏点击“PDF 原图地图”，上传/选择 PDF，按 PDF 实际页码预览。拖动框选地图区域，核对行列数，再点“建立原图地图”。可选择“建立并让 AI 研究”，AI 查阅文字并保留这张底图，不会在筹备时放玩家。
+
+底图是原页渲染、裁剪的 PNG，不是 AI 重新绘画；可以显示/隐藏叠加网格。原图中的墙壁、门、暗道不会自动变成可计算地形，使用“标注地形”逐格校对后点击“确认地形标注完成”，才启用视线/掩体计算。默认每格 5 尺，需要按原图比例核对。AI 研究使用提取文字，尚不具备读图识别房间与墙壁的能力。
+
+原件与缓存均放在 EXE 同级 library，角色和地图坐标等小 JSON 仍在 AppData。地图 SVG 导出会嵌入底图，可独立打开；导出文件可从存档中的 data/images 取得。
 
 ## 更新与备份
 
-退出软件后，用新版包覆盖 `SoloTRPG.exe`、`runtime/` 和内置规则目录，保留自己的 `library/data/modules/`。AppData 存档不会被程序包覆盖。备份时同时备份 AppData 战役目录和 library 用户模组目录。软件仍会使用少量 AppData 缓存；该版不承诺 C 盘完全零占用。
+退出软件后，用新版包覆盖 `SoloTRPG.exe`、`runtime/` 和内置规则目录，保留自己的 `library/data/modules/` 和 `library/data/map-images/`。AppData 存档不会被程序包覆盖。备份时同时备份 AppData 战役目录和 整个 library 目录。软件仍会使用少量 AppData 缓存；该版不承诺 C 盘完全零占用。
 
 ## 模组与 AI
 

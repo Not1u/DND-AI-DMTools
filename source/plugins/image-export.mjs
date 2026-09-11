@@ -41,10 +41,12 @@ function buildSvg(map, opts) {
   parts.push('<text x="' + pad + '" y="' + (pad + 14) + '" fill="#e8e8ec" font-family="sans-serif" font-size="15" font-weight="700">' + esc(map.name || '战术地图') + '</text>')
   parts.push('<text x="' + (width - pad) + '" y="' + (pad + 14) + '" fill="#9aa0a6" font-family="sans-serif" font-size="11" text-anchor="end">每格 5 尺 · ' + w + '×' + h + ' 格</text>')
   const ox = pad, oy = pad + head
+  if(opts.backgroundData)parts.push('<image x="'+ox+'" y="'+oy+'" width="'+w*tile+'" height="'+h*tile+'" preserveAspectRatio="none" href="'+opts.backgroundData+'"/>')
   for (let y = 0; y < h; y++) {
     const row = String((map.terrain || [])[y] || '.').padEnd(w, '.')
     for (let x = 0; x < w; x++) {
       const k = TERRAIN[row[x]] || 'ground'
+      if(opts.backgroundData && row[x]==='.')continue
       parts.push('<rect x="' + (ox + x * tile) + '" y="' + (oy + y * tile) + '" width="' + tile + '" height="' + tile + '" fill="' + COLORS[k] + '"/>')
     }
   }
@@ -89,7 +91,9 @@ export const ops = {
       try { const live = await api.call('map.get', {}); if (live && live.ok) map = live } catch (e) { }
     }
     if (!map || !map.terrain) return { ok: false, error: '地图数据为空，先 map.set 建一张图' }
-    const built = buildSvg(map, a)
+    let backgroundData
+    if(map.background?.id){try{backgroundData='data:image/png;base64,'+(await api.readMapImage(map.background.id)).toString('base64')}catch{return {ok:false,error:'PDF 底图文件缺失，请恢复 library 资源后再导出。'}}}
+    const built = buildSvg(map, {...a,backgroundData})
     const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
     const rel = 'data/images/map-' + stamp + '.svg'
     const abs = path.join(api.repoRoot, rel)

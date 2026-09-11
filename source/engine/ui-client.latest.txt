@@ -1272,6 +1272,9 @@ function MapPanel(props) {
   const [fit, setFit] = React.useState(!!props.bare)
   const [maps, setMaps] = React.useState(null)
   const [nameDraft, setNameDraft] = React.useState(null)
+  const [pdfOpen,setPdfOpen]=React.useState(false)
+  const [paintTile,setPaintTile]=React.useState('#')
+  const [showGrid,setShowGrid]=React.useState(true)
   const [enemyQuery,setEnemyQuery]=React.useState('')
   const [enemyResult,setEnemyResult]=React.useState(null)
   const loadMaps = () => call('map.list', {}).then(r => { if (r && r.ok) setMaps(r) }).catch(() => { })
@@ -1325,6 +1328,7 @@ function MapPanel(props) {
     if (r && r.ok) { setLosRes(r); setMsg(r.summary) } else setMsg('视线判定失败：' + ((r && r.error) || ''))
   }
   const onCellClick = (c) => {
+    if(tool==='paint'){call('map.terrain.set',{cells:[{...c,t:paintTile}]}).then(r=>{if(r.ok)setMap(r);else setErr(r.error)}).catch(e=>setErr(e.message));return}
     if (tool === 'measure') {
       if (!meas.a || (meas.a && meas.b)) setMeas({ a: c, b: null })
       else setMeas({ a: meas.a, b: c })
@@ -1366,12 +1370,13 @@ function MapPanel(props) {
     for (let x = 0; x < map.w; x++) {
       const ch = row[x] || '.'
       const td = TERRAIN[ch] || TERRAIN['.']
-      cells.push(h('div', { key: x + '-' + y, className: 'dndp-cell g-' + td.k, style: cellVariation(x, y), onClick: () => onCellClick({ x, y }), title: cellName(x, y) + ' · ' + td.n + (td.solid ? '（不可通行）' : '') + (td.difficult ? '（困难地形）' : '') + (td.cover ? '（半掩体 AC+2）' : '') }))
+      cells.push(h('div', { key: x + '-' + y, className: 'dndp-cell g-' + td.k + (map.background ? ' pdf-cell' + (ch==='.'?' clear':' annotated') : ''), style: map.background ? undefined : cellVariation(x, y), onClick: () => onCellClick({ x, y }), title: cellName(x, y) + ' · ' + td.n + (td.solid ? '（不可通行）' : '') + (td.difficult ? '（困难地形）' : '') + (td.cover ? '（半掩体 AC+2）' : '') }))
     }
   }
   const m1 = meas.a, m2 = meas.b
   const md = (m1 && m2) ? cellDist(m1, m2) : null
-  const grid = h('div', { ref: gridRef, className: 'dndp-mapgrid', style: { gridTemplateColumns: 'repeat(' + map.w + ', var(--dndp-tile))', '--dndp-tile': tile + 'px', position: 'relative' } },
+  const grid = h('div', { ref: gridRef, className: 'dndp-mapgrid' + (map.background?' pdf-background':'') + (!showGrid?' grid-hidden':''), style: { gridTemplateColumns: 'repeat(' + map.w + ', var(--dndp-tile))', '--dndp-tile': tile + 'px', position: 'relative' } },
+    map.background?h('img',{className:'map-original',src:map.background.url,alt:map.background.source,draggable:false,onError:()=>setErr('PDF 底图缺失，请恢复 library 资源或重新建图。')}):null,
     cells,
     tokens.map(tk => {
       const size = (Number(tk.size) || 1)
@@ -1416,6 +1421,12 @@ function MapPanel(props) {
     if (r && r.ok) { setMap(r); loadMaps(); setMsg(r.summary || '已新建'); setNameDraft('新地图') } else setMsg('新建失败：' + ((r && r.error) || ''))
   }
   const tools = h('div', { className: 'dndp-maptools' },
+    pdfOpen && typeof window!=='undefined' && window.SoloPdfMap ? h(window.SoloPdfMap,{call,onClose:()=>setPdfOpen(false),onCreated:r=>{setMap(r);loadMaps();setMsg('PDF 地图已建立，请校对网格和墙壁。')}}):null,
+    h('button',{className:'dndp-btn tiny',onClick:()=>setPdfOpen(true)},'PDF 原图地图'),
+    map.background?h('button',{className:'dndp-btn tiny',onClick:()=>setShowGrid(!showGrid)},showGrid?'隐藏叠加网格':'显示叠加网格'):null,
+    map.background?h('button',{className:'dndp-btn tiny'+(tool==='paint'?' primary':''),onClick:()=>{setTool(tool==='paint'?'move':'paint');setSel(null)}},'标注地形'):null,
+    tool==='paint'?h('select',{className:'dndp-input',style:{width:140},value:paintTile,onChange:e=>setPaintTile(e.target.value)},[['#','墙壁'],['+','门'],['T','半掩体'],[',','困难地形/掩体'],['~','浅水'],['.','清除标注']].map(([v,t])=>h('option',{key:v,value:v},t))):null,
+    map.background?h('button',{className:'dndp-btn tiny',onClick:async()=>{const r=await call('map.background.confirm',{confirmed:!map.background.terrainReady});if(r.ok)setMap(r);setMsg(r.summary||r.error)}},map.background.terrainReady?'地形已确认':'确认地形标注完成'):null,
     h('input',{className:'dndp-input',style:{width:110},placeholder:'敌人名称',value:enemyQuery,onChange:e=>setEnemyQuery(e.target.value),'aria-label':'敌人检索'}),
     h('button',{className:'dndp-btn tiny',disabled:!enemyQuery.trim(),onClick:async()=>{const r=await call('mod.statblock',{query:enemyQuery});setEnemyResult(r.ok?r:null);setMsg(r.ok?r.summary:r.error)}},'检索简表'),
     enemyResult?h('button',{className:'dndp-btn tiny',disabled:!sel,onClick:async()=>{const r=await call('enemy.bind',{tokenId:sel,statblockId:enemyResult.id});setMsg(r.summary||r.error);load()}},'应用到选中敌人'):null,
@@ -1451,6 +1462,7 @@ function MapPanel(props) {
   if (props.bare) {
     return h('div', { className: 'dndp-mapfill' },
       tools,
+      map.background?h('div',{className:'dndp-note',style:{padding:'0 12px 6px'}},map.background.source+' · '+(map.background.terrainReady?'地形已校对':'仅原图底图，墙壁与掩体待标注')):null,
       h('div', { style: { flex: 1, minHeight: 0, padding: '0 10px 6px', display: 'flex' } }, h('div', { ref: fitRef, className: 'dndp-mapwrap', style: { flex: 1, minHeight: 0 } }, grid)),
       msg ? h('div', { className: 'dndp-note hl', style: { padding: '0 12px 6px' } }, msg) : null,
       err ? h('div', { className: 'dndp-err' }, err) : null,

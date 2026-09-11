@@ -22,7 +22,7 @@ export async function initializeLibrary(library, campaign) {
   const old=path.join(campaign,'data','modules'), target=path.join(library,'data','modules');
   if(path.resolve(old)===path.resolve(target))return library;
   let names=[];try{names=await fs.readdir(old)}catch(e){if(e.code!=='ENOENT')throw e}
-  for(const name of names.filter(n=>/^[a-f0-9]{64}\.json$/.test(n))){
+  for(const name of names.filter(n=>/^[a-f0-9]{64}\.(?:json|pdf)$/.test(n))){
     const original=path.join(old,name),dest=path.join(target,name),bytes=await fs.readFile(original);
     try{await fs.writeFile(dest,bytes,{flag:'wx'})}catch(e){if(e.code!=='EEXIST')throw e}
     const copied=await fs.readFile(dest);
