@@ -1,0 +1,240 @@
+{
+  "generatedAt": "2026-09-10T03:28:12.878Z",
+  "source": "E:/HarnessWorkspace/跑团/rules-src/dnd5e-chm",
+  "books": [
+    {
+      "book": "DNDBeyond",
+      "entries": 89,
+      "jsonl": "DNDBeyond.jsonl",
+      "bytes": 291690
+    },
+    {
+      "book": "template2",
+      "entries": 0,
+      "jsonl": "template2.jsonl",
+      "bytes": 0
+    },
+    {
+      "book": "万象无常书",
+      "entries": 192,
+      "jsonl": "万象无常书.jsonl",
+      "bytes": 694119
+    },
+    {
+      "book": "其他",
+      "entries": 239,
+      "jsonl": "其他.jsonl",
+      "bytes": 1013848
+    },
+    {
+      "book": "剑湾冒险者指南",
+      "entries": 60,
+      "jsonl": "剑湾冒险者指南.jsonl",
+      "bytes": 733789
+    },
+    {
+      "book": "印记城与外域",
+      "entries": 50,
+      "jsonl": "印记城与外域.jsonl",
+      "bytes": 324565
+    },
+    {
+      "book": "城主指南",
+      "entries": 185,
+      "jsonl": "城主指南.jsonl",
+      "bytes": 1337350
+    },
+    {
+      "book": "城主指南2024",
+      "entries": 304,
+      "jsonl": "城主指南2024.jsonl",
+      "bytes": 1288313
+    },
+    {
+      "book": "塔莎的万事坩埚",
+      "entries": 131,
+      "jsonl": "塔莎的万事坩埚.jsonl",
+      "bytes": 646691
+    },
+    {
+      "book": "塞洛斯之神话奥德赛",
+      "entries": 135,
+      "jsonl": "塞洛斯之神话奥德赛.jsonl",
+      "bytes": 837241
+    },
+    {
+      "book": "多元宇宙的怪物",
+      "entries": 315,
+      "jsonl": "多元宇宙的怪物.jsonl",
+      "bytes": 950969
+    },
+    {
+      "book": "巨人之荣耀",
+      "entries": 172,
+      "jsonl": "巨人之荣耀.jsonl",
+      "bytes": 585426
+    },
+    {
+      "book": "布布的星界怪兽展",
+      "entries": 43,
+      "jsonl": "布布的星界怪兽展.jsonl",
+      "bytes": 210426
+    },
+    {
+      "book": "怪物图鉴",
+      "entries": 343,
+      "jsonl": "怪物图鉴.jsonl",
+      "bytes": 1423083
+    },
+    {
+      "book": "怪物图鉴2025",
+      "entries": 599,
+      "jsonl": "怪物图鉴2025.jsonl",
+      "bytes": 1282180
+    },
+    {
+      "book": "拉尼卡公会长指南",
+      "entries": 124,
+      "jsonl": "拉尼卡公会长指南.jsonl",
+      "bytes": 798279
+    },
+    {
+      "book": "斯翠海文：混沌研习",
+      "entries": 69,
+      "jsonl": "斯翠海文：混沌研习.jsonl",
+      "bytes": 284230
+    },
+    {
+      "book": "星界冒险者指南",
+      "entries": 43,
+      "jsonl": "星界冒险者指南.jsonl",
+      "bytes": 135991
+    },
+    {
+      "book": "模组",
+      "entries": 624,
+      "jsonl": "模组.jsonl",
+      "bytes": 1898544
+    },
+    {
+      "book": "玩家手册",
+      "entries": 166,
+      "jsonl": "玩家手册.jsonl",
+      "bytes": 1379869
+    },
+    {
+      "book": "玩家手册2024",
+      "entries": 218,
+      "jsonl": "玩家手册2024.jsonl",
+      "bytes": 1172566
+    },
+    {
+      "book": "珊娜萨的万事指南",
+      "entries": 239,
+      "jsonl": "珊娜萨的万事指南.jsonl",
+      "bytes": 851810
+    },
+    {
+      "book": "瓦罗怪物指南",
+      "entries": 288,
+      "jsonl": "瓦罗怪物指南.jsonl",
+      "bytes": 940218
+    },
+    {
+      "book": "空白页模板",
+      "entries": 3,
+      "jsonl": "空白页模板.jsonl",
+      "bytes": 2264
+    },
+    {
+      "book": "第三方",
+      "entries": 627,
+      "jsonl": "第三方.jsonl",
+      "bytes": 3429450
+    },
+    {
+      "book": "艾伯伦寻路者指南",
+      "entries": 21,
+      "jsonl": "艾伯伦寻路者指南.jsonl",
+      "bytes": 115896
+    },
+    {
+      "book": "艾伯伦：从终末战争中崛起",
+      "entries": 186,
+      "jsonl": "艾伯伦：从终末战争中崛起.jsonl",
+      "bytes": 1234044
+    },
+    {
+      "book": "艾伯伦：奇械锻炉",
+      "entries": 127,
+      "jsonl": "艾伯伦：奇械锻炉.jsonl",
+      "bytes": 385455
+    },
+    {
+      "book": "艾奎兹玄有限责任公司",
+      "entries": 72,
+      "jsonl": "艾奎兹玄有限责任公司.jsonl",
+      "bytes": 480458
+    },
+    {
+      "book": "范·里希腾的鸦阁魔域指南",
+      "entries": 136,
+      "jsonl": "范·里希腾的鸦阁魔域指南.jsonl",
+      "bytes": 959370
+    },
+    {
+      "book": "荒洲探险家指南",
+      "entries": 246,
+      "jsonl": "荒洲探险家指南.jsonl",
+      "bytes": 1051666
+    },
+    {
+      "book": "莫提的位面游记",
+      "entries": 60,
+      "jsonl": "莫提的位面游记.jsonl",
+      "bytes": 202484
+    },
+    {
+      "book": "被遗忘的国度",
+      "entries": 209,
+      "jsonl": "被遗忘的国度.jsonl",
+      "bytes": 662726
+    },
+    {
+      "book": "贤者谏言2025",
+      "entries": 30,
+      "jsonl": "贤者谏言2025.jsonl",
+      "bytes": 72977
+    },
+    {
+      "book": "费资本的巨龙宝库",
+      "entries": 107,
+      "jsonl": "费资本的巨龙宝库.jsonl",
+      "bytes": 790983
+    },
+    {
+      "book": "速查",
+      "entries": 20,
+      "jsonl": "速查.jsonl",
+      "bytes": 469716
+    },
+    {
+      "book": "魔邓肯的众敌卷册",
+      "entries": 179,
+      "jsonl": "魔邓肯的众敌卷册.jsonl",
+      "bytes": 929819
+    },
+    {
+      "book": "鸦阁魔域：魔障深藏",
+      "entries": 90,
+      "jsonl": "鸦阁魔域：魔障深藏.jsonl",
+      "bytes": 254543
+    },
+    {
+      "book": "龙枪：龙后之影",
+      "entries": 62,
+      "jsonl": "龙枪：龙后之影.jsonl",
+      "bytes": 196622
+    }
+  ]
+}

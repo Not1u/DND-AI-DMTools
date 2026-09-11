@@ -1,0 +1,93 @@
+{
+  "schema": "dnd5e.subclasses.v2",
+  "note": "5e 子职业集（SRD + PHB 常见子职）。chooseLevel 为获得子职业的等级；features 为该子职等级特性；choices 为需要一并选择的选项（如龙裔龙种、大地结社地形）。",
+  "classes": {
+    "barbarian": { "chooseLevel": 3, "options": [
+      { "key": "berserker", "name": "狂战士道途", "features": [ { "level": 3, "name": "狂乱", "desc": "狂暴中每轮附赠动作追加一次近战攻击，结束后力竭一级" }, { "level": 6, "name": "无羁之怒", "desc": "狂暴中免疫魅惑与恐惧" }, { "level": 10, "name": "威吓姿态", "desc": "动作使一敌恐惧你（感知豁免）" }, { "level": 14, "name": "报复", "desc": "5 尺内被命中后反应反击" } ] },
+      { "key": "totem", "name": "图腾战士道途", "choices": { "key": "totem", "label": "图腾", "options": [ { "key": "bear", "name": "熊", "desc": "狂暴中除心灵外伤害抗性" }, { "key": "eagle", "name": "鹰", "desc": "狂暴中借机攻击对你劣势" }, { "key": "wolf", "name": "狼", "desc": "狂暴中盟友对邻近敌攻击有优势" } ] }, "features": [ { "level": 3, "name": "图腾精魂", "desc": "选择图腾并获得其狂暴增益" }, { "level": 6, "name": "图腾之兽", "desc": "获得与图腾相关的探索能力" }, { "level": 14, "name": "图腾同调", "desc": "获得图腾的强力形态能力" } ] }
+    ] },
+    "bard": { "chooseLevel": 3, "options": [
+      { "key": "lore", "name": "传说学院", "features": [ { "level": 3, "name": "额外熟练", "desc": "任选三项技能熟练" }, { "level": 3, "name": "恶语相向", "desc": "反应消耗激励骰降低敌人结果" }, { "level": 6, "name": "额外魔法秘密", "desc": "任选职业法术表再学 2 个法术" }, { "level": 14, "name": "无双技艺", "desc": "属性检定可耗激励骰加值" } ] },
+      { "key": "valor", "name": "勇气学院", "features": [ { "level": 3, "name": "战斗激励", "desc": "激励骰可用于武器伤害或提升 AC" }, { "level": 3, "name": "战斗熟练", "desc": "获得中甲、盾与军用武器熟练" }, { "level": 6, "name": "额外攻击", "desc": "攻击动作可攻击两次" }, { "level": 14, "name": "战斗魔法", "desc": "施法后可用附赠动作进行一次武器攻击" } ] }
+    ] },
+    "cleric": { "chooseLevel": 1, "options": [
+      { "key": "life", "name": "生命领域", "features": [ { "level": 1, "name": "领域法术/重甲熟练", "desc": "获得领域法术与重甲熟练" }, { "level": 1, "name": "生命门徒", "desc": "治疗法术额外恢复 2+环位" }, { "level": 2, "name": "引导神力：维系生命", "desc": "以 5×等级 治疗池分配治疗" }, { "level": 8, "name": "神圣打击", "desc": "近战命中额外 1d8 光耀" } ] },
+      { "key": "tempest", "name": "风暴领域", "features": [ { "level": 1, "name": "领域法术/重甲熟练", "desc": "获得雷鸣波等法术与重甲熟练" }, { "level": 1, "name": "风暴怒火", "desc": "反应对 5 尺内攻击者造成 2d8 闪电/雷鸣伤害" }, { "level": 2, "name": "引导神力：毁灭之怒", "desc": "雷鸣伤害取最大值" }, { "level": 6, "name": "雷霆打击", "desc": "命中可将目标推开 10 尺" } ] },
+      { "key": "trickery", "name": "诡术领域", "features": [ { "level": 1, "name": "祝福骗徒", "desc": "动作使一名盟友的隐匿检定优势" }, { "level": 2, "name": "引导神力：伪装", "desc": "随意改变自身外貌 1 小时" }, { "level": 6, "name": "诡术行者", "desc": "可用附赠动作传送至幻象位置" }, { "level": 8, "name": "神圣打击", "desc": "近战命中额外 1d8 毒素" } ] },
+      { "key": "knowledge", "name": "知识领域", "features": [ { "level": 1, "name": "知识祝福", "desc": "获得两项技能熟练与两种语言" }, { "level": 2, "name": "引导神力：洞悉过去", "desc": "读取物品或地点的历史" }, { "level": 6, "name": "读心", "desc": "可读取生物表层思维" }, { "level": 8, "name": "强力施法", "desc": "法术伤害加感知修正" } ] },
+      { "key": "light", "name": "光明领域", "features": [ { "level": 1, "name": "戏法·光焰", "desc": "获得火焰戏法与远距离驱光" }, { "level": 1, "name": "耀目闪光", "desc": "反应使 30 尺内攻击者目盲" }, { "level": 2, "name": "引导神力：黎明曙光", "desc": "驱散魔法黑暗并造成光耀伤害" }, { "level": 6, "name": "强化闪光", "desc": "闪光可造成伤害" } ] },
+      { "key": "nature", "name": "自然领域", "features": [ { "level": 1, "name": "自然侍从", "desc": "获得一个德鲁伊戏法与动物交谈" }, { "level": 1, "name": "自然学识", "desc": "获得一项德鲁伊技能熟练" }, { "level": 2, "name": "引导神力：魅惑动植物", "desc": "魅惑附近的野兽与植物" }, { "level": 6, "name": "抑制元素", "desc": "反应给予盟友元素伤害抗性" } ] },
+      { "key": "war", "name": "战争领域", "features": [ { "level": 1, "name": "额外熟练与战争祭司", "desc": "获得军用武器/重甲熟练，附赠动作攻击一次" }, { "level": 2, "name": "引导神力：导引打击", "desc": "攻击检定 +10" }, { "level": 6, "name": "战神祝福", "desc": "每轮一次以反应为盟友攻击加成" }, { "level": 8, "name": "神圣打击", "desc": "近战命中额外 1d8 同武器类型" } ] }
+    ] },
+    "druid": { "chooseLevel": 2, "options": [
+      { "key": "land", "name": "大地结社", "choices": { "key": "terrain", "label": "地形", "options": [ { "key": "arctic", "name": "北地" }, { "key": "coast", "name": "海岸" }, { "key": "desert", "name": "荒漠" }, { "key": "forest", "name": "森林" }, { "key": "grassland", "name": "草原" }, { "key": "mountain", "name": "山地" }, { "key": "swamp", "name": "沼泽" }, { "key": "underdark", "name": "幽暗地域" } ] }, "features": [ { "level": 2, "name": "额外戏法/自然恢复", "desc": "额外戏法；短休恢复部分法术位" }, { "level": 3, "name": "结社法术", "desc": "依地形获得常备法术" }, { "level": 6, "name": "大地之步", "desc": "困难地形不减速" }, { "level": 10, "name": "自然庇护", "desc": "毒素疾病免疫，元素/妖精魅惑免疫" } ] },
+      { "key": "moon", "name": "月亮结社", "features": [ { "level": 2, "name": "战斗变形", "desc": "附赠动作变形，挑战等级可用更高形态" }, { "level": 2, "name": "结社形态", "desc": "可变形为挑战等级 1 的野兽" }, { "level": 6, "name": "元素形态", "desc": "可变形为元素生物" }, { "level": 10, "name": "元素形态大师", "desc": "元素形态更持久强力" } ] }
+    ] },
+    "fighter": { "chooseLevel": 3, "options": [
+      { "key": "champion", "name": "勇士范型", "features": [ { "level": 3, "name": "强化重击", "desc": "19-20 即重击" }, { "level": 7, "name": "卓越运动员", "desc": "力/敏/体检定半熟练，跳跃更远" }, { "level": 10, "name": "额外战斗风格", "desc": "再选一种战斗风格" }, { "level": 15, "name": "卓越重击", "desc": "18-20 即重击" }, { "level": 18, "name": "幸存者", "desc": "低血时每轮回血，死亡豁免可比" } ] },
+      { "key": "battlemaster", "name": "战斗大师范型", "features": [ { "level": 3, "name": "战斗卓越", "desc": "获得优越骰 d8 与战技选择" }, { "level": 3, "name": "学生之刃", "desc": "获得一项工匠工具熟练" }, { "level": 7, "name": "战场知识", "desc": "观察生物可了解其战力" }, { "level": 10, "name": "强化战技", "desc": "优越骰提升为 d10" }, { "level": 15, "name": "精湛战技", "desc": "优越骰提升为 d12" } ] },
+      { "key": "eldritchknight", "name": "奥法骑士范型", "features": [ { "level": 3, "name": "施法", "desc": "获得法师法术（智力施法）" }, { "level": 3, "name": "武器联结", "desc": "可召唤武器并绑定" }, { "level": 7, "name": "战法合一", "desc": "施法后可附赠攻击" }, { "level": 10, "name": "魔能打击", "desc": "命中使目标下个豁免劣势" }, { "level": 15, "name": "奥术冲锋", "desc": "传送并攻击" } ] }
+    ] },
+    "monk": { "chooseLevel": 3, "options": [
+      { "key": "openhand", "name": "开手道", "features": [ { "level": 3, "name": "开手技", "desc": "连击命中可倒地/推离/禁反应" }, { "level": 6, "name": "完整体魄", "desc": "动作回 3×等级 生命" }, { "level": 11, "name": "心如止水", "desc": "长休后获得庇护术" }, { "level": 17, "name": "惊魂掌", "desc": "震击目标生命或造成 10d10" } ] },
+      { "key": "shadow", "name": "暗影道", "features": [ { "level": 3, "name": "暗影技艺", "desc": "用气施展次级幻影等法术" }, { "level": 6, "name": "暗影步", "desc": "附赠动作在暗影间传送 60 尺" }, { "level": 11, "name": "暗影斗篷", "desc": "隐身（气消耗）" }, { "level": 17, "name": "暗影之舞", "desc": "可借暗影发动攻击" } ] },
+      { "key": "fourelements", "name": "四元素道", "features": [ { "level": 3, "name": "元素门徒", "desc": "以气施展元素法术" }, { "level": 6, "name": "元素掌控", "desc": "更多元素法术选项" }, { "level": 11, "name": "元素掌握", "desc": "强效元素法术" }, { "level": 17, "name": "元素之终", "desc": "终极元素形态" } ] }
+    ] },
+    "paladin": { "chooseLevel": 3, "options": [
+      { "key": "devotion", "name": "奉献誓言", "features": [ { "level": 3, "name": "誓言法术/引导神力", "desc": "神圣武器与驱散邪祟" }, { "level": 7, "name": "奉献光环", "desc": "你与 10 尺盟友免疫魅惑" }, { "level": 15, "name": "纯净灵魂", "desc": "始终处于保护善恶下" }, { "level": 20, "name": "神圣光环", "desc": "光明领域并对邪魔/不死有利" } ] },
+      { "key": "ancients", "name": "古贤誓言", "features": [ { "level": 3, "name": "引导神力：自然之怒", "desc": "以藤蔓束缚敌人" }, { "level": 7, "name": "守护光环", "desc": "盟友获得法术伤害抗性" }, { "level": 15, "name": "不灭哨兵", "desc": "生命降至 0 可改为 1 点" }, { "level": 20, "name": "远古斗士", "desc": "每轮回复生命并施法迅捷" } ] },
+      { "key": "vengeance", "name": "复仇誓言", "features": [ { "level": 3, "name": "引导神力：仇敌誓约", "desc": "对目标攻击优势" }, { "level": 7, "name": "无惧光环", "desc": "你与盟友免疫恐惧" }, { "level": 15, "name": "复仇之魂", "desc": "反应对攻击者反击" }, { "level": 20, "name": "复仇化身", "desc": "获得飞行与威吓光环" } ] }
+    ] },
+    "ranger": { "chooseLevel": 3, "options": [
+      { "key": "hunter", "name": "猎人范型", "choices": { "key": "hunterPick", "label": "3 级猎杀之选", "options": [ { "key": "colossus", "name": "巨兽杀手", "desc": "每轮对受伤目标额外 1d8" }, { "key": "giant", "name": "巨人杀手", "desc": "被大生物攻击后可反击" }, { "key": "horde", "name": "群袭破灭", "desc": "攻击可波及相邻另一个目标" } ] }, "features": [ { "level": 3, "name": "猎杀之选", "desc": "选择一种猎杀方式" }, { "level": 7, "name": "防御战术", "desc": "选择一种防御能力" }, { "level": 11, "name": "多重攻击", "desc": "旋风攻击或齐射" }, { "level": 15, "name": "猎人防御", "desc": "闪避/反射闪避/直觉闪避" } ] },
+      { "key": "beastmaster", "name": "驯兽师范型", "features": [ { "level": 3, "name": "游侠同伴", "desc": "获得一只野兽同伴并共同行动" }, { "level": 7, "name": "卓越训练", "desc": "同伴攻击视为魔法并有更多指令" }, { "level": 11, "name": "兽群狂怒", "desc": "同伴可进行两次攻击" }, { "level": 15, "name": "共享法术", "desc": "对同伴施展的法术可共享" } ] }
+    ] },
+    "rogue": { "chooseLevel": 3, "options": [
+      { "key": "thief", "name": "盗贼范型", "features": [ { "level": 3, "name": "快手/绳索高手", "desc": "附赠动作使用物品；攀爬不减速" }, { "level": 9, "name": "极上潜行", "desc": "半速移动时隐匿有优势" }, { "level": 13, "name": "使用魔法物品", "desc": "忽略魔法物品使用限制" }, { "level": 17, "name": "盗贼反应", "desc": "首轮获得额外回合" } ] },
+      { "key": "assassin", "name": "刺客范型", "features": [ { "level": 3, "name": "额外熟练/突袭", "desc": "获得易容与伪造工具；对未行动目标攻击优势且必定重击" }, { "level": 9, "name": "渗透专家", "desc": "可伪造身份并快速易容" }, { "level": 13, "name": "致命一击", "desc": "命中失败可改为命中" }, { "level": 17, "name": "死亡打击", "desc": "突袭命中目标体质豁免失败则伤害翻倍" } ] },
+      { "key": "arcanetrickster", "name": "奥法盗贼范型", "features": [ { "level": 3, "name": "施法/法师之手", "desc": "获得法师法术（智力）与幻手法师之手" }, { "level": 9, "name": "魔法诡计", "desc": "减弱目标对幻术的抵抗" }, { "level": 13, "name": "魔法窃贼", "desc": "可窃取他人法术" }, { "level": 17, "name": "法术窃取", "desc": "窃取法术并立即使用" } ] }
+    ] },
+    "sorcerer": { "chooseLevel": 1, "options": [
+      { "key": "draconic", "name": "龙裔血脉", "choices": { "key": "dragon", "label": "龙种", "options": [ { "key": "black", "name": "黑龙（强酸）" }, { "key": "blue", "name": "蓝龙（闪电）" }, { "key": "brass", "name": "黄铜龙（火焰）" }, { "key": "bronze", "name": "青铜龙（闪电）" }, { "key": "copper", "name": "赤铜龙（强酸）" }, { "key": "gold", "name": "金龙（火焰）" }, { "key": "green", "name": "绿龙（毒素）" }, { "key": "red", "name": "红龙（火焰）" }, { "key": "silver", "name": "银龙（寒冷）" }, { "key": "white", "name": "白龙（寒冷）" } ] }, "features": [ { "level": 1, "name": "龙族先祖/龙鳞韧性", "desc": "无甲 AC=13+敏捷；生命上限 +1/级" }, { "level": 6, "name": "元素亲和", "desc": "龙种元素伤害加魅力修正" }, { "level": 14, "name": "龙翼", "desc": "附赠动作获得飞行" }, { "level": 18, "name": "龙威", "desc": "花费术法点使敌人恐惧或魅惑" } ] },
+      { "key": "wildmagic", "name": "狂野魔法", "features": [ { "level": 1, "name": "狂野魔法浪涌", "desc": "施法后 DM 可掷狂野浪涌表" }, { "level": 1, "name": "命运的倾斜", "desc": "每长休可用一次优势，DM 可反制" }, { "level": 6, "name": "混沌之潮", "desc": "可重掷一次掷骰以触发浪涌" }, { "level": 14, "name": "乱中有序", "desc": "浪涌结果可自选上下项" } ] }
+    ] },
+    "warlock": { "chooseLevel": 1, "options": [
+      { "key": "fiend", "name": "恶魔宗主", "features": [ { "level": 1, "name": "扩展法术/恶魔祝福", "desc": "获得宗主法术；击杀敌人得临时生命" }, { "level": 6, "name": "恶魔侥幸", "desc": "长休一次：检定/豁免改 1d10+魅力" }, { "level": 10, "name": "魔性抗性", "desc": "长休后选择一种伤害抗性" }, { "level": 14, "name": "炼狱放逐", "desc": "命中后放逐目标受 10d10" } ] },
+      { "key": "archfey", "name": "妖精宗主", "features": [ { "level": 1, "name": "扩展法术/妖精存在", "desc": "获得宗主法术；可魅惑或恐惧 10 尺内生物" }, { "level": 6, "name": "迷雾遁走", "desc": "受击后反应隐形并传送 60 尺" }, { "level": 10, "name": "妖精防御", "desc": "免疫魅惑并有心灵伤害抗性" }, { "level": 14, "name": "黑暗妄想", "desc": "使目标陷入魅惑/恐惧 1 分钟" } ] },
+      { "key": "greatoldone", "name": "旧日支配者", "features": [ { "level": 1, "name": "扩展法术/觉醒心灵", "desc": "可与 30 尺内生物心灵沟通" }, { "level": 6, "name": "心灵守护", "desc": "获得心灵伤害抗性并可反弹" }, { "level": 10, "name": "思想之盾", "desc": "免疫心灵读取并获得伤害抗性" }, { "level": 14, "name": "创造奴仆", "desc": "使一个人形生物魅惑你 1 分钟" } ] }
+    ] },
+    "wizard": { "chooseLevel": 2, "options": [
+      { "key": "evocation", "name": "塑能学派", "features": [ { "level": 2, "name": "塑能专精/塑形", "desc": "抄写塑能法术减半；保护盟友免受塑能伤害" }, { "level": 6, "name": "强力戏法", "desc": "戏法失败也造成半数伤害" }, { "level": 10, "name": "强化塑能", "desc": "塑能伤害加智力修正" }, { "level": 14, "name": "超载", "desc": "取最大伤害后受暗蚀伤害" } ] },
+      { "key": "abjuration", "name": "防护学派", "features": [ { "level": 2, "name": "防护专精/奥秘守护", "desc": "抄写防护法术减半；获得可吸收伤害的护盾" }, { "level": 6, "name": "投影守护", "desc": "护盾可保护他人" }, { "level": 10, "name": "强化防护", "desc": "施放防护法术时护盾增强" }, { "level": 14, "name": "法术抗性", "desc": "对法术豁免有优势并抵抗法术伤害" } ] },
+      { "key": "divination", "name": "预言学派", "features": [ { "level": 2, "name": "预言专精/预兆", "desc": "获得两个可替换掷骰的预兆骰" }, { "level": 6, "name": "专家预言", "desc": "预言法术消耗减半" }, { "level": 10, "name": "第三只眼", "desc": "可看隐形、透视或读心" }, { "level": 14, "name": "更优预兆", "desc": "预兆骰增至三个" } ] },
+      { "key": "enchantment", "name": "惑控学派", "features": [ { "level": 2, "name": "惑控专精/催眠凝视", "desc": "动作使生物魅惑，且可改变记忆" }, { "level": 6, "name": "本能魅惑", "desc": "被魅惑生物视你为友" }, { "level": 10, "name": "心智分裂", "desc": "免疫魅惑并可反射魅惑" }, { "level": 14, "name": "改变记忆", "desc": "抹除或改写目标记忆" } ] },
+      { "key": "illusion", "name": "幻术学派", "features": [ { "level": 2, "name": "幻术专精/次级幻影", "desc": "抄写减半；可造声音与物象" }, { "level": 6, "name": "可塑幻象", "desc": "用幻术改变幻象" }, { "level": 10, "name": "幻象实体化", "desc": "幻象可变为半真实" }, { "level": 14, "name": "真实幻象", "desc": "幻象可变为真实" } ] },
+      { "key": "necromancy", "name": "死灵学派", "features": [ { "level": 2, "name": "死灵专精/无情收割", "desc": "击杀生物可回复生命" }, { "level": 6, "name": "亡灵奴仆", "desc": "复活能力更强并召唤更多亡灵" }, { "level": 10, "name": "不死坚韧", "desc": "获得大量生命上限与亡灵抗性" }, { "level": 14, "name": "命令亡灵", "desc": "可夺取他人亡灵的控制权" } ] },
+      { "key": "transmutation", "name": "变化学派", "features": [ { "level": 2, "name": "变化专精/次级炼金", "desc": "抄写减半；可转化物质" }, { "level": 6, "name": "变化石", "desc": "制造赋予能力的魔法石" }, { "level": 10, "name": "变形者", "desc": "变形能力增强" }, { "level": 14, "name": "大师变形", "desc": "可变形为任意生物" } ] }
+    ] }
+  },
+  "extraChoices": {
+    "warlock": {
+      "pactBoonLevel": 3,
+      "pactBoons": [
+        { "key": "chain", "name": "链之契", "desc": "获得可变化形态的魔宠" },
+        { "key": "blade", "name": "刃之契", "desc": "召唤契约武器，熟练且可作施法器" },
+        { "key": "tome", "name": "书之契", "desc": "获得影之书：3 戏法 + 2 个 1 环仪式法术" }
+      ],
+      "invocationLevels": [2, 5, 7, 9, 12, 15, 18],
+      "invocationCount": { "2": 2, "5": 3, "7": 4, "9": 5, "12": 6, "15": 7, "18": 8 },
+      "invocations": [
+        { "key": "agonizingBlast", "name": "痛苦魔爆", "desc": "魔能爆每束加魅力修正" },
+        { "key": "armorOfShadows", "name": "影之护甲", "desc": "随意施展法师护甲" },
+        { "key": "beastSpeech", "name": "野兽言语", "desc": "随意施展动物交谈" },
+        { "key": "devilsSight", "name": "恶魔视觉", "desc": "黑暗中视物 120 尺" },
+        { "key": "eldritchSight", "name": "魔能视觉", "desc": "随意施展侦测魔法" },
+        { "key": "fiendishVigor", "name": "魔性活力", "desc": "随意施展虚假生命" },
+        { "key": "maskOfManyFaces", "name": "千面假面", "desc": "随意施展易容术" },
+        { "key": "mistyVisions", "name": "迷雾幻景", "desc": "随意施展无声幻影" },
+        { "key": "repellingBlast", "name": "击退魔爆", "desc": "魔能爆命中推开 10 尺" },
+        { "key": "thiefOfFiveFates", "name": "命运窃贼", "desc": "以法术位施展灾祸术一次" }
+      ]
+    }
+  }
+}

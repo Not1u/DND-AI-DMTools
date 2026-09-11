@@ -1,0 +1,2492 @@
+// v21 client — 战术地图（5尺格 / 地形 / 可拖动单位 / 测距 / 速度范围）+ 战斗记录 + 骰子
+const h = React.createElement
+// —— 统一传输层：优先走同源 HTTP 桥（profile 常驻插件 /dnd5e/api，可直接落盘），
+//    不可用时回退动态插件的 host.call。
+const __rawCall = (typeof host !== 'undefined' && host && typeof host.call === 'function') ? host.call.bind(host) : null
+const __bridgeCall = async (name, args) => {
+  try {
+    if (typeof fetch !== 'function') return null
+    const res = await fetch('/dnd5e/api', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ op: name, args: args === undefined ? null : args }),
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    if (!data || data.ok !== true) return null
+    return data.value
+  } catch (e) { return null }
+}
+const call = async (name, args) => {
+  const viaBridge = await __bridgeCall(name, args)
+  if (viaBridge !== null) return viaBridge
+  if (__rawCall) return __rawCall(name, args)
+  throw new Error('[dnd-5ednd] no transport for ' + name)
+}
+const css = `
+/* ===== 主题层：自己定义全部设计 token（独立运行时也可用），作用域只在自己的容器内 ===== */
+.dndp-ws,.dndp-root,.dndp-overlay{
+  --dsw-alias-bg-base:#14161a; --dsw-alias-bg-layer-1:#1a1d22; --dsw-alias-bg-layer-2:#21252b;
+  --dsw-alias-bg-overlay:#282d35; --dsw-alias-border-l1:#2c323a; --dsw-alias-border-l2:#3b434e;
+  --dsw-alias-label-primary:#e8ecf1; --dsw-alias-label-secondary:#9aa4b0; --dsw-alias-label-tertiary:#6f7883;
+  --dsw-alias-brand-primary:#5aa0ff; --dsw-alias-state-error-primary:#e0614f;
+  --dndp-on-accent:#0d1015;
+  --dndp-line:#39434f; --dndp-line-soft:#272e37;
+  --dndp-line-accent:color-mix(in srgb, var(--dsw-alias-brand-primary) 42%, #333c47);
+  --dndp-glow:color-mix(in srgb, var(--dsw-alias-brand-primary) 22%, transparent);
+  --dndp-surface-tint:color-mix(in srgb, var(--dsw-alias-brand-primary) 7%, var(--dsw-alias-bg-layer-2));
+  --dndp-radius:10px;
+  --dndp-t-ground:#3a3d42; --dndp-t-wall:#1b1e22; --dndp-t-water:#2a4a6b; --dndp-t-brush:#2d4a30;
+  --dndp-t-high:#5a4a32; --dndp-t-cave:#0e0f13; --dndp-t-door:#6b5330; --dndp-t-plank:#4a3a22;
+  --dndp-t-tree:#204021; --dndp-t-fire:#6b4a20; --dndp-t-rubble:#403b34; --dndp-t-void:#07080a;
+}
+.dndp-theme-azure{--dsw-alias-brand-primary:#5aa0ff}
+.dndp-theme-emerald{--dsw-alias-brand-primary:#4fbf8b}
+.dndp-theme-amber{--dsw-alias-brand-primary:#e0a64a}
+.dndp-theme-violet{--dsw-alias-brand-primary:#a98bff}
+.dndp-theme-rose{--dsw-alias-brand-primary:#e07a98}
+.dndp-theme-slate{--dsw-alias-brand-primary:#93a7bd}
+.dndp-light{
+  --dsw-alias-bg-base:#f2f5f9; --dsw-alias-bg-layer-1:#ffffff; --dsw-alias-bg-layer-2:#eaeff5;
+  --dsw-alias-bg-overlay:#ffffff; --dsw-alias-border-l1:#d5dde7; --dsw-alias-border-l2:#bcc7d5;
+  --dsw-alias-label-primary:#1b2027; --dsw-alias-label-secondary:#5b6675; --dsw-alias-label-tertiary:#8b95a3;
+  --dsw-alias-state-error-primary:#c94a38;
+  --dndp-line:#b9c6d6; --dndp-line-soft:#dde4ec;
+  --dndp-line-accent:color-mix(in srgb, var(--dsw-alias-brand-primary) 55%, #a9b7c7);
+  --dndp-surface-tint:color-mix(in srgb, var(--dsw-alias-brand-primary) 10%, #ffffff);
+  --dndp-t-ground:#d9dee5; --dndp-t-wall:#8d97a3; --dndp-t-water:#a8cbe8; --dndp-t-brush:#bcd9b8;
+  --dndp-t-high:#e0cfa8; --dndp-t-cave:#3c4450; --dndp-t-door:#dcc08a; --dndp-t-plank:#cbb08a;
+  --dndp-t-tree:#9ec79c; --dndp-t-fire:#e8b47a; --dndp-t-rubble:#cbc4b8; --dndp-t-void:#e6eaf0;
+}
+.dndp-root{display:flex;flex-direction:column;height:100%;box-sizing:border-box;color:var(--dsw-alias-label-primary);font-size:13px;line-height:1.55}
+.dndp-header{display:flex;align-items:center;gap:10px;padding:10px 14px;font-weight:600;font-size:13px;border-bottom:1px solid var(--dsw-alias-border-l1);flex:none}
+.dndp-ic{width:26px;height:26px;border-radius:7px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l1);display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+.dndp-sp{flex:1}
+.dndp-btn{background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);color:var(--dsw-alias-label-primary);border-radius:7px;padding:4px 12px;font-size:13px;cursor:pointer}
+.dndp-btn:hover{background:var(--dsw-alias-bg-overlay)}
+.dndp-btn.primary{background:var(--dsw-alias-brand-primary);border-color:transparent;color:var(--dndp-on-accent)}
+.dndp-btn:disabled{opacity:.5;cursor:default}
+.dndp-scroll{overflow:auto;flex:1;padding-bottom:18px}
+.dndp-row{display:flex;align-items:center;gap:11px;padding:9px 14px;border-bottom:1px solid var(--dsw-alias-border-l1);cursor:pointer}
+.dndp-row:hover{background:var(--dsw-alias-bg-layer-2)}
+.dndp-ava{width:30px;height:30px;border-radius:50%;background:var(--dsw-alias-brand-primary);color:var(--dndp-on-accent);display:flex;align-items:center;justify-content:center;font-weight:700;flex:none;font-size:13px}
+.dndp-main{flex:1;min-width:0}
+.dndp-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dndp-sub{color:var(--dsw-alias-label-secondary);font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dndp-chip{font-size:12px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l1);border-radius:11px;padding:2px 9px;color:var(--dsw-alias-label-secondary);flex:none}
+.dndp-detail{padding:14px 14px 24px}
+.dndp-title{font-weight:700;font-size:16px;margin:2px 0 4px}
+.dndp-subtitle{color:var(--dsw-alias-label-secondary);font-size:13px;margin-bottom:14px}
+.dndp-label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--dsw-alias-label-secondary);margin:16px 0 7px}
+.dndp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dndp-stat{background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l1);border-radius:10px;padding:9px 6px;text-align:center}
+.dndp-stat b{display:block;font-size:17px;font-weight:700}
+.dndp-stat span{font-size:11px;color:var(--dsw-alias-label-secondary);letter-spacing:.04em}
+.dndp-attr{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.dndp-ab{background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l1);border-radius:9px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;font-size:14px}
+.dndp-ab .ab{color:var(--dsw-alias-label-secondary);font-size:11px}
+.dndp-ab .val{font-weight:700}
+.dndp-tags{display:flex;flex-wrap:wrap;gap:6px}
+.dndp-tag{font-size:12px;background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l1);border-radius:7px;padding:3px 9px}
+.dndp-tag.prof{border-color:var(--dsw-alias-brand-primary)}
+.dndp-slotrow{display:flex;align-items:center;gap:7px;margin:5px 0}
+.dndp-slotlv{font-size:12px;color:var(--dsw-alias-label-secondary);min-width:36px}
+.dndp-pip{width:11px;height:11px;transform:rotate(45deg);background:var(--dsw-alias-brand-primary);border:1px solid var(--dsw-alias-border-l2);border-radius:2px;flex:none}
+.dndp-slotnum{font-size:12px;color:var(--dsw-alias-label-secondary)}
+.dndp-xp{min-width:150px;text-align:right}
+.dndp-xplv{font-weight:700;font-size:15px}
+.dndp-xpbar{height:6px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l1);border-radius:4px;overflow:hidden;margin:4px 0 2px}
+.dndp-xpfill{height:100%;background:var(--dsw-alias-brand-primary)}
+.dndp-xptxt{font-size:11px;color:var(--dsw-alias-label-secondary)}
+.dndp-sect{border:1px solid var(--dsw-alias-border-l1);border-radius:9px;margin-bottom:9px;overflow:hidden}
+.dndp-sec{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;background:var(--dsw-alias-bg-layer-1);cursor:pointer;font-weight:600;border:0;color:var(--dsw-alias-label-primary);text-align:left}
+.dndp-chev{transition:transform .12s;display:inline-block;font-size:11px;color:var(--dsw-alias-label-secondary)}
+.dndp-chev.open{transform:rotate(90deg)}
+.dndp-body{border-top:1px solid var(--dsw-alias-border-l1);padding:9px 12px}
+.dndp-item{display:flex;align-items:center;gap:8px;padding:5px 2px;border-bottom:1px solid var(--dsw-alias-border-l1)}
+.dndp-item:last-child{border-bottom:0}
+.dndp-field{margin-bottom:10px}
+.dndp-field label{display:block;font-size:12px;color:var(--dsw-alias-label-secondary);margin-bottom:4px}
+.dndp-input{width:100%;box-sizing:border-box;background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l2);color:var(--dsw-alias-label-primary);border-radius:7px;padding:6px 9px;font-size:13px}
+.dndp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.dndp-opt{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1);border-radius:8px;padding:7px 9px;cursor:pointer;text-align:left;font-size:12px;color:var(--dsw-alias-label-primary);width:100%;box-sizing:border-box}
+.dndp-opt.sel{border-color:var(--dsw-alias-brand-primary);box-shadow:0 0 0 1px var(--dsw-alias-brand-primary)}
+.dndp-opt small{display:block;color:var(--dsw-alias-label-secondary);margin-top:2px}
+.dndp-opt:disabled{opacity:.4;cursor:default}
+.dndp-pbbar{display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l1);border-radius:9px;margin-bottom:12px}
+.dndp-pbrow{display:flex;align-items:center;gap:8px;background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l1);border-radius:9px;padding:6px 9px;margin-bottom:7px}
+.dndp-pbrow .grow{flex:1}
+.dndp-ico{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);border-radius:6px;width:24px;height:24px;cursor:pointer;font-size:14px}
+.dndp-ico:disabled{opacity:.4}
+.dndp-note{font-size:12px;color:var(--dsw-alias-label-secondary);padding:4px 2px}
+.dndp-note.hl{color:var(--dsw-alias-brand-primary)}
+.dndp-steps{display:flex;gap:4px;padding:8px 12px 0}
+.dndp-stepdot{flex:1;height:3px;border-radius:2px;background:var(--dsw-alias-border-l2)}
+.dndp-stepdot.on{background:var(--dsw-alias-brand-primary)}
+.dndp-empty{color:var(--dsw-alias-label-secondary);padding:30px 14px;text-align:center;font-size:13px}
+.dndp-err{color:var(--dsw-alias-state-error-primary);padding:12px 14px;white-space:pre-wrap}
+.dndp-panel{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1);border-radius:10px;padding:10px 12px;margin-top:10px}
+.dndp-cardwrap{display:block}
+.dndp-tipf{position:fixed;z-index:99999;width:340px;max-width:86vw;background:var(--dsw-alias-bg-overlay);border:1px solid var(--dsw-alias-border-l2);border-radius:9px;padding:9px 11px;font-size:12px;line-height:1.55;color:var(--dsw-alias-label-primary);box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:none;white-space:normal;font-weight:400}
+.dndp-tipf .tp-title{font-weight:700;font-size:13px;margin-bottom:5px}
+.dndp-tipf .tp-item{margin-bottom:5px}
+.dndp-tipf .tp-item b{font-weight:600}
+.dndp-tipf .tp-item .tp-desc{color:var(--dsw-alias-label-secondary)}
+.dndp-hl{background:var(--dsw-alias-brand-primary);color:var(--dndp-on-accent);border-radius:3px;padding:0 2px;font-weight:600}
+.dndp-dicebox{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1);border-radius:10px;padding:8px 10px;margin:10px 12px}
+.dndp-logbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.dndp-logbar:last-child{margin-bottom:0}
+.dndp-advgrp{display:flex;gap:4px}
+.dndp-btn.tiny{padding:2px 9px;font-size:12px;border-radius:6px}
+.dndp-chips{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 2px}
+.dndp-logrow{display:flex;gap:9px;padding:7px 12px;border-bottom:1px solid var(--dsw-alias-border-l1);align-items:flex-start}
+.dndp-logrow.r{background:var(--dsw-alias-bg-layer-2)}
+.dndp-logk{flex:none;min-width:40px;text-align:center;font-size:11px;padding:1px 6px;border-radius:6px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l1);margin-top:1px;color:var(--dsw-alias-label-secondary)}
+.dndp-logk.k-atk{color:#c98a1a;border-color:#c98a1a66}
+.dndp-logk.k-dmg{color:#d3564b;border-color:#d3564b66}
+.dndp-logk.k-heal{color:#3f9e63;border-color:#3f9e6366}
+.dndp-logk.k-narr{color:var(--dsw-alias-brand-primary);border-color:var(--dsw-alias-brand-primary)}
+.dndp-logk.k-turn{color:#8a63d2;border-color:#8a63d266}
+.dndp-logk.k-move{color:#2f8f8f;border-color:#2f8f8f66}
+.dndp-logmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.dndp-logline{display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}
+.dndp-logr{font-size:11px;color:var(--dsw-alias-label-secondary);border:1px solid var(--dsw-alias-border-l1);border-radius:5px;padding:0 5px}
+.dndp-loga{font-weight:600}
+.dndp-logt{word-break:break-word}
+.dndp-logd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--dsw-alias-label-secondary);background:var(--dsw-alias-bg-layer-2);border-radius:6px;padding:1px 6px;display:inline-block;word-break:break-all}
+.dndp-time{flex:none;font-size:11px;color:var(--dsw-alias-label-secondary);margin-top:2px}
+.dndp-mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.dndp-filters{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px 2px}
+.dndp-mapwrap{position:relative;overflow:auto;border:1px solid var(--dsw-alias-border-l2);border-radius:10px;background:var(--dsw-alias-bg-layer-1)}
+.dndp-mapgrid{display:grid;position:relative;width:max-content}
+.dndp-cell{width:var(--dndp-tile);height:var(--dndp-tile);box-sizing:border-box;border-right:1px solid rgba(128,128,128,.18);border-bottom:1px solid rgba(128,128,128,.18);position:relative;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(160,160,160,.55);cursor:crosshair}
+.dndp-cell.g-floor,
+.dndp-legend .sw.g-floor{background:radial-gradient(circle at 32% 30%, rgba(255,255,255,.05), transparent 58%),repeating-linear-gradient(118deg, rgba(0,0,0,.11) 0 1px, transparent 1px 8px),linear-gradient(158deg,#45494f,#3a3e45)}
+.dndp-cell.g-grass,
+.dndp-legend .sw.g-grass{background:repeating-linear-gradient(72deg, rgba(120,200,120,.16) 0 1px, transparent 1px 5px),repeating-linear-gradient(-64deg, rgba(60,140,70,.18) 0 1px, transparent 1px 6px),radial-gradient(circle at 40% 70%, rgba(90,170,90,.22), transparent 60%),linear-gradient(160deg,#3c5a37,#2f4a2d)}
+.dndp-cell.g-dirt,
+.dndp-legend .sw.g-dirt{background:radial-gradient(circle at 60% 40%, rgba(190,160,110,.16), transparent 55%),repeating-radial-gradient(circle at 20% 80%, rgba(0,0,0,.10) 0 2px, transparent 2px 7px),linear-gradient(150deg,#5b4b36,#4a3d2c)}
+.dndp-cell.g-pave,
+.dndp-legend .sw.g-pave{background:repeating-linear-gradient(0deg, rgba(0,0,0,.30) 0 1px, transparent 1px 24px),repeating-linear-gradient(90deg, rgba(0,0,0,.30) 0 1px, transparent 1px 24px),radial-gradient(circle at 30% 30%, rgba(255,255,255,.05), transparent 60%),linear-gradient(160deg,#565c63,#454b52)}
+.dndp-cell.g-wood,
+.dndp-legend .sw.g-wood{background:repeating-linear-gradient(90deg, rgba(0,0,0,.28) 0 1px, transparent 1px 18px),repeating-linear-gradient(0deg, rgba(90,60,30,.22) 0 2px, transparent 2px 9px),linear-gradient(155deg,#6b5233,#57422a)}
+.dndp-cell.g-furn,
+.dndp-legend .sw.g-furn{background:linear-gradient(180deg, transparent 22%, rgba(120,84,48,.95) 22%, rgba(90,62,34,.95) 78%, transparent 78%),linear-gradient(90deg, transparent 18%, rgba(120,84,48,.9) 18%, rgba(90,62,34,.9) 82%, transparent 82%),linear-gradient(160deg,#4a3a28,#3c2f20)}
+.dndp-cell.g-stair,
+.dndp-legend .sw.g-stair{background:repeating-linear-gradient(0deg, rgba(255,255,255,.18) 0 2px, transparent 2px 10px),linear-gradient(180deg,#5a5f66,#3f444a)}
+.dndp-cell.g-wall,
+.dndp-legend .sw.g-wall{background:repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 3px, transparent 3px 12px),radial-gradient(circle at 25% 15%, rgba(255,255,255,.09), transparent 55%),linear-gradient(160deg,#33383f,#1d2126)}
+.dndp-cell.g-brick,
+.dndp-legend .sw.g-brick{background:repeating-linear-gradient(0deg, rgba(0,0,0,.45) 0 1px, transparent 1px 11px),repeating-linear-gradient(90deg, rgba(0,0,0,.40) 0 1px, transparent 1px 22px),linear-gradient(160deg,#6d4038,#4f2c27)}
+.dndp-cell.g-pillar,
+.dndp-legend .sw.g-pillar{background:radial-gradient(circle at 50% 45%, rgba(255,255,255,.16), transparent 52%),radial-gradient(circle at 50% 50%, #7d838c 0 42%, transparent 46%),linear-gradient(160deg,#2b3037,#1f242a)}
+.dndp-cell.g-water,
+.dndp-legend .sw.g-water{background:repeating-linear-gradient(115deg, rgba(255,255,255,.10) 0 2px, transparent 2px 12px),radial-gradient(circle at 30% 65%, rgba(120,200,255,.20), transparent 60%),linear-gradient(160deg,#2c5a80,#20455f)}
+.dndp-cell.g-deep,
+.dndp-legend .sw.g-deep{background:repeating-linear-gradient(115deg, rgba(255,255,255,.06) 0 2px, transparent 2px 16px),radial-gradient(circle at 65% 35%, rgba(90,170,240,.18), transparent 62%),linear-gradient(160deg,#16324d,#0e2237)}
+.dndp-cell.g-brush,
+.dndp-legend .sw.g-brush{background:repeating-radial-gradient(circle at 30% 40%, rgba(120,200,120,.22) 0 3px, transparent 3px 9px),repeating-radial-gradient(circle at 70% 65%, rgba(70,150,80,.26) 0 3px, transparent 3px 11px),linear-gradient(160deg,#2f4a2c,#243a23)}
+.dndp-cell.g-ledge,
+.dndp-legend .sw.g-ledge{background:repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 2px, transparent 2px 9px),linear-gradient(180deg,rgba(255,255,255,.10),transparent 40%),linear-gradient(160deg,#6a5a3e,#4c4029)}
+.dndp-cell.g-cave,
+.dndp-legend .sw.g-cave{background:radial-gradient(circle at 50% 50%, rgba(0,0,0,.95) 0 55%, rgba(0,0,0,.72) 75%, transparent 100%),linear-gradient(160deg,#14161b,#080a0d)}
+.dndp-cell.g-door,
+.dndp-legend .sw.g-door{background:repeating-linear-gradient(90deg, rgba(0,0,0,.25) 0 1px, transparent 1px 14px),linear-gradient(180deg,#7b5c33,#5a4224)}
+.dndp-cell.g-plank,
+.dndp-legend .sw.g-plank{background:repeating-linear-gradient(90deg, rgba(0,0,0,.32) 0 1px, transparent 1px 13px),linear-gradient(160deg,#57422a,#443322)}
+.dndp-cell.g-tree,
+.dndp-legend .sw.g-tree{background:radial-gradient(circle at 50% 42%, rgba(120,200,120,.92) 0 30%, rgba(60,120,70,.92) 42%, transparent 60%),radial-gradient(circle at 50% 50%, #2c4527 0 46%, transparent 52%),linear-gradient(160deg,#33502f,#26401f)}
+.dndp-cell.g-fire,
+.dndp-legend .sw.g-fire{background:radial-gradient(circle at 50% 55%, rgba(255,220,120,.95) 0 18%, rgba(255,140,40,.75) 34%, transparent 60%),radial-gradient(circle at 50% 70%, rgba(120,60,20,.9) 0 42%, transparent 58%),linear-gradient(160deg,#5a3a1c,#3a2412)}
+.dndp-cell.g-rubble,
+.dndp-legend .sw.g-rubble{background:repeating-radial-gradient(circle at 35% 30%, rgba(255,255,255,.10) 0 2px, transparent 2px 7px),repeating-radial-gradient(circle at 70% 70%, rgba(0,0,0,.22) 0 3px, transparent 3px 9px),linear-gradient(160deg,#4d4840,#38342e)}
+.dndp-cell.g-void,
+.dndp-legend .sw.g-void{background:linear-gradient(160deg,#07080a,#040506)}
+/* 墙体/砖墙给一点体积感，水面缓慢起伏，火堆轻微闪动，树冠有投影 */
+.dndp-cell.g-wall,.dndp-cell.g-brick,.dndp-cell.g-pillar{box-shadow:inset 0 -3px 0 rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.07)}
+.dndp-cell.g-water,.dndp-cell.g-deep{animation:dndpRipple 6s ease-in-out infinite}
+@keyframes dndpRipple{0%,100%{background-position:0 0,0 0,0 0}50%{background-position:6px 0,0 0,0 0}}
+.dndp-cell.g-fire{animation:dndpFlicker 2.4s ease-in-out infinite}
+@keyframes dndpFlicker{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+.dndp-cell.g-tree,.dndp-cell.g-pillar,.dndp-cell.g-furn{box-shadow:inset 0 -4px 6px -3px rgba(0,0,0,.55)}
+.dndp-cell{box-shadow:inset 0 0 0 1px rgba(255,255,255,.02)}
+/* 浅色模式下把瓦片整体翻成浅色（不影响单位图标） */
+.dndp-light .dndp-cell{filter:invert(.88) hue-rotate(185deg) saturate(.9) brightness(1.06)}
+.dndp-cell.msel{outline:2px solid var(--dsw-alias-brand-primary);outline-offset:-2px;z-index:3}
+.dndp-tok{position:absolute;box-sizing:border-box;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 6px rgba(0,0,0,.5);cursor:grab;user-select:none;z-index:5;line-height:1}
+.dndp-tok.drag{cursor:grabbing;z-index:9;opacity:.9}
+.dndp-tok.k-pc{background:#2b6cb0}
+.dndp-tok.k-enemy{background:#b03030}
+.dndp-tok.k-ally{background:#2f7d4f}
+.dndp-tok.k-object{background:#5b5b66}
+.dndp-tok .tkname{font-size:9px;font-weight:600;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:0 2px}
+.dndp-tok.sel{outline:3px solid #fff;outline-offset:1px}
+.dndp-tokbar{position:absolute;left:12%;right:12%;bottom:-5px;height:3px;background:rgba(0,0,0,.55);border-radius:2px;overflow:hidden}
+.dndp-tokbar i{display:block;height:100%;background:#5ec27a}
+.dndp-tokbar.low i{background:#e0a03a}
+.dndp-tokbar.crit i{background:#d3564b}
+.dndp-measure{position:absolute;inset:0;pointer-events:none;z-index:7}
+.dndp-mlabel{position:absolute;transform:translate(-50%,-50%);background:var(--dsw-alias-bg-overlay);border:1px solid var(--dsw-alias-brand-primary);color:var(--dsw-alias-label-primary);border-radius:7px;padding:2px 7px;font-size:11px;white-space:nowrap;z-index:8;pointer-events:none}
+.dndp-maptools{display:flex;gap:7px;align-items:center;flex-wrap:wrap;padding:8px 10px}
+.dndp-legend{display:flex;gap:4px 10px;flex-wrap:wrap;padding:6px 12px 10px;font-size:11px;color:var(--dsw-alias-label-secondary)}
+.dndp-legend span.sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:4px;vertical-align:-1px;border:1px solid var(--dsw-alias-border-l2)}
+.dndp-overlay{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.72);display:flex;flex-direction:column}
+.dndp-overlay .dndp-ovhead{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--dsw-alias-bg-layer-2);border-bottom:1px solid var(--dsw-alias-border-l1);color:var(--dsw-alias-label-primary);font-weight:600}
+.dndp-overlay .dndp-ovbody{flex:1;overflow:auto;padding:12px;background:var(--dsw-alias-bg-base)}
+/* ===== 工作区（IDE 式多面板）===== */
+.dndp-ws{display:flex;flex-direction:column;height:100%;min-height:0;box-sizing:border-box;color:var(--dsw-alias-label-primary);font-size:13px;background:radial-gradient(1200px 620px at 18% -12%, var(--dndp-glow), transparent 70%), var(--dsw-alias-bg-base)}
+.dndp-ws-top{flex:none;display:flex;align-items:center;gap:9px;padding:6px 10px;background:var(--dsw-alias-bg-layer-2);flex-wrap:wrap;border-bottom:1px solid var(--dndp-line);box-shadow:0 2px 0 -1px var(--dndp-glow),0 6px 14px -12px var(--dndp-glow)}
+.dndp-ws-top .logo{font-weight:700}
+.dndp-ws-main{flex:1;display:flex;min-height:0}
+.dndp-ws-col{display:flex;flex-direction:column;min-width:0;min-height:0;border:1px solid var(--dndp-line-soft);border-radius:12px;background:color-mix(in srgb, var(--dsw-alias-bg-base) 72%, transparent);transition:border-color .18s ease,background .18s ease}
+.dndp-ws-col.slim{border-style:dashed;border-color:var(--dndp-line-accent);background:transparent}
+.dndp-ws-row{display:flex;flex-direction:row;min-width:0;min-height:0}
+.dndp-ws-split{flex:none;position:relative;z-index:6;background:transparent}
+.dndp-ws-split.v{width:7px;cursor:col-resize}
+.dndp-ws-split.h{height:7px;cursor:row-resize}
+.dndp-ws-split::after{content:'';position:absolute;background:var(--dndp-line);border-radius:2px;transition:background .16s ease,box-shadow .16s ease}
+.dndp-ws-split.v::after{left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%)}
+.dndp-ws-split.h::after{top:50%;left:0;right:0;height:2px;transform:translateY(-50%)}
+.dndp-ws-split:hover::after,.dndp-ws-split.on::after{background:var(--dsw-alias-brand-primary);box-shadow:0 0 8px var(--dndp-glow)}
+.dndp-ws-inner{display:flex;flex-direction:column;min-height:0;min-width:0}
+.dndp-ws-inner.h{flex-direction:row}
+.dndp-panel{display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden;border:1px solid var(--dndp-line);border-radius:var(--dndp-radius);background:var(--dsw-alias-bg-layer-1);box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 8px 18px -16px rgba(0,0,0,.9)}
+.dndp-panel::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--dndp-line-accent),transparent 62%);pointer-events:none}
+.dndp-panel.max{border-color:var(--dsw-alias-brand-primary);box-shadow:0 0 0 1px var(--dndp-glow),0 8px 18px -14px rgba(0,0,0,.9)}
+.dndp-ptitle{flex:none;display:flex;align-items:center;gap:6px;padding:5px 8px;font-size:12px;font-weight:600;cursor:default;user-select:none;background:linear-gradient(180deg,var(--dndp-surface-tint),var(--dsw-alias-bg-layer-2));border-bottom:1px solid var(--dndp-line-soft);box-shadow:inset 0 -2px 0 -1px var(--dndp-line-accent)}
+.dndp-ptitle .sp{flex:1}
+.dndp-pbtn{border:1px solid transparent;background:transparent;color:var(--dsw-alias-label-secondary);border-radius:5px;padding:0 6px;font-size:12px;cursor:pointer;line-height:18px}
+.dndp-pbtn:hover{background:var(--dsw-alias-bg-overlay);color:var(--dsw-alias-label-primary);border-color:var(--dsw-alias-border-l2)}
+.dndp-pmenu{position:absolute;z-index:99998;background:var(--dsw-alias-bg-overlay);border:1px solid var(--dsw-alias-border-l2);border-radius:8px;padding:5px;box-shadow:0 8px 24px rgba(0,0,0,.45);min-width:150px}
+.dndp-pmenu button{display:block;width:100%;text-align:left;background:transparent;border:0;color:var(--dsw-alias-label-primary);border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer}
+.dndp-pmenu button:hover{background:var(--dsw-alias-bg-layer-2)}
+.dndp-pmenu .sep{height:1px;background:var(--dsw-alias-border-l1);margin:4px 2px}
+.dndp-pmenu .hd{font-size:11px;color:var(--dsw-alias-label-secondary);padding:3px 8px}
+.dndp-pbody{flex:1;min-height:0;overflow:auto;position:relative}
+.dndp-panel.col .dndp-pbody{display:none}
+.dndp-roster{display:flex;flex-direction:column;gap:2px;padding:6px}
+.dndp-ritem{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.dndp-ritem:hover{background:var(--dsw-alias-bg-layer-2)}
+.dndp-ritem.on{border-color:var(--dsw-alias-brand-primary);background:var(--dsw-alias-bg-layer-2)}
+.dndp-mapfill{display:flex;flex-direction:column;height:100%;min-height:0}
+.dndp-mapfill .dndp-mapwrap{flex:1;min-height:0;max-height:none}
+.dndp-fill{display:flex;flex-direction:column;height:100%;min-height:0}
+.dndp-fill>.dndp-scroll{flex:1;min-height:0}
+/* 骰子面板：待投按钮发光 + 记录 */
+.dndp-dicebox{padding: 0 10px}
+.dndp-dicego{border:1px solid transparent;border-radius:10px;padding:9px 14px;font-size:14px;font-weight:700;cursor:default;width:100%;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary);transition:background .18s ease,color .18s ease,box-shadow .18s ease,transform .1s ease}
+.dndp-dicego.live{background:var(--dsw-alias-brand-primary);color:var(--dndp-on-accent);cursor:pointer;animation:dndpPulse 1.4s ease-in-out infinite}
+.dndp-dicego.live:hover{transform:translateY(-1px)}
+@keyframes dndpPulse{0%,100%{box-shadow:0 0 0 0 var(--dndp-glow)}50%{box-shadow:0 0 0 8px transparent}}
+.dndp-req{border:1px solid var(--dndp-line-accent);border-radius:10px;padding:8px 10px;margin:6px 0;background:color-mix(in srgb, var(--dsw-alias-brand-primary) 8%, transparent)}
+.dndp-rec{display:flex;gap:8px;align-items:baseline;padding:5px 2px;border-bottom:1px solid var(--dndp-line-soft);font-size:12px}
+.dndp-rec .tm{color:var(--dsw-alias-label-secondary);font-size:11px;flex:none}
+.dndp-rec .lb{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.dndp-rec .ok{color:#5ec27a;flex:none}
+.dndp-rec .no{color:#d3564b;flex:none}
+/* 经验条 */
+.dndp-xpmini{display:inline-flex;align-items:center;gap:4px;flex:none}
+.dndp-xpminibar{width:52px;height:5px;border-radius:3px;background:color-mix(in srgb, var(--dsw-alias-label-primary) 14%, transparent);overflow:hidden;display:inline-block}
+.dndp-xpminibar i{display:block;height:100%;background:linear-gradient(90deg,var(--dsw-alias-brand-primary),color-mix(in srgb, var(--dsw-alias-brand-primary) 55%, #fff));transition:width .3s ease}
+.dndp-xpminitxt{font-size:10px;color:var(--dsw-alias-label-secondary)}
+.dndp-xpup{font-size:11px;filter:drop-shadow(0 0 4px var(--dndp-glow))}
+/* 先攻条行 */
+.dndp-crow{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid var(--dndp-line-soft);cursor:pointer;transition:background .14s ease,border-color .14s ease}
+.dndp-crow:hover{background:var(--dsw-alias-bg-layer-2)}
+.dndp-crow.on{background:var(--dndp-surface-tint);box-shadow:inset 3px 0 0 var(--dsw-alias-brand-primary)}
+.dndp-crow.sel{outline:1px solid var(--dsw-alias-brand-primary);outline-offset:-1px}
+/* ===== AI 对话 / 设置 ===== */
+.dndp-ai{display:flex;flex-direction:column;height:100%;min-height:0}
+.dndp-aibar{flex:none;display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:6px 10px;border-bottom:1px solid var(--dsw-alias-border-l1);font-size:12px}
+.dndp-aibody{flex:1;min-height:0;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:9px}
+.dndp-msg{display:flex;flex-direction:column;gap:4px;max-width:96%}
+.dndp-msg.me{align-self:flex-end;align-items:flex-end}
+.dndp-who{font-size:11px;color:var(--dsw-alias-label-secondary)}
+.dndp-bubble{padding:7px 10px;border-radius:10px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l1);white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.dndp-msg.me .dndp-bubble{background:var(--dsw-alias-brand-primary);color:var(--dndp-on-accent);border-color:transparent}
+.dndp-msg.err .dndp-bubble{border-color:var(--dsw-alias-state-error-primary);color:var(--dsw-alias-state-error-primary)}
+.dndp-steps{border:1px dashed var(--dsw-alias-border-l2);border-radius:8px;padding:5px 8px;font-size:11px;color:var(--dsw-alias-label-secondary)}
+.dndp-steps b{color:var(--dsw-alias-label-primary)}
+.dndp-aiinput{flex:none;display:flex;gap:7px;padding:8px 10px;border-top:1px solid var(--dsw-alias-border-l1);align-items:flex-end}
+.dndp-aiinput textarea{flex:1;min-height:38px;max-height:140px;resize:vertical;background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l2);color:var(--dsw-alias-label-primary);border-radius:8px;padding:7px 9px;font-size:13px;font-family:inherit}
+.dndp-setrow{display:flex;flex-direction:column;gap:4px;margin-bottom:9px}
+.dndp-setrow label{font-size:12px;color:var(--dsw-alias-label-secondary)}
+.dndp-setrow .hint{font-size:11px;color:var(--dsw-alias-label-secondary)}
+.dndp-warn{font-size:11px;color:#d9a03a;border:1px dashed #d9a03a66;border-radius:8px;padding:6px 8px;margin-bottom:9px}
+/* ===== 拖动 + 动效 ===== */
+.dndp-ws.dragging{cursor:grabbing}
+.dndp-ptitle{cursor:grab}
+.dndp-ptitle.dragging{cursor:grabbing;opacity:.6}
+.dndp-panel{position:relative;transition:border-color .16s ease,box-shadow .16s ease,background .16s ease;animation:dndpIn .2s ease-out}
+.dndp-panel:hover{border-color:var(--dsw-alias-border-l2)}
+.dndp-panel.dragsrc{opacity:.55;border-style:dashed}
+.dndp-drop{background:var(--dsw-alias-brand-primary);border-radius:3px;box-shadow:0 0 8px var(--dsw-alias-brand-primary);z-index:2147483001;pointer-events:none;animation:dndpBar .14s ease-out}
+@keyframes dndpBar{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+.dndp-dragghost{position:fixed;z-index:2147483002;pointer-events:none;border:1px solid var(--dsw-alias-brand-primary);background:var(--dsw-alias-bg-overlay);color:var(--dsw-alias-label-primary);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;box-shadow:0 10px 26px rgba(0,0,0,.55);transform:translate(-50%,-140%);white-space:nowrap;animation:dndpIn .12s ease-out}
+.dndp-slot{transition:background .16s ease,outline-color .16s ease;outline:1px dashed transparent;outline-offset:-2px;border-radius:9px}
+.dndp-slot.glow{background:rgba(90,160,255,.09);outline-color:var(--dsw-alias-brand-primary)}
+.dndp-slotwrap.slim .dndp-empty{font-size:11px}
+@keyframes dndpIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes dndpPop{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+.dndp-pmenu{animation:dndpPop .13s ease-out}
+.dndp-btn{transition:background .14s ease,border-color .14s ease,transform .08s ease,opacity .14s ease}
+.dndp-btn:active:not(:disabled){transform:scale(.965)}
+.dndp-pbtn{transition:background .13s ease,color .13s ease,transform .08s ease,opacity .13s ease}
+.dndp-pbtn:active{transform:scale(.9)}
+.dndp-ws-split{transition:background .16s ease}
+.dndp-ritem{transition:background .14s ease,border-color .14s ease}
+.dndp-cell{transition:background .12s ease,outline-color .12s ease}
+.dndp-tok{transition:left .2s cubic-bezier(.22,.61,.36,1),top .2s cubic-bezier(.22,.61,.36,1),width .18s ease,height .18s ease,box-shadow .16s ease}
+.dndp-tok:hover{box-shadow:0 0 0 2px rgba(255,255,255,.4),0 3px 10px rgba(0,0,0,.6)}
+.dndp-tok.drag{transition:none}
+.dndp-msg{animation:dndpIn .2s ease-out}
+.dndp-logrow{animation:dndpIn .16s ease-out;transition:background .14s ease}
+.dndp-bubble{transition:background .16s ease,border-color .16s ease}
+.dndp-pbody{transition:opacity .16s ease}
+.dndp-chev{transition:transform .16s ease}
+.dndp-maptools .dndp-btn.tiny{transition:background .14s ease,transform .08s ease}
+`
+const AB = ['str', 'dex', 'con', 'int', 'wis', 'cha']
+const ABF = { str: '力量', dex: '敏捷', con: '体质', int: '智力', wis: '感知', cha: '魅力' }
+const CLSN = { barbarian: '野蛮人', bard: '吟游诗人', cleric: '牧师', druid: '德鲁伊', fighter: '战士', monk: '武僧', paladin: '圣武士', ranger: '游侠', rogue: '游荡者', sorcerer: '术士', warlock: '邪术师', wizard: '法师' }
+const SK = { acrobatics: '特技', animalHandling: '驯兽', arcana: '奥术', athletics: '运动', deception: '欺瞒', history: '历史', insight: '洞察', intimidation: '威吓', investigation: '调查', medicine: '医药', nature: '自然', perception: '察觉', performance: '表演', persuasion: '游说', religion: '宗教', sleightOfHand: '巧手', stealth: '隐匿', survival: '生存' }
+const PBCOST = { 8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9 }
+const incCost = v => PBCOST[v + 1] - PBCOST[v]
+const fmt = n => (n > 0 ? '+' : '') + n
+const skName = s => SK[s] || s
+const LVNAME = ['戏法', '1 环', '2 环', '3 环', '4 环', '5 环', '6 环', '7 环', '8 环', '9 环']
+const KINDN = { armor: '护甲', shield: '盾牌', weapon: '武器', gear: '杂物', pack: '套装' }
+const spellItems = (s) => [{ name: '学派', desc: s.school }, { name: '施法时间', desc: s.time }, { name: '距离', desc: s.range }, { name: '持续', desc: s.duration }, { name: '标记', desc: [s.conc ? '专注' : '', s.ritual ? '仪式' : ''].filter(Boolean).join(' ') || '—' }, { name: '效果', desc: s.fx }]
+let __tip = null
+function tipNode() { if (!__tip) { const d = document.createElement('div'); d.className = 'dndp-tipf'; d.style.display = 'none'; document.body.appendChild(d); __tip = d } return __tip }
+function tipShow(ev, title, items) {
+  const el = tipNode(); el.textContent = ''
+  const t = document.createElement('div'); t.className = 'tp-title'; t.textContent = title; el.appendChild(t)
+  const list = items || []
+  if (!list.length) { const d = document.createElement('div'); d.className = 'tp-desc'; d.textContent = '（暂无详细介绍）'; el.appendChild(d) }
+  else list.forEach(it => { const row = document.createElement('div'); row.className = 'tp-item'; const b = document.createElement('b'); b.textContent = (it.name || '') + '：'; row.appendChild(b); const s = document.createElement('span'); s.className = 'tp-desc'; s.textContent = it.desc || ''; row.appendChild(s); el.appendChild(row) })
+  el.style.display = 'block'; tipMove(ev)
+}
+function tipMove(ev) { const el = tipNode(); if (el.style.display === 'none') return; const w = 340, hgt = el.offsetHeight || 120; let x = ev.clientX + 16, y = ev.clientY + 16; if (x + w > window.innerWidth - 10) x = Math.max(8, window.innerWidth - w - 10); if (y + hgt > window.innerHeight - 10) y = Math.max(8, window.innerHeight - hgt - 10); el.style.left = x + 'px'; el.style.top = y + 'px' }
+function tipHide() { if (__tip) __tip.style.display = 'none' }
+function Card(props) {
+  const inner = [props.title]
+  if (props.sub) inner.push(h('small', { key: 's' }, props.sub))
+  return h('span', { className: 'dndp-cardwrap', onMouseEnter: e => tipShow(e, props.tipTitle || props.title, props.items), onMouseMove: tipMove, onMouseLeave: tipHide }, h('button', { className: 'dndp-opt' + (props.on ? ' sel' : ''), disabled: props.disabled, onClick: props.onClick }, inner))
+}
+function Pips(props) { const pips = []; for (let i = 0; i < props.max; i++) pips.push(h('span', { key: i, className: 'dndp-pip' })); return h('div', { className: 'dndp-slotrow' }, h('span', { className: 'dndp-slotlv' }, props.lv === 0 ? '戏法' : props.lv + '环'), pips, h('span', { className: 'dndp-slotnum' }, '×' + props.max)) }
+function XpWidget(props) {
+  const s = props.s
+  const cur = Number(s.xp) || 0, prev = Number(s.xpPrev) || 0, next = s.xpNext
+  const pct = next ? Math.max(0, Math.min(100, Math.round(((cur - prev) / Math.max(1, next - prev)) * 100))) : 100
+  return h('div', { className: 'dndp-xp' }, h('div', { className: 'dndp-xplv' }, 'Lv ', h('b', null, String(s.level))), h('div', { className: 'dndp-xpbar' }, h('div', { className: 'dndp-xpfill', style: { width: pct + '%' } })), h('div', { className: 'dndp-xptxt' }, next ? (cur + ' / ' + next + ' XP') : (cur + ' XP · 满级')))
+}
+function Sect(props) {
+  const [open, setOpen] = React.useState(props.open !== false)
+  const head = h('button', { className: 'dndp-sec', onClick: () => setOpen(!open) }, h('span', { className: 'dndp-chev' + (open ? ' open' : '') }, '▶'), h('span', null, props.title), h('div', { className: 'dndp-sp' }), props.count != null ? h('span', { className: 'dndp-chip' }, props.count) : null)
+  return h('div', { className: 'dndp-sect' }, head, open ? h('div', { className: 'dndp-body' }, props.children) : null)
+}
+function ChoiceBox(props) {
+  const ch = props.ch, st = props.st, setSt = props.setSt
+  if (ch.kind === 'subclass' || ch.kind === 'pactBoon') {
+    const kids = []
+    kids.push(h('div', { key: 't', className: 'dndp-note hl' }, 'Lv' + ch.level + '：' + (ch.kind === 'subclass' ? '选择子职业' : '选择魔契')))
+    kids.push(h('div', { key: 'g', className: 'dndp-grid' }, ch.options.map(o => h(Card, { key: o.key, on: st.key === o.key, title: o.name, tipTitle: o.name, items: [{ name: o.name, desc: o.desc || '选择后获得其特性' }], onClick: () => setSt({ key: o.key, picks: {} }) }))))
+    const sel = (ch.options || []).find(o => o.key === st.key)
+    if (sel && sel.choices) {
+      kids.push(h('div', { key: 'pl', className: 'dndp-label' }, sel.choices.label))
+      kids.push(h('div', { key: 'pg', className: 'dndp-grid' }, sel.choices.options.map(op => h(Card, { key: op.key, on: (st.picks || {})[sel.choices.key] === op.key, title: op.name, tipTitle: op.name, items: [{ name: op.name, desc: op.desc || '' }], onClick: () => setSt({ key: st.key, picks: Object.assign({}, st.picks, { [sel.choices.key]: op.key }) }) }))))
+    }
+    return h('div', { key: 'c' }, kids)
+  }
+  if (ch.kind === 'invocation') {
+    return h('div', { key: 'c' }, h('div', { className: 'dndp-note hl' }, 'Lv' + ch.level + '：选择祈愿（需 ' + ch.need + ' 项）'), h('div', { className: 'dndp-grid' }, ch.pool.map(o => h(Card, { key: o.key, on: (st.keys || []).includes(o.key), title: o.name, tipTitle: o.name, items: [{ name: o.name, desc: o.desc }], onClick: () => setSt({ keys: (st.keys || []).includes(o.key) ? st.keys.filter(k => k !== o.key) : ((st.keys || []).length >= ch.need ? st.keys : (st.keys || []).concat(o.key)) }) }))))
+  }
+  if (ch.kind === 'asi') {
+    const mode = st.mode || 'one'
+    const kids = [h('div', { key: 't', className: 'dndp-note hl' }, 'Lv' + ch.level + '：属性提升或专长')]
+    kids.push(h('div', { key: 'm', style: { display: 'flex', gap: 6 } }, h('button', { className: 'dndp-btn' + (mode === 'one' ? ' primary' : ''), onClick: () => setSt({ mode: 'one' }) }, '单项+2'), h('button', { className: 'dndp-btn' + (mode === 'two' ? ' primary' : ''), onClick: () => setSt({ mode: 'two' }) }, '两项+1'), h('button', { className: 'dndp-btn' + (mode === 'feat' ? ' primary' : ''), onClick: () => setSt({ mode: 'feat' }) }, '专长')))
+    if (mode === 'one') kids.push(h('div', { key: 'a', className: 'dndp-grid', style: { marginTop: 6 } }, AB.map(a => h('button', { key: a, className: 'dndp-opt' + (st.ab1 === a ? ' sel' : ''), onClick: () => setSt({ mode: 'one', ab1: a }) }, ABF[a]))))
+    if (mode === 'two') { kids.push(h('div', { key: 'a2', className: 'dndp-grid', style: { marginTop: 6 } }, AB.map(a => h('button', { key: a, className: 'dndp-opt' + (st.ab1 === a ? ' sel' : ''), onClick: () => setSt({ mode: 'two', ab1: a, ab2: st.ab2 }) }, ABF[a])))); kids.push(h('div', { key: 'a3', className: 'dndp-grid', style: { marginTop: 6 } }, AB.map(a => h('button', { key: a, className: 'dndp-opt' + (st.ab2 === a ? ' sel' : ''), onClick: () => setSt({ mode: 'two', ab1: st.ab1, ab2: a }) }, ABF[a])))) }
+    if (mode === 'feat') kids.push(h('div', { key: 'f', className: 'dndp-grid', style: { marginTop: 6 } }, (ch.feats || []).map(f => h(Card, { key: f.key, on: st.feat === f.key, title: f.name, tipTitle: f.name, items: [{ name: f.name, desc: f.desc }], onClick: () => setSt({ mode: 'feat', feat: f.key }) }))))
+    return h('div', { key: 'c' }, kids)
+  }
+  if (ch.kind === 'cantrip' || ch.kind === 'spell') {
+    const sel = st.keys || []
+    const on = k => sel.includes(k)
+    const head = 'Lv' + ch.level + '：选择 ' + ch.need + ' 个' + (ch.kind === 'cantrip' ? '戏法' : '法术') + (ch.top ? '（可施放至 ' + ch.top + ' 环）' : '')
+    return h('div', { key: 'c' }, h('div', { className: 'dndp-note hl' }, head), h('div', { className: 'dndp-grid' }, (ch.pool || []).map(s => h(Card, { key: s.key, on: on(s.key), title: (s.level === 0 ? '戏法·' : s.level + '环·') + s.name, sub: s.school, tipTitle: s.name, items: spellItems(s), onClick: () => setSt({ keys: on(s.key) ? sel.filter(k => k !== s.key) : (sel.length >= ch.need ? sel : sel.concat(s.key)) }) }))))
+  }
+  return null
+}
+function LevelSet(props) {
+  const s = props.s
+  const manual = !!props.manual
+  const cur = Number(s.level) || 1
+  const autoTarget = Math.min(20, cur + 1)
+  const xpNext = (s.xpNext == null ? null : Number(s.xpNext))
+  const canLevel = xpNext == null ? true : (Number(s.xp) >= xpNext)
+  const xpShort = xpNext == null ? 0 : Math.max(0, xpNext - Number(s.xp || 0))
+  const [target, setTarget] = React.useState(manual ? cur : autoTarget)
+  const [syncXp, setSyncXp] = React.useState(true)
+  const [open, setOpen] = React.useState(!manual)
+  const [info, setInfo] = React.useState(null)
+  const [states, setStates] = React.useState([])
+  const [busy, setBusy] = React.useState(false)
+  const [msg, setMsg] = React.useState('')
+  const effTarget = manual ? target : autoTarget
+  const calc = React.useCallback(() => {
+    setMsg('')
+    return call('levelset.info', { id: s.id, target: effTarget }).then(r => { if (r && r.ok) { setInfo(r); setStates((r.pending || []).map(() => ({}))) } else setMsg((r && r.error) || '计算失败') })
+  }, [s.id, effTarget])
+  // 自动升级模式：进面板就算好要选什么
+  React.useEffect(() => { if (!manual && canLevel) calc() }, [s.id, s.level, s.xp, canLevel])
+  const doApply = async () => {
+    setBusy(true); setMsg('')
+    try {
+      const choices = (info && info.pending || []).map((ch, i) => { const st = states[i] || {}; if (ch.kind === 'subclass') return { kind: 'subclass', key: st.key, picks: st.picks }; if (ch.kind === 'pactBoon') return { kind: 'pactBoon', key: st.key }; if (ch.kind === 'invocation') return { kind: 'invocation', keys: st.keys }; if (ch.kind === 'asi') return Object.assign({ kind: 'asi' }, st); if (ch.kind === 'cantrip' || ch.kind === 'spell') return { kind: ch.kind, keys: st.keys }; return null }).filter(x => x && (x.key || x.keys || x.mode))
+      const payload = { id: s.id, target: effTarget, choices: choices }
+      if (manual && syncXp) payload.setXp = true
+      const r = await call('levelset.apply', { json: JSON.stringify(payload) })
+      if (r && r.ok) { setMsg(r.summary + (r.saved ? '（已保存）' : '（未保存：' + (r.saveError || '未知原因') + '）')); setInfo(null); if (props.onReload) props.onReload() } else setMsg((r && r.error) || '应用失败')
+    } catch (e) { setMsg(String(e && e.message || e)) }
+    setBusy(false)
+  }
+  const kids = []
+  if (manual) {
+    kids.push(h('div', { key: 'h', style: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' } },
+      h('b', null, '手动调整等级'),
+      h('span', { className: 'dndp-chip' }, 'DM 覆写'),
+      h('div', { className: 'dndp-sp' }),
+      h('button', { className: 'dndp-btn tiny', onClick: () => setOpen(!open) }, open ? '收起' : '展开')))
+    if (!open) return h('div', { className: 'dndp-panel' }, kids)
+    kids.push(h('div', { key: 'w', className: 'dndp-warn', style: { marginTop: 6 } },
+      '这里直接设定等级，不走经验。跨过需要做选择的等级（例如 Lv3 的子职、Lv4 的属性提升）时请改用上面的「升级（按经验）」。'))
+    kids.push(h('div', { key: 'p', style: { marginTop: 6, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' } },
+      h('button', { className: 'dndp-ico', onClick: () => setTarget(t => Math.max(1, t - 1)) }, '−'),
+      h('b', null, 'Lv' + target),
+      h('button', { className: 'dndp-ico', onClick: () => setTarget(t => Math.min(20, t + 1)) }, '+'),
+      h('input', { className: 'dndp-input', style: { width: 62 }, value: String(target), onChange: e => setTarget(Math.max(1, Math.min(20, Number(e.target.value) || 1))) }),
+      h('label', { style: { display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12 } },
+        h('input', { type: 'checkbox', checked: syncXp, onChange: e => setSyncXp(e.target.checked) }), '同时把经验设为该等级门槛'),
+      h('button', { className: 'dndp-btn', onClick: calc }, '计算影响')))
+  } else {
+    kids.push(h('div', { key: 'h', style: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' } },
+      h('b', null, '升级（按经验）'),
+      h('span', { className: 'dndp-chip' }, 'Lv' + cur + ' → Lv' + autoTarget),
+      h('div', { className: 'dndp-sp' }),
+      h('button', { className: 'dndp-btn tiny', onClick: calc }, '重算')))
+    if (!canLevel) {
+      kids.push(h('div', { key: 'x', className: 'dndp-note', style: { marginTop: 6 } },
+        '经验还没满：' + (s.xp || 0) + ' / ' + (xpNext == null ? '—' : xpNext) + '，还差 ' + xpShort + ' 点；升不了级。（DM 可以用下面的「手动调整等级」直接覆写。）'))
+      if (msg) kids.push(h('div', { key: 'm', className: 'dndp-note hl', style: { marginTop: 6 } }, msg))
+      return h('div', { className: 'dndp-panel' }, kids)
+    }
+  }
+  if (info && info.ok) {
+    if (info.same) kids.push(h('div', { key: 's', className: 'dndp-note', style: { marginTop: 6 } }, '当前已是 Lv' + info.level))
+    else {
+      kids.push(h('div', { key: 'd', className: 'dndp-note', style: { marginTop: 6 } }, 'Lv' + info.level + ' → Lv' + info.target + '：每级 HP ' + (info.hpPerLevel >= 0 ? '+' : '') + info.hpPerLevel))
+      if (info.slotsAfter && info.slotsAfter.length) kids.push(h('div', { key: 'sl', className: 'dndp-note' }, '调整后法术位：' + info.slotsAfter.map(x => x.lv + '环×' + x.max).join('、')))
+      ;(info.pending || []).forEach((ch, i) => kids.push(h('div', { key: 'p' + i, style: { marginTop: 8 } }, h(ChoiceBox, { ch: ch, st: states[i] || {}, setSt: v => setStates(arr => { const n = arr.slice(); n[i] = v; return n }) }))))
+      if (!info.pending || !info.pending.length) kids.push(h('div', { key: 'n', className: 'dndp-note' }, '该等级区间无需额外选择'))
+      kids.push(h('div', { key: 'go', style: { marginTop: 10 } },
+        h('button', { className: 'dndp-btn' + (manual ? '' : ' primary'), disabled: busy, onClick: doApply }, manual ? ('覆写为 Lv' + effTarget + (syncXp ? '（并同步经验）' : '')) : ('升级到 Lv' + effTarget))))
+    }
+  }
+  if (msg) kids.push(h('div', { key: 'm', className: 'dndp-note hl', style: { marginTop: 6 } }, msg))
+  return h('div', { className: 'dndp-panel' }, kids)
+}
+function StatusPanel(props) {
+  const s = props.s
+  const [open, setOpen] = React.useState(false)
+  const [skey, setSkey] = React.useState('')
+  const [level, setLevel] = React.useState('')
+  const [note, setNote] = React.useState('')
+  const [busy, setBusy] = React.useState(false)
+  const [msg, setMsg] = React.useState('')
+  const cat = s.conditionCatalog || []
+  const cur = s.conditions || []
+  const call = async (payload) => {
+    setBusy(true); setMsg('')
+    try {
+      const r = await call('sheet.condition.set', { json: JSON.stringify(Object.assign({ id: s.id }, payload)) })
+      if (r && r.ok) { setMsg(r.summary + (r.saved ? '（已保存）' : '（未保存：' + (r.saveError || '未知原因') + '）')); if (props.onReload) props.onReload() } else setMsg((r && r.error) || '操作失败')
+    } catch (e) { setMsg(String(e && e.message || e)) }
+    setBusy(false)
+  }
+  const chips = cur.map((c, i) => h(Card, { key: i, title: c.name + (c.level != null ? ' ' + c.level : '') + (c.note ? '（' + c.note + '）' : ''), tipTitle: c.name, items: [{ name: c.name, desc: c.desc || c.note || '（自定义状态）' }], onClick: () => call({ remove: c.key }) }))
+  const kids = [h('div', { key: 'h', style: { display: 'flex', alignItems: 'center', gap: 8 } }, h('b', null, '状态'), h('div', { className: 'dndp-sp' }), cur.length ? h('span', { className: 'dndp-chip' }, cur.length + ' 项') : h('span', { className: 'dndp-chip' }, '无'), h('button', { className: 'dndp-btn', onClick: () => setOpen(!open) }, open ? '收起' : '手动修改'))]
+  kids.push(h('div', { key: 'c', className: 'dndp-tags', style: { marginTop: 6 } }, chips))
+  if (open) {
+    kids.push(h('div', { key: 'l1', className: 'dndp-label' }, '添加/覆盖状态'))
+    kids.push(h('div', { key: 'g', className: 'dndp-grid' }, cat.map(c => h(Card, { key: c.key, on: skey === c.key, title: c.name, tipTitle: c.name, items: [{ name: c.name, desc: c.desc }], onClick: () => { setSkey(c.key); setLevel(c.key === 'exhaustion' ? '1' : '') } }))))
+    kids.push(h('div', { key: 'f', className: 'dndp-grid', style: { marginTop: 6 } },
+      h('div', { key: 'lv', className: 'dndp-field', style: { marginBottom: 0 } }, h('label', null, '等级（仅力竭）'), h('input', { className: 'dndp-input', value: level, onChange: e => setLevel(e.target.value) })),
+      h('div', { key: 'nt', className: 'dndp-field', style: { marginBottom: 0 } }, h('label', null, '备注（如来源/剩余回合）'), h('input', { className: 'dndp-input', value: note, onChange: e => setNote(e.target.value) }))))
+    kids.push(h('div', { key: 'go', style: { marginTop: 8, display: 'flex', gap: 6 } },
+      h('button', { key: 'a', className: 'dndp-btn primary', disabled: busy || !skey, onClick: () => call({ key: skey, level: level, note: note }) }, '添加状态'),
+      h('button', { key: 'b', className: 'dndp-btn', disabled: busy, onClick: () => call({ clear: true }) }, '清空全部')))
+  }
+  if (msg) kids.push(h('div', { key: 'm', className: 'dndp-note hl' }, msg))
+  return h('div', { className: 'dndp-panel' }, kids)
+}
+function EquipPanel(props) {
+  const s = props.s
+  const eq = s.equipment || { armor: null, shield: null, mainHand: null, offHand: null, worn: [] }
+  const [busy, setBusy] = React.useState(false)
+  const [msg, setMsg] = React.useState('')
+  const ws = s.weaponStats || {}
+  const call = async (slot, key) => {
+    setBusy(true); setMsg('')
+    try {
+      const r = await call('sheet.equip', { json: JSON.stringify({ id: s.id, slot: slot, key: key || null, clear: !key }) })
+      if (r && r.ok) { setMsg(r.summary + (r.saved ? '（已保存）' : '（未保存：' + (r.saveError || '未知原因') + '）')); if (props.onReload) props.onReload() } else setMsg((r && r.error) || '操作失败')
+    } catch (e) { setMsg(String(e && e.message || e)) }
+    setBusy(false)
+  }
+  const row = (label, slot, entry) => h('div', { key: slot, className: 'dndp-item' },
+    h('div', { className: 'dndp-main' }, h('div', { className: 'dndp-name' }, label + '：' + (entry ? entry.name : '（空）')), h('div', { className: 'dndp-sub' }, entry ? (entry.damage ? (entry.damage + ' ' + (entry.dmgType || '')) : (entry.base != null ? ('AC 基础 ' + entry.base + '｜敏捷上限 ' + (entry.dexCap == null ? '无' : entry.dexCap)) : ('AC +' + (entry.acBonus || 0)))) + (entry.magicBonus ? ' 魔法 +' + entry.magicBonus : '') : '未装备')),
+    h('button', { className: 'dndp-btn', disabled: busy || !entry, onClick: () => call(slot, null) }, '卸下'))
+  const kids = [h('div', { key: 'h', style: { display: 'flex', alignItems: 'center', gap: 8 } }, h('b', null, '装备栏'), h('div', { className: 'dndp-sp' }), h('span', { className: 'dndp-chip' }, 'AC ' + s.ac))]
+  kids.push(row('护甲', 'armor', eq.armor))
+  kids.push(row('盾牌', 'shield', eq.shield))
+  kids.push(row('主手', 'mainHand', eq.mainHand))
+  kids.push(row('副手', 'offHand', eq.offHand))
+  if (ws.main) kids.push(h('div', { key: 'w1', className: 'dndp-note' }, '主手攻击 ' + (ws.main.attack >= 0 ? '+' : '') + ws.main.attack + '｜伤害 ' + ws.main.damage + (ws.main.dmgBonus ? (ws.main.dmgBonus > 0 ? ' +' + ws.main.dmgBonus : ' ' + ws.main.dmgBonus) : '') + '（' + ABF[ws.main.ability] + '）'))
+  if (ws.off) kids.push(h('div', { key: 'w2', className: 'dndp-note' }, '副手攻击 ' + (ws.off.attack >= 0 ? '+' : '') + ws.off.attack + '｜伤害 ' + ws.off.damage + (ws.off.dmgBonus ? (ws.off.dmgBonus > 0 ? ' +' + ws.off.dmgBonus : ' ' + ws.off.dmgBonus) : '')))
+  if (eq.worn && eq.worn.length) kids.push(h('div', { key: 'worn', className: 'dndp-tags' }, eq.worn.map((w, i) => h('span', { key: i, className: 'dndp-tag' }, w.name + (w.acBonus ? ' AC+' + w.acBonus : '')))))
+  kids.push(h('div', { key: 'ac', className: 'dndp-note hl' }, 'AC 明细：' + (s.acBreakdown || '')))
+  if (msg) kids.push(h('div', { key: 'm', className: 'dndp-note hl' }, msg))
+  return h('div', { className: 'dndp-panel' }, kids)
+}
+function Bag(props) {
+  const s = props.s
+  const [name, setName] = React.useState('')
+  const [kind, setKind] = React.useState('gear')
+  const [acBonus, setAcBonus] = React.useState('')
+  const [damage, setDamage] = React.useState('')
+  const [dmgType, setDmgType] = React.useState('')
+  const [desc, setDesc] = React.useState('')
+  const [busy, setBusy] = React.useState(false)
+  const [msg, setMsg] = React.useState('')
+  const [openPack, setOpenPack] = React.useState('')
+  const inv = s.inventory || []
+  const call = async (name2, payload) => {
+    setBusy(true); setMsg('')
+    try {
+      const r = await call(name2, { json: JSON.stringify(Object.assign({ id: s.id }, payload)) })
+      if (r && r.ok) { setMsg(r.summary + (r.saved ? '（已保存）' : '（未保存：' + (r.saveError || '未知原因') + '）')); if (props.onReload) props.onReload() } else setMsg((r && r.error) || '操作失败')
+    } catch (e) { setMsg(String(e && e.message || e)) }
+    setBusy(false)
+  }
+  const slotsFor = (it) => { const k = it.kind || 'gear'; if (k === 'armor') return [['armor', '装备为护甲']]; if (k === 'shield') return [['shield', '持盾']]; if (k === 'weapon') return [['mainHand', '主手'], ['offHand', '副手']]; return [['worn', '随身佩戴']] }
+  const packRow = (it, c) => h('div', { key: c.key, className: 'dndp-item' },
+    h('div', { className: 'dndp-main' }, h('div', { className: 'dndp-name' }, c.name), h('div', { className: 'dndp-sub' }, c.qty > 1 ? ('×' + c.qty) : '单个')),
+    h('button', { className: 'dndp-btn', disabled: busy, onClick: () => call('sheet.pack.take', { packKey: it.key, itemKey: c.key }) }, '取出'))
+  const card = (it, i) => {
+    const isContainer = !!it.container
+    const expanded = openPack === it.key
+    const head = h('button', { className: 'dndp-sec', onClick: () => (isContainer ? setOpenPack(expanded ? '' : it.key) : null) },
+      isContainer ? h('span', { className: 'dndp-chev' + (expanded ? ' open' : '') }, '▶') : null,
+      h('span', null, it.name + (it.qty > 1 ? ' ×' + it.qty : '')),
+      h('div', { className: 'dndp-sp' }),
+      h('span', { className: 'dndp-chip' }, isContainer ? ('套装 · ' + ((it.contents || []).length) + ' 件') : (KINDN[it.kind] || it.kind || '杂物')))
+    const body = []
+    if (isContainer) {
+      const contents = it.contents || []
+      body.push(h('div', { key: 'hint', className: 'dndp-note' }, contents.length ? '套装内物品（点「取出」后进入背包成为独立物品）' : '（套装已清空）'))
+      contents.forEach(c => body.push(packRow(it, c)))
+      if (contents.length) body.push(h('div', { key: 'all', style: { marginTop: 6 } }, h('button', { className: 'dndp-btn', disabled: busy, onClick: () => call('sheet.pack.take', { packKey: it.key, all: true }) }, '全部取出')))
+    } else {
+      if (it.damage || it.acBonus || it.base != null) body.push(h('div', { key: 'st', className: 'dndp-note' }, [it.damage ? ('伤害 ' + it.damage + ' ' + (it.dmgType || '')) : '', it.base != null ? ('AC ' + it.base + '（敏捷上限 ' + (it.dexCap == null ? '无' : it.dexCap) + '）') : '', it.acBonus ? ('AC +' + it.acBonus) : ''].filter(Boolean).join('｜')))
+      if (it.desc) body.push(h('div', { key: 'de', className: 'dndp-note' }, it.desc))
+      body.push(h('div', { key: 'act', style: { display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 } },
+        slotsFor(it).map(p => h('button', { key: p[0], className: 'dndp-btn', disabled: busy, onClick: () => call('sheet.equip', { slot: p[0], key: it.key }) }, p[1])),
+        h('button', { key: 'rm', className: 'dndp-btn', disabled: busy, onClick: () => call('sheet.item.remove', { key: it.key }) }, '移除')))
+    }
+    return h('div', { key: it.key || i, className: 'dndp-sect', style: { marginTop: 6 } }, head, expanded || !isContainer ? h('div', { className: 'dndp-body' }, body) : null)
+  }
+  const kids = [h('div', { key: 'h', style: { display: 'flex', alignItems: 'center', gap: 8 } }, h('b', null, '背包'), h('div', { className: 'dndp-sp' }), h('span', { className: 'dndp-chip' }, inv.length + ' 项'))]
+  kids.push(h('div', { key: 'list', style: { marginTop: 8 } }, inv.length ? inv.map(card) : h('div', { className: 'dndp-note' }, '（空）')))
+  kids.push(h('div', { key: 'l', className: 'dndp-label' }, '新增自定义物品'))
+  kids.push(h('div', { key: 'g', className: 'dndp-grid' }, Object.keys(KINDN).map(k => h('button', { key: k, className: 'dndp-opt' + (kind === k ? ' sel' : ''), onClick: () => setKind(k) }, KINDN[k]))))
+  kids.push(h('div', { key: 'f', className: 'dndp-grid', style: { marginTop: 6 } },
+    h('div', { key: 'n', className: 'dndp-field', style: { marginBottom: 0 } }, h('label', null, '名称'), h('input', { className: 'dndp-input', value: name, onChange: e => setName(e.target.value) })),
+    h('div', { key: 'a', className: 'dndp-field', style: { marginBottom: 0 } }, h('label', null, 'AC 加值/基础'), h('input', { className: 'dndp-input', value: acBonus, onChange: e => setAcBonus(e.target.value) })),
+    h('div', { key: 'd', className: 'dndp-field', style: { marginBottom: 0 } }, h('label', null, '伤害骰（如 1d8）'), h('input', { className: 'dndp-input', value: damage, onChange: e => setDamage(e.target.value) })),
+    h('div', { key: 't', className: 'dndp-field', style: { marginBottom: 0 } }, h('label', null, '伤害类型'), h('input', { className: 'dndp-input', value: dmgType, onChange: e => setDmgType(e.target.value) })),
+    h('div', { key: 'x', className: 'dndp-field', style: { marginBottom: 0, gridColumn: '1 / span 2' } }, h('label', null, '说明'), h('input', { className: 'dndp-input', value: desc, onChange: e => setDesc(e.target.value) }))))
+  kids.push(h('div', { key: 'go', style: { marginTop: 8 } }, h('button', { className: 'dndp-btn primary', disabled: busy || !name, onClick: () => { const item = { name: name, kind: kind, desc: desc }; if (acBonus !== '') { if (kind === 'armor') item.base = Number(acBonus); else item.acBonus = Number(acBonus) } if (damage) item.damage = damage; if (dmgType) item.dmgType = dmgType; call('sheet.item.add', { item: item }).then(() => { setName(''); setAcBonus(''); setDamage(''); setDmgType(''); setDesc('') }) } }, '加入背包')))
+  if (msg) kids.push(h('div', { key: 'm', className: 'dndp-note hl' }, msg))
+  return h('div', { className: 'dndp-panel' }, kids)
+}
+
+class Boundary extends React.Component {
+  constructor(props) { super(props); this.state = { err: '' } }
+  static getDerivedStateFromError(e) { return { err: String((e && e.message) || e) } }
+  componentDidCatch(e) { try { console.error('[dnd-5ednd] render error:', e) } catch (x) { } }
+  render() {
+    if (this.state.err) {
+      return h('div', { className: 'dndp-err' }, '界面渲染出错（已隔离，不影响其它页签）：' + this.state.err)
+    }
+    return this.props.children
+  }
+}
+function UiBadge(props) {
+  const info = (typeof window !== 'undefined' && window.__DND5E_UI) ? window.__DND5E_UI : null
+  if (!info) return null
+  const kb = Math.round((info.bytes || 0) / 1024)
+  const label = 'UI ' + kb + 'KB · ' + (info.from === 'disk' ? '磁盘' : '内联')
+  return h('span', { className: 'dndp-chip', title: '界面源码来源：' + info.from + '，字节 ' + info.bytes + (info.mtimeMs ? ('，mtime ' + new Date(info.mtimeMs).toLocaleTimeString()) : '') }, label)
+}
+function RulesPanel(props) {
+  const [q, setQ] = React.useState('')
+  const [book, setBook] = React.useState('')
+  const [items, setItems] = React.useState(null)
+  const [stats, setStats] = React.useState(null)
+  const [openId, setOpenId] = React.useState('')
+  const [text, setText] = React.useState('')
+  const [busy, setBusy] = React.useState(false)
+  const [msg, setMsg] = React.useState('')
+  const [recent, setRecent] = React.useState(() => { try { const v = localStorage.getItem('dnd5e.recentRules'); return v ? JSON.parse(v) : [] } catch (e) { return [] } })
+  React.useEffect(() => {
+    call('rules.stats', {}).then(r => { if (r && r.ok) setStats(r); else setMsg('规则索引不可用：' + ((r && r.error) || '') + '（在仓库运行 node tools/index-rules.mjs 生成索引）') }).catch(e => setMsg(String(e && e.message || e)))
+  }, [])
+  const remember = (term) => {
+    const next = [term].concat(recent.filter(x => x !== term)).slice(0, 6)
+    setRecent(next)
+    try { localStorage.setItem('dnd5e.recentRules', JSON.stringify(next)) } catch (e) { }
+  }
+  const terms = () => q.trim().split(/[\s,，]+/).filter(Boolean)
+  const run = async (override) => {
+    const query = typeof override === 'string' ? override : q
+    if (!query.trim()) return
+    if (override) setQ(query)
+    setBusy(true); setMsg(''); setItems(null); setOpenId(''); setText('')
+    try {
+      const args = { query: query, limit: 12 }
+      if (book) args.book = book
+      const r = await call('rules.search', args)
+      if (r && r.ok) { setItems(r.items || []); remember(query.trim()); if (!(r.items || []).length) setMsg('未命中：' + query) } else setMsg((r && r.error) || '检索失败')
+    } catch (e) { setMsg(String(e && e.message || e)) }
+    setBusy(false)
+  }
+  const open = async (id) => {
+    if (openId === id) { setOpenId(''); return }
+    setOpenId(id); setText('读取中…')
+    try {
+      const r = await call('rules.read', { id: id })
+      setText(r && r.ok ? r.entry.text : ('读取失败：' + ((r && r.error) || '')))
+    } catch (e) { setText(String(e && e.message || e)) }
+  }
+  const hl = (str) => {
+    const ts = terms().filter(t => t.length > 0)
+    if (!ts.length) return str
+    const out = []
+    let rest = String(str)
+    let guard = 0
+    while (rest.length && guard++ < 200) {
+      const lower = rest.toLowerCase()
+      let best = -1, bestLen = 0
+      for (const t of ts) { const i = lower.indexOf(t.toLowerCase()); if (i >= 0 && (best < 0 || i < best)) { best = i; bestLen = t.length } }
+      if (best < 0) { out.push(rest); break }
+      if (best > 0) out.push(rest.slice(0, best))
+      out.push(h('span', { key: 'm' + guard, className: 'dndp-hl' }, rest.slice(best, best + bestLen)))
+      rest = rest.slice(best + bestLen)
+    }
+    return out
+  }
+  const kids = []
+  kids.push(h('div', { key: 'h', style: { display: 'flex', alignItems: 'center', gap: 8 } },
+    h('b', null, '规则查找'),
+    h('div', { className: 'dndp-sp' }),
+    stats ? h('span', { className: 'dndp-chip' }, (stats.total || 0) + ' 条 / ' + ((stats.books || []).length) + ' 本书') : null))
+  kids.push(h('div', { key: 'f', style: { display: 'flex', gap: 6, marginTop: 8 } },
+    h('input', { key: 'i', className: 'dndp-input', placeholder: '关键词，空格=同时满足，如：擒抱 体型 / 火球术 伤害', value: q, onChange: e => setQ(e.target.value), onKeyDown: e => { if (e.key === 'Enter') run() } }),
+    h('button', { key: 'b', className: 'dndp-btn primary', disabled: busy, onClick: () => run() }, '检索')))
+  if (recent.length) kids.push(h('div', { key: 'rec', className: 'dndp-tags', style: { marginTop: 6 } },
+    h('span', { key: 'lb', className: 'dndp-note' }, '最近：'),
+    recent.map((r2, i) => h('button', { key: i, className: 'dndp-tag', style: { cursor: 'pointer' }, onClick: () => run(r2) }, r2))))
+  if (stats && (stats.books || []).length) {
+    const chips = [h('button', { key: 'all', className: 'dndp-tag', style: { cursor: 'pointer', borderColor: book === '' ? 'var(--dsw-alias-brand-primary)' : undefined }, onClick: () => setBook('') }, '全部')]
+    ;(stats.books || []).forEach((b, i) => chips.push(h('button', { key: i, className: 'dndp-tag', style: { cursor: 'pointer', borderColor: book === b.book ? 'var(--dsw-alias-brand-primary)' : undefined }, onClick: () => setBook(book === b.book ? '' : b.book) }, b.book + ' ' + b.entries)))
+    kids.push(h('div', { key: 'bk', className: 'dndp-tags', style: { marginTop: 6 } }, chips))
+  }
+  if (items && items.length) {
+    kids.push(h('div', { key: 'l', className: 'dndp-label' }, '结果 ' + items.length + ' 条（点击展开全文）'))
+    items.forEach((it, i) => {
+      kids.push(h('div', { key: 'r' + i, className: 'dndp-sect', style: { marginTop: 6 } },
+        h('button', { className: 'dndp-sec', onClick: () => open(it.id) },
+          h('span', { className: 'dndp-chev' + (openId === it.id ? ' open' : '') }, '▶'),
+          h('span', null, hl(it.title)),
+          h('div', { className: 'dndp-sp' }),
+          h('span', { className: 'dndp-chip' }, it.book)),
+        openId === it.id
+          ? h('div', { className: 'dndp-body' }, h('div', { style: { whiteSpace: 'pre-wrap', fontSize: 12, maxHeight: 340, overflow: 'auto' } }, text))
+          : h('div', { className: 'dndp-body' }, h('div', { className: 'dndp-note' }, hl(it.snippet)))))
+    })
+  }
+  if (msg) kids.push(h('div', { key: 'm', className: 'dndp-note hl' }, msg))
+  return h('div', { className: 'dndp-panel' }, kids)
+}
+
+const MCLS_ABILITY = { barbarian: 'str', bard: 'cha', cleric: 'wis', druid: 'wis', fighter: 'str', monk: 'dex', paladin: 'str', ranger: 'dex', rogue: 'dex', sorcerer: 'cha', warlock: 'cha', wizard: 'int' }
+// 5e 兼职前置：新职业主属性 ≥ 13，且所有已有职业主属性也 ≥ 13（属性值，不是修正）
+function mcPrereqInfo(s, key, owned) {
+  const own = (owned && owned.length) ? owned : (s.clsKeys || [])
+  const need = []
+  const newAb = MCLS_ABILITY[key]
+  if (newAb) need.push({ ab: newAb, why: (CLSN[key] || key) + ' 的主属性' })
+  for (const o of own) { const ab = MCLS_ABILITY[o]; if (ab && !need.some(x => x.ab === ab)) need.push({ ab: ab, why: (CLSN[o] || o) + '（已有职业）' }) }
+  const bad = need.filter(x => ((s.mods || {})[x.ab] || 0) < 1)
+  return { need: need, ok: bad.length === 0, bad: bad, text: need.map(x => ABF[x.ab] + '≥13').join('、') }
+}
+
+function MulticlassBox(props) {
+  const s = props.s
+  const [opts, setOpts] = React.useState(null)
+  const [cls, setCls] = React.useState('')
+  const [busy, setBusy] = React.useState(false)
+  const [msg, setMsg] = React.useState('')
+  React.useEffect(() => { call('build.options', {}).then(r => { if (r && r.ok) setOpts(r) }).catch(() => { }) }, [])
+  const owned = s.clsKeys || []
+  const classes = ((opts && opts.classes) || []).filter(c => owned.indexOf(c.key) < 0)
+  const add = async () => {
+    setBusy(true); setMsg('')
+    const r = await call('multiclass.add', { json: JSON.stringify({ id: s.id, cls: cls }) })
+    if (r && r.ok) { setMsg(r.summary + (r.saved ? '（已保存）' : '（未保存：' + (r.saveError || '') + '）')); if (props.onReload) props.onReload() }
+    else setMsg((r && r.error) || '兼职失败')
+    setBusy(false)
+  }
+  const info = cls ? mcPrereqInfo(s, cls, owned) : null
+  const rows = classes.map(c => {
+    const i2 = mcPrereqInfo(s, c.key, owned)
+    return h('div', { key: c.key, className: 'dndp-item', style: { opacity: i2.ok ? 1 : 0.55, cursor: i2.ok ? 'pointer' : 'default' }, onClick: () => { if (i2.ok) setCls(c.key) } },
+      h('div', { className: 'dndp-main' },
+        h('div', { className: 'dndp-name' }, (cls === c.key ? '◉ ' : '○ ') + c.name),
+        h('div', { className: 'dndp-sub' }, i2.ok ? ('可兼职｜要求 ' + i2.text + '，你满足') : ('不满足：' + i2.bad.map(x => ABF[x.ab] + ' 需 ≥13（当前 ' + ((s.mods || {})[x.ab] >= 0 ? (s.mods[x.ab] + 10) : '?') + '）').join('、')))),
+      h('span', { className: 'dndp-chip' }, i2.ok ? '✔' : '✘'))
+  })
+  return h('div', null,
+    h('div', { className: 'dndp-note' }, '兼职规则：新增职业从 Lv1 开始，总等级 +1；前置要求见下（拼写属性是**属性值 ≥ 13**）。'),
+    h('div', { style: { marginTop: 6 } }, rows.length ? rows : h('div', { className: 'dndp-note' }, '没有可兼职的职业（都已拥有）')),
+    h('div', { style: { marginTop: 8, display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' } },
+      h('button', { className: 'dndp-btn primary', disabled: busy || !cls || !(info && info.ok), onClick: add }, busy ? '处理中…' : ('兼职 ' + (cls ? CLSN[cls] : '（先选一个职业）') + ' Lv1')),
+      info && info.ok ? h('span', { className: 'dndp-note' }, '将获得：HP +（' + CLSN[cls] + '生命骰均值 + 体质）、熟练加值按总等级、' + CLSN[cls] + '的 1 级特性') : null),
+    msg ? h('div', { className: 'dndp-note hl', style: { marginTop: 6 } }, msg) : null)
+}
+
+// 职业特性与祈愿栏位（含自定义特性，可手动加/删）
+function FeatureBox(props) {
+  const s = props.s
+  const [name, setName] = React.useState('')
+  const [desc, setDesc] = React.useState('')
+  const [busy, setBusy] = React.useState(false)
+  const [msg, setMsg] = React.useState('')
+  const detail = s.choicesDetail || []
+  const invocations = detail.filter(d => d.kind === '祈愿')
+  const pacts = detail.filter(d => d.kind === '魔契')
+  const customs = detail.filter(d => d.kind === '自定义')
+  const picks = detail.filter(d => d.kind === '子职选项')
+  const save = async (payload, note) => {
+    setBusy(true); setMsg('')
+    const r = await call('pc.apply', { id: s.id, features: payload, log: note, logKind: 'state' })
+    if (r && r.ok) { setMsg(r.summary + (r.saved ? '（已保存）' : '（未保存：' + (r.saveError || '') + '）')); setName(''); setDesc(''); if (props.onReload) props.onReload() }
+    else setMsg((r && r.error) || '保存失败')
+    setBusy(false)
+  }
+  const card = (x, key, onDel) => h('span', { key: key, className: 'dndp-cardwrap', onMouseEnter: e => tipShow(e, x.name, [{ name: x.kind || '特性', desc: x.desc || '（暂无说明）' }]), onMouseMove: tipMove, onMouseLeave: tipHide },
+    h('button', { className: 'dndp-opt', style: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 8px', width: 'auto' }, onClick: onDel || undefined, title: onDel ? '点击移除' : (x.desc || '') },
+      h('span', { className: 'dndp-tag', style: { marginRight: 4 } }, x.kind || '特性'), x.name, onDel ? h('span', { style: { opacity: .5, marginLeft: 4 } }, '✕') : null))
+  return h('div', { className: 'dndp-panel' },
+    h('div', { key: 'h', style: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' } },
+      h('b', null, '职业特性与祈愿'),
+      h('div', { className: 'dndp-sp' }),
+      h('span', { className: 'dndp-chip' }, '悬停看说明')),
+    pacts.length || invocations.length || picks.length
+      ? h('div', { key: 'k', className: 'dndp-tags', style: { marginTop: 6 } }, [].concat(pacts, invocations, picks).map((x, i) => card(x, 'd' + i)))
+      : h('div', { key: 'n', className: 'dndp-note', style: { marginTop: 6 } }, '还没有祈愿/魔契/子职选项（邪术师升级到相应等级时会在升级向导里让你选，例如「痛苦魔爆」）。'),
+    h('div', { key: 'cl', className: 'dndp-label', style: { marginTop: 10 } }, '自定义特性' + (customs.length ? '（' + customs.length + '）' : '')),
+    customs.length
+      ? h('div', { key: 'c', className: 'dndp-tags' }, customs.map((x, i) => card(x, 'c' + i, () => save({ remove: [x.name] }, '移除特性 ' + x.name))))
+      : h('div', { key: 'cn', className: 'dndp-note' }, '可以在这里记下规则外的特性或备注，例如「苦痛魔爆：魔能爆每束加魅力修正」。'),
+    h('div', { key: 'f', className: 'dndp-grid', style: { marginTop: 8 } },
+      h('div', { className: 'dndp-field', style: { marginBottom: 0 } }, h('label', null, '特性名'), h('input', { className: 'dndp-input', value: name, onChange: e => setName(e.target.value), placeholder: '苦痛魔爆' })),
+      h('div', { className: 'dndp-field', style: { marginBottom: 0 } }, h('label', null, '说明'), h('input', { className: 'dndp-input', value: desc, onChange: e => setDesc(e.target.value), placeholder: '魔能爆每束加魅力修正' }))),
+    h('div', { key: 'go', style: { marginTop: 8 } },
+      h('button', { className: 'dndp-btn primary', disabled: busy || !name, onClick: () => save({ add: [{ name: name, desc: desc }] }, '添加特性 ' + name) }, '添加特性')),
+    msg ? h('div', { key: 'm', className: 'dndp-note hl', style: { marginTop: 6 } }, msg) : null)
+}
+
+// 手动调整等级（DM 覆写）——与「按经验升级」完全分开
+function ManualLevelBox(props) {
+  return h(LevelSet, { s: props.s, onReload: props.onReload, manual: true })
+}
+
+// 升级向导（按经验）：提升本职等级 / 兼职新职业
+function LevelUpBox(props) {
+  const s = props.s
+  const [mode, setMode] = React.useState('advance')
+  const canLevel = s.xpNext != null && Number(s.xp) >= Number(s.xpNext)
+  return h('div', { className: 'dndp-panel' },
+    h('div', { key: 'h', style: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' } },
+      h('b', null, '升级（按经验）'),
+      h(XpMini, { item: { xp: s.xp, next: s.xpNext, pct: (!s.xpNext ? 100 : Math.max(0, Math.min(100, Math.round((Number(s.xp) - Number(s.xpPrev || 0)) / Math.max(1, Number(s.xpNext) - Number(s.xpPrev || 0)) * 100)))), canLevel: canLevel, targetLevel: s.level + 1 } }),
+      h('div', { className: 'dndp-sp' }),
+      h('div', { className: 'dndp-advgrp' },
+        h('button', { className: 'dndp-btn tiny' + (mode === 'advance' ? ' primary' : ''), onClick: () => setMode('advance') }, '提升本职'),
+        h('button', { className: 'dndp-btn tiny' + (mode === 'multi' ? ' primary' : ''), onClick: () => setMode('multi') }, '兼职新职业'))),
+    canLevel ? h('div', { key: 'b', className: 'dndp-note hl', style: { marginTop: 6 } },
+      '✨ 经验已满（' + s.xp + '/' + s.xpNext + '），可以升到 Lv' + (s.level + 1) + ' —— 选「提升本职」升级本职业，或选「兼职新职业」拿别的职业 1 级。') : h('div', { key: 'b2', className: 'dndp-note', style: { marginTop: 6 } },
+      '经验未满（' + (s.xp || 0) + '/' + (s.xpNext == null ? '—' : s.xpNext) + '）：升不了级；需要直接改等级请用下面的「手动调整等级」。'),
+    h('div', { key: 'body', style: { marginTop: 8 } },
+      mode === 'advance' ? h(LevelSet, { s: s, onReload: props.onReload }) : h(MulticlassBox, { s: s, onReload: props.onReload })))
+}
+
+function ManualEdit(props) {
+  const s = props.s
+  const [open, setOpen] = React.useState(false)
+  const [hpCur, setHpCur] = React.useState(String(s.hp.cur))
+  const [hpMax, setHpMax] = React.useState(String(s.hp.max))
+  const [hpTemp, setHpTemp] = React.useState(String(s.hp.temp || 0))
+  const [xp, setXp] = React.useState(String(s.xp || 0))
+  const [ac, setAc] = React.useState(String(s.ac))
+  const [busy, setBusy] = React.useState(false)
+  const [msg, setMsg] = React.useState('')
+  React.useEffect(() => { setHpCur(String(s.hp.cur)); setHpMax(String(s.hp.max)); setHpTemp(String(s.hp.temp || 0)); setXp(String(s.xp || 0)); setAc(String(s.ac)) }, [s.id, s.level, s.hp.cur, s.hp.max, s.ac, s.xp])
+  const field = (label, val, setVal, k) => h('div', { key: k, className: 'dndp-field', style: { marginBottom: 6 } }, h('label', null, label), h('input', { className: 'dndp-input', value: val, onChange: e => setVal(e.target.value) }))
+  const save = async (opts) => {
+    if (!opts || !opts.silent) { setBusy(true); setMsg('') }
+    try {
+      const r = await call('sheet.patch', { json: JSON.stringify({ id: s.id, patch: { hpCur: hpCur, hpMax: hpMax, hpTemp: hpTemp, xp: xp, ac: ac } }) })
+      if (r && r.ok) { setMsg(r.summary + (r.saved ? '（已保存）' : '（未保存：' + (r.saveError || '未知原因') + '）')); if (props.onReload) props.onReload() } else setMsg((r && r.error) || '保存失败')
+    } catch (e) { setMsg(String(e && e.message || e)) }
+    setBusy(false)
+  }
+  const kids = [h('div', { key: 'h', style: { display: 'flex', alignItems: 'center', gap: 8 } }, h('b', null, '手动调整数值'), h('div', { className: 'dndp-sp' }), h('button', { className: 'dndp-btn', onClick: () => setOpen(!open) }, open ? '收起' : '展开'))]
+  if (open) {
+    kids.push(h('div', { key: 'g', className: 'dndp-grid', style: { marginTop: 8 } }, field('当前 HP', hpCur, setHpCur, 'a'), field('HP 上限', hpMax, setHpMax, 'b'), field('临时 HP', hpTemp, setHpTemp, 'c'), field('经验值', xp, setXp, 'd'), field('AC（覆盖计算值）', ac, setAc, 'e')))
+    kids.push(h('div', { key: 'go', style: { marginTop: 8 } }, h('button', { className: 'dndp-btn primary', disabled: busy, onClick: save }, '保存数值')))
+  }
+  if (msg) kids.push(h('div', { key: 'm', className: 'dndp-note hl' }, msg))
+  return h('div', { className: 'dndp-panel' }, kids)
+}function Detail(props) {
+  const s = props.s
+  const cells = [['HP', s.hp.cur + '/' + s.hp.max], ['AC', s.ac], ['熟练', '+' + s.pb]].map(x => h('div', { key: x[0], className: 'dndp-stat' }, h('b', null, x[1]), h('span', null, x[0])))
+  if (s.dc) { cells.push(h('div', { key: 'dc', className: 'dndp-stat' }, h('b', null, s.dc), h('span', null, '法术DC'))); cells.push(h('div', { key: 'at', className: 'dndp-stat' }, h('b', null, '+' + s.attack), h('span', null, '法术攻击'))) }
+  cells.push(h('div', { key: 'hd', className: 'dndp-stat' }, h('b', null, s.hitDice || '—'), h('span', null, '生命骰')))
+  const attrs = AB.map(a => h('div', { key: a, className: 'dndp-ab' }, h('span', { className: 'ab' }, ABF[a]), h('span', { className: 'val' }, fmt(s.mods[a]))))
+  const saves = AB.map(a => h('span', { key: a, className: 'dndp-tag' + (s.saveProfs.includes(a) ? ' prof' : '') }, ABF[a] + ' ' + fmt(s.saves[a])))
+  const featCard = (f, k) => h(Card, { key: k, title: f.name, tipTitle: f.name, items: [{ name: f.name, desc: f.desc }] })
+  const children = []
+  children.push(h('div', { key: 'stats', className: 'dndp-stats' }, cells))
+  if (s.classFix && s.classFix.length) {
+    children.push(h('div', { key: 'cf', className: 'dndp-warn', style: { marginTop: 8 } },
+      '⚠ 职业条目有问题：' + s.classFix.join('；'),
+      h('div', { style: { marginTop: 5 } }, h('button', {
+        className: 'dndp-btn tiny primary',
+        onClick: async () => { const r = await call('pc.repair', { id: s.id }); if (props.onReload) props.onReload() },
+      }, '一键修复并保存'))))
+  }
+  children.push(h('div', { key: 'lu', style: { marginTop: 10 } }, h(LevelUpBox, { s: s, onReload: props.onReload })))
+  children.push(h('div', { key: 'ml', style: { marginTop: 10 } }, h(ManualLevelBox, { s: s, onReload: props.onReload })))
+  children.push(h('div', { key: 'me', style: { marginTop: 10 } }, h(ManualEdit, { s: s, onReload: props.onReload })))
+  children.push(h('div', { key: 'st', style: { marginTop: 10 } }, h(StatusPanel, { s: s, onReload: props.onReload })))
+  if (s.resources && s.resources.length) { children.push(h('div', { key: 'resl', className: 'dndp-label' }, '职业资源')); children.push(h('div', { key: 'res', className: 'dndp-tags' }, s.resources.map((r, i) => h('span', { key: i, className: 'dndp-tag' }, r.name + ' ' + r.max + (r.note ? '（' + r.note + '）' : ''))))) }
+  if (s.subclass) {
+    const picks = s.subclass.picks ? Object.values(s.subclass.picks) : []
+    children.push(h('div', { key: 'scl', className: 'dndp-label' }, '子职业：' + s.subclass.name + (picks.length ? '（' + picks.join(' / ') + '）' : '')))
+    children.push(h('div', { key: 'sc', className: 'dndp-tags' }, (s.subclass.features || []).map((f, i) => featCard(f, 'sc' + i))))
+  }
+  if (s.choices && (s.choices.pactBoon || (s.choices.invocations || []).length || (s.choices.feats || []).length)) {
+    const tags = []
+    if (s.choices.pactBoon) tags.push(h('span', { key: 'pb', className: 'dndp-tag' }, '魔契：' + s.choices.pactBoon))
+    ;(s.choices.invocations || []).forEach((n, i) => tags.push(h('span', { key: 'iv' + i, className: 'dndp-tag' }, '祈愿：' + n)))
+    ;(s.choices.feats || []).forEach((n, i) => tags.push(h('span', { key: 'ft' + i, className: 'dndp-tag' }, '专长：' + n)))
+    children.push(h('div', { key: 'chl', className: 'dndp-label' }, '契约与专长'))
+    children.push(h('div', { key: 'ch', className: 'dndp-tags' }, tags))
+  }
+  children.push(h('div', { key: 'ftl', className: 'dndp-label' }, '种族 / 职业 / 背景特性'))
+  const ft = []
+  ;((s.features && s.features.race) || []).forEach((f, i) => ft.push(featCard(f, 'r' + i)))
+  ;((s.features && s.features.class) || []).forEach((f, i) => ft.push(featCard(f, 'c' + i)))
+  ;((s.features && s.features.background) || []).forEach((f, i) => ft.push(featCard(f, 'b' + i)))
+  children.push(h('div', { key: 'ft', className: 'dndp-tags' }, ft))
+  children.push(h('div', { key: 'fb', style: { marginTop: 10 } }, h(FeatureBox, { s: s, onReload: props.onReload })))
+  children.push(h('div', { key: 'al', className: 'dndp-label' }, '属性与修正'))
+  children.push(h('div', { key: 'attrs', className: 'dndp-attr' }, attrs))
+  children.push(h('div', { key: 'svl', className: 'dndp-label' }, '豁免检定'))
+  children.push(h('div', { key: 'svs', className: 'dndp-tags' }, saves))
+  if (s.spells && s.spells.length) {
+    const byLv = {}
+    s.spells.forEach(sp => { (byLv[sp.level] = byLv[sp.level] || []).push(sp) })
+    if (s.slots && s.slots.length) { children.push(h('div', { key: 'sl0', className: 'dndp-label' }, '法术位')); s.slots.forEach((x, i) => children.push(h(Pips, { key: 'pip' + i, lv: x.lv, max: x.max }))) }
+    children.push(h('div', { key: 'sp0', className: 'dndp-label' }, '法术'))
+    Object.keys(byLv).map(Number).sort((a, b) => a - b).forEach(lv => {
+      const arr = byLv[lv]
+      const cards = arr.map(sp => h('div', { key: sp.key, style: { marginBottom: 6 } }, h(Card, { title: sp.name, sub: sp.school, tipTitle: sp.name, items: spellItems(sp) })))
+      children.push(h(Sect, { key: 'spg' + lv, title: (lv === 0 ? '0 环 ' : lv + ' 环 ') + LVNAME[lv], count: arr.length, open: false }, cards))
+    })
+  }
+  children.push(h('div', { key: 'eq', style: { marginTop: 10 } }, h(EquipPanel, { s: s, onReload: props.onReload })))
+  children.push(h('div', { key: 'bag', style: { marginTop: 10 } }, h(Bag, { s: s, onReload: props.onReload })))
+  if (!props.noRules) children.push(h('div', { key: 'rules', style: { marginTop: 10 } }, h(RulesPanel, null)))
+  return h('div', { className: 'dndp-detail' }, h('div', { key: 't', className: 'dndp-title' }, s.name), h('div', { key: 'sub', className: 'dndp-subtitle' }, 'Lv' + s.level + '  ·  ' + s.race + '  ·  ' + (s.classes || []).join(' / ')), children)
+}
+function Wizard(props) {
+  const [opts, setOpts] = React.useState(null)
+  const [err, setErr] = React.useState('')
+  const [step, setStep] = React.useState(0)
+  const [busy, setBusy] = React.useState(false)
+  const [name, setName] = React.useState('')
+  const [player, setPlayer] = React.useState('')
+  const [race, setRace] = React.useState('')
+  const [cls, setCls] = React.useState('')
+  const [sub, setSub] = React.useState('')
+  const [subPicks, setSubPicks] = React.useState({})
+  const [bg, setBg] = React.useState('')
+  const [scores, setScores] = React.useState({ str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 })
+  const [skills, setSkills] = React.useState([])
+  const [cantrips, setCantrips] = React.useState([])
+  const [spells, setSpells] = React.useState([])
+  const [caster, setCaster] = React.useState(null)
+  const [spellsAll, setSpellsAll] = React.useState([])
+  const [pack, setPack] = React.useState('dungeoneersPack')
+  const [weapons, setWeapons] = React.useState([])
+  const [armorSel, setArmorSel] = React.useState(null)
+  const [result, setResult] = React.useState(null)
+  React.useEffect(() => { call('build.options', {}).then(r => { if (r && r.ok) setOpts(r) }).catch(e => setErr(String(e && e.message || e))) }, [])
+  function loadCaster(c) { call('build.caster', { cls: c }).then(r => { setCaster(r && r.ok ? r : null); setSpellsAll((r && r.ok && r.spells) || []) }).catch(() => setCaster(null)) }
+  const pickClass = (k) => { setCls(k); setSub(''); setSubPicks({}); setCaster(null); setSpellsAll([]); loadCaster(k) }
+  const spend = () => AB.reduce((s, a) => s + PBCOST[scores[a]], 0)
+  const raceSel = opts && opts.races.find(r => r.key === race)
+  const clsSel = opts && opts.classes.find(c => c.key === cls)
+  const bgSel = opts && opts.backgrounds.find(b => b.key === bg)
+  const needSub = !!(clsSel && clsSel.subclass && clsSel.subclass.chooseLevel === 1)
+  const subSel = (clsSel && clsSel.subclass) ? clsSel.subclass.options.find(o => o.key === sub) : null
+  const dot = n => h('div', { key: n, className: 'dndp-stepdot' + (n === step ? ' on' : '') })
+  const children = [h('div', { key: 'dots', className: 'dndp-steps' }, [0, 1, 2, 3, 4, 5].map(dot))]
+  const buttons = (list, keyOf, subOf, sel, onSel) => (list || []).map(it => h(Card, { key: keyOf(it), on: sel === keyOf(it), title: it.name, sub: subOf ? subOf(it) : null, tipTitle: it.name, items: (it.features || []).map(f => ({ name: f.name, desc: f.desc })), onClick: () => onSel(keyOf(it)) }))
+  const nav = (prev, next, canNext, onNext) => {
+    const row = []
+    if (prev) row.push(h('button', { key: 'b', className: 'dndp-btn', onClick: () => setStep(step - 1) }, prev))
+    row.push(h('div', { key: 'sp', className: 'dndp-sp' }))
+    if (next) row.push(h('button', { key: 'n', className: 'dndp-btn primary', disabled: busy || canNext, onClick: () => { if (onNext) onNext(); else setStep(step + 1) } }, next))
+    return h('div', { key: 'nav', style: { display: 'flex', gap: 8, marginTop: 14 } }, row)
+  }
+  if (result) {
+    const done = []
+    done.push(h('div', { key: 't', className: 'dndp-title' }, (result.name || '已生成') + (result.saved ? ' ✔' : '')))
+    done.push(h('div', { key: 'id', className: 'dndp-note hl' }, 'ID: ' + (result.id || '')))
+    done.push(h('div', { key: 's', className: 'dndp-note' }, result.summary || ''))
+    done.push(h('textarea', { key: 'j', className: 'dndp-input', readOnly: true, rows: 6, value: result.character || '' }))
+    done.push(h('div', { key: 'btns', style: { marginTop: 8, display: 'flex', gap: 8 } }, h('button', { key: 'c', className: 'dndp-btn', onClick: () => { try { navigator.clipboard.writeText(result.character || '') } catch (e) { } } }, '复制 JSON'), h('button', { key: 'ok', className: 'dndp-btn primary', onClick: props.onDone }, '完成')))
+    children.push(h('div', { key: 'r', className: 'dndp-detail' }, done))
+  } else if (step === 0) {
+    const kids = []
+    kids.push(h('div', { key: 'n', className: 'dndp-field' }, h('label', null, '角色名 *'), h('input', { className: 'dndp-input', value: name, onChange: e => setName(e.target.value) })))
+    kids.push(h('div', { key: 'p', className: 'dndp-field' }, h('label', null, '玩家'), h('input', { className: 'dndp-input', value: player, onChange: e => setPlayer(e.target.value) })))
+    kids.push(h('div', { key: 'r', className: 'dndp-field' }, h('label', null, '种族'), h('div', { className: 'dndp-grid' }, buttons(opts && opts.races, x => x.key, it => it.asi.map(x2 => (x2[0] === 'choose' ? '自选+1×' + x2[1] : ABF[x2[0]] + '+' + x2[1])).join(' '), race, setRace))))
+    kids.push(h('div', { key: 'c', className: 'dndp-field' }, h('label', null, '职业'), h('div', { className: 'dndp-grid' }, buttons(opts && opts.classes, x => x.key, it => (it.casting ? '施法属性 ' + ABF[it.casting.ability] : it.primary ? '主属性 ' + ABF[it.primary] : ''), cls, pickClass))))
+    if (needSub) {
+      kids.push(h('div', { key: 'sc', className: 'dndp-field' }, h('label', null, '子职业（1 级必选）'), h('div', { className: 'dndp-grid' }, buttons(clsSel.subclass.options, x => x.key, null, sub, k => { setSub(k); setSubPicks({}) }))))
+      if (subSel && subSel.choices) kids.push(h('div', { key: 'sp', className: 'dndp-field' }, h('label', null, subSel.choices.label), h('div', { className: 'dndp-grid' }, (subSel.choices.options || []).map(op => h(Card, { key: op.key, on: subPicks[subSel.choices.key] === op.key, title: op.name, tipTitle: op.name, items: [{ name: op.name, desc: op.desc || '' }], onClick: () => setSubPicks(Object.assign({}, subPicks, { [subSel.choices.key]: op.key })) })))))
+    }
+    kids.push(h('div', { key: 'b', className: 'dndp-field' }, h('label', null, '背景'), h('div', { className: 'dndp-grid' }, buttons(opts && opts.backgrounds, x => x.key, it => (it.skills || []).map(skName).join('/'), bg, setBg))))
+    const needPick = !!(subSel && subSel.choices && !subPicks[subSel.choices.key])
+    kids.push(nav(null, '下一步 →', (!(name && race && cls && bg)) || (needSub && !sub) || needPick))
+    children.push(h('div', { key: 's0', className: 'dndp-detail' }, kids))
+  } else if (step === 1) {
+    const total = spend()
+    const rows = AB.map(a => {
+      const v = scores[a]
+      const key = clsSel && (clsSel.primary === a || (clsSel.casting && clsSel.casting.ability === a))
+      const upOk = v < 15 && total + incCost(v) <= 27
+      const row = [h('div', { key: 'g', className: 'grow' }, h('b', null, ABF[a]), key ? h('span', { className: 'dndp-note hl' }, ' ◈') : null, h('div', { className: 'dndp-note' }, '修正 ' + fmt(Math.floor((v - 10) / 2)) + ' · 升级花费 ' + incCost(v)))]
+      row.push(h('button', { key: 'd', className: 'dndp-ico', disabled: v <= 8, onClick: () => setScores(s => ({ ...s, [a]: v - 1 })) }, '−'))
+      row.push(h('b', { key: 'v' }, v))
+      row.push(h('button', { key: 'u', className: 'dndp-ico', disabled: !upOk, onClick: () => setScores(s => ({ ...s, [a]: v + 1 })) }, '+'))
+      return h('div', { key: a, className: 'dndp-pbrow' }, row)
+    })
+    const kids = [h('div', { key: 'bar', className: 'dndp-pbbar' }, h('span', null, '购点 27 点'), h('div', { className: 'dndp-sp' }), h('b', null, total + ' / 27'))]
+    rows.forEach(r => kids.push(r))
+    if (raceSel) kids.push(h('div', { key: 'asi', className: 'dndp-note' }, '种族加值：' + raceSel.asi.map(x => (x[0] === 'choose' ? '自选+1×' + x[1] : ABF[x[0]] + '+' + x[1])).join(' ')))
+    if (clsSel) kids.push(h('div', { key: 'tip', className: 'dndp-note hl' }, '推荐：' + ABF[clsSel.primary] + ' 最高' + (clsSel.casting ? '；' + ABF[clsSel.casting.ability] + '(施法) 14–16' : '') + '；体质≥14'))
+    kids.push(nav('← 上一步', '下一步 →', total !== 27))
+    children.push(h('div', { key: 's1', className: 'dndp-detail' }, kids))
+  } else if (step === 2) {
+    const clsOpt = (clsSel && clsSel.skillOptions) || []
+    const bgSkills = (bgSel && bgSel.skills) || []
+    const maxClass = clsSel ? Number(clsSel.skillCount) : 0
+    const list = clsOpt.map(s => {
+      const isBg = bgSkills.includes(s)
+      const taken = skills.includes(s)
+      const can = isBg || taken || skills.filter(x => !bgSkills.includes(x)).length < maxClass
+      return h('button', { key: s, className: 'dndp-opt' + (taken ? ' sel' : ''), disabled: !isBg && !taken && !can, onClick: () => setSkills(x => (taken ? x.filter(v => v !== s) : x.concat(s))) }, skName(s) + (isBg ? '（背景）' : ''))
+    })
+    const kids = [h('div', { key: 'n', className: 'dndp-note' }, '背景熟练自动计入；职业再选 ' + maxClass + ' 项'), h('div', { key: 'g', className: 'dndp-grid' }, list)]
+    kids.push(nav('← 上一步', '下一步 →', false, () => { if (!caster && clsSel && clsSel.casting) loadCaster(cls); setStep(3) }))
+    children.push(h('div', { key: 's2', className: 'dndp-detail' }, kids))
+  } else if (step === 3 && caster && caster.ok) {
+    const cMax = Number(caster.cantripsKnown) || 0
+    const abScore = scores[caster.ability] || 8
+    const abMod = Math.floor((abScore - 10) / 2)
+    const sMax = caster.prepared ? Math.max(0, abMod + 1) : (Number(caster.knownMax) || 0)
+    const capText = caster.prepared ? ('准备上限 = ' + ABF[caster.ability] + '修正(' + (abMod > 0 ? '+' : '') + abMod + ')+1 = ' + sMax) : ('已知上限 ' + sMax)
+    const card = (sp) => {
+      const isC = sp.level === 0
+      const on = isC ? cantrips.includes(sp.key) : spells.includes(sp.key)
+      const maxed = isC ? (cantrips.length >= cMax && !on) : (spells.length >= sMax && !on)
+      const toggle = () => { if (on) (isC ? setCantrips : setSpells)(x => x.filter(v => v !== sp.key)); else if (!maxed) (isC ? setCantrips : setSpells)(x => x.concat(sp.key)) }
+      return h(Card, { key: sp.key, on: on, disabled: maxed, title: (isC ? '戏法·' : '1环·') + sp.name, sub: sp.school, tipTitle: sp.name, onClick: toggle, items: spellItems(sp) })
+    }
+    const kids = [h('div', { key: 'n', className: 'dndp-note hl' }, '施法属性 ' + (ABF[caster.ability] || caster.ability) + '：戏法 ' + cantrips.length + '/' + cMax + '，1环法术 ' + spells.length + '/' + sMax + '（' + capText + '）')]
+    kids.push(h('div', { key: 'l0', className: 'dndp-label' }, '戏法'))
+    kids.push(h('div', { key: 'c0', className: 'dndp-grid' }, spellsAll.filter(s => s.level === 0).map(card)))
+    kids.push(h('div', { key: 'l1', className: 'dndp-label' }, '1 环'))
+    kids.push(h('div', { key: 'c1', className: 'dndp-grid' }, spellsAll.filter(s => s.level === 1).map(card)))
+    kids.push(nav('← 上一步', '下一步 →', false))
+    children.push(h('div', { key: 's3', className: 'dndp-detail' }, kids))
+  } else if (step === 3 || step === 4) {
+    const armorTags = (clsSel && clsSel.armorTags) || []
+    const wepTags = (clsSel && clsSel.weaponTags) || []
+    const armorArr = ((opts && opts.armor) || []).filter(a => armorTags.includes('all') || armorTags.includes(a.cat))
+    const wepArr = ((opts && opts.weapons) || []).filter(w => { if (wepTags.includes('martial')) return w.cat === 'martial'; if (wepTags.includes('simple')) return w.cat === 'simple'; return wepTags.includes(w.key) })
+    const optBtn = (on, dis, onClick, text) => h('button', { className: 'dndp-opt' + (on ? ' sel' : ''), disabled: dis, onClick: onClick }, text)
+    const grid = arr => h('div', { className: 'dndp-grid' }, arr)
+    const kids = []
+    kids.push(h('div', { key: 'pk', className: 'dndp-field' }, h('label', null, '起始装备包裹（选 1，悬停看内含物品）'), grid(((opts && opts.packs) || []).map(p => h(Card, { key: p.key, on: pack === p.key, title: p.name, sub: ((p.items || []).length || 0) + ' 件物品', tipTitle: p.name + ' · 内含', items: (p.items || []).map(i => ({ name: i.name, desc: i.qty > 1 ? '×' + i.qty : '' })), onClick: () => setPack(p.key) })))))
+    if (armorArr.length) kids.push(h('div', { key: 'ar', className: 'dndp-field' }, h('label', null, '护甲（限1）'), grid(armorArr.map(a => optBtn(armorSel === a.key, false, () => setArmorSel(armorSel === a.key ? null : a.key), a.name + ' · AC' + a.base)))))
+    if (wepArr.length) {
+      const kindOf = w => (w.props || []).includes('ammunition') ? 'ranged' : 'melee'
+      kids.push(h('div', { key: 'wp', className: 'dndp-field' }, h('label', null, '武器（近战/远程各限1）'), grid(wepArr.map(w => {
+        const sel = weapons.includes(w.key)
+        const k = kindOf(w)
+        const blocked = !sel && weapons.filter(x => x !== w.key).some(x2 => { const w2 = (opts.weapons || []).find(ww => ww.key === x2); return w2 && kindOf(w2) === k })
+        return optBtn(sel, blocked, () => setWeapons(x => (sel ? x.filter(v => v !== w.key) : x.concat(w.key))), w.name + ' ' + w.damage)
+      }))))
+    }
+    const doCreate = async () => {
+      setBusy(true); setErr('')
+      try {
+        const r = await call('build.create', { json: JSON.stringify({ name, player, race, cls, subclass: sub || undefined, subPicks: subPicks, bg, scores, skills, cantrips, spells, pack, armor: armorSel, weapons }) })
+        if (r && r.ok) setResult(r); else setErr((r && r.error) || 'create failed')
+      } catch (e) { setErr(String(e && e.message || e)) }
+      setBusy(false)
+    }
+    kids.push(h('button', { key: 'go', className: 'dndp-btn primary', disabled: busy, onClick: doCreate }, '生成角色'))
+    children.push(h('div', { key: 's4', className: 'dndp-detail' }, kids))
+  }
+  if (err) children.push(h('div', { key: 'e', className: 'dndp-err' }, err))
+  return h('div', { className: 'dndp-root' }, h('div', { className: 'dndp-header' }, h('span', { className: 'dndp-ic' }, '＋'), h('span', null, '新建角色'), h('div', { className: 'dndp-sp' }), h('button', { className: 'dndp-btn', onClick: props.onBack }, '取消')), h('div', { className: 'dndp-scroll' }, children))
+}
+const LOGK = {
+  roll: { n: '骰子', c: 'k-roll' }, attack: { n: '攻击', c: 'k-atk' }, damage: { n: '伤害', c: 'k-dmg' },
+  heal: { n: '治疗', c: 'k-heal' }, narrate: { n: '叙述', c: 'k-narr' }, turn: { n: '轮次', c: 'k-turn' },
+  move: { n: '移动', c: 'k-move' }, state: { n: '状态', c: 'k-state' }, down: { n: '倒地', c: 'k-dmg' }, dm: { n: 'DM', c: 'k-narr' }, player: { n: '玩家', c: 'k-turn' },
+}
+function logPresets(s) {
+  const out = []
+  if (s && s.attack != null) out.push({ name: '法术攻击 ' + fmt(s.attack), expr: '1d20' + fmt(s.attack) })
+  const m = s && s.weaponStats && s.weaponStats.main
+  if (m) {
+    out.push({ name: (m.name || '主手') + ' 攻击 ' + fmt(m.attack), expr: '1d20' + fmt(m.attack) })
+    out.push({ name: '伤害 ' + m.damage + (m.dmgBonus ? fmt(m.dmgBonus) : ''), expr: m.damage + (m.dmgBonus ? fmt(m.dmgBonus) : '') })
+  }
+  ;['int', 'dex', 'wis', 'con'].forEach(a => { if (s && s.mods) out.push({ name: ABF[a] + '检定', expr: '1d20' + fmt(s.mods[a]) }) })
+  if (s && s.saves) out.push({ name: '敏捷豁免', expr: '1d20' + fmt(s.saves.dex) })
+  out.push({ name: 'd20 裸骰', expr: '1d20' })
+  return out
+}
+function DiceBar(props) {
+  const [expr, setExpr] = React.useState('1d20')
+  const [adv, setAdv] = React.useState('normal')
+  const [label, setLabel] = React.useState('')
+  const [busy, setBusy] = React.useState(false)
+  const [last, setLast] = React.useState('')
+  const actorName = props.actorName || ''
+  const doRoll = async () => {
+    const e = String(expr || '').trim()
+    if (!e) { setLast('请输入骰式'); return }
+    setBusy(true)
+    try {
+      const r = await call('roll.dice', { expr: e, advantage: adv, actor: actorName, label: label })
+      if (r && r.ok) setLast(r.detail + (r.saved === false ? '（未写入文件：' + (r.saveError || '未知') + '）' : '（已记入战斗记录）'))
+      else setLast('失败：' + ((r && r.error) || '未知错误'))
+    } catch (err) { setLast('失败：' + String(err && err.message || err)) }
+    setBusy(false)
+    if (props.onDone) props.onDone()
+  }
+  const kids = []
+  const row1 = [
+    h('input', { key: 'i', className: 'dndp-input dndp-mono', style: { width: 108, flex: 'none' }, value: expr, placeholder: '1d20+5', onChange: e => setExpr(e.target.value), onKeyDown: e => { if (e.key === 'Enter') doRoll() } }),
+    h('div', { key: 'a', className: 'dndp-advgrp' }, [['normal', '普通'], ['adv', '优势'], ['dis', '劣势']].map(x => h('button', { key: x[0], className: 'dndp-btn tiny' + (adv === x[0] ? ' primary' : ''), onClick: () => setAdv(x[0]) }, x[1]))),
+    h('button', { key: 'go', className: 'dndp-btn primary', disabled: busy, onClick: doRoll }, busy ? '投掷中…' : '投掷 d20'),
+  ]
+  kids.push(h('div', { key: 'r1', className: 'dndp-logbar' }, row1))
+  const row2 = []
+  if (props.party && props.party.length) row2.push(h('select', { key: 's', className: 'dndp-input', style: { width: 126, flex: 'none' }, value: props.pcId || '', onChange: e => props.onPick && props.onPick(e.target.value) }, [h('option', { key: '_', value: '' }, '（不署名）')].concat(props.party.map(p => h('option', { key: p.id, value: p.id }, p.name)))))
+  row2.push(h('input', { key: 'l', className: 'dndp-input', style: { flex: 1, minWidth: 120 }, value: label, placeholder: '备注：如「火焰箭 → 地精B」', onChange: e => setLabel(e.target.value) }))
+  kids.push(h('div', { key: 'r2', className: 'dndp-logbar' }, row2))
+  const ps = props.presets || []
+  if (ps.length) kids.push(h('div', { key: 'r3', className: 'dndp-chips' }, ps.map((p, i) => h('button', { key: i, className: 'dndp-btn tiny', title: p.expr, onClick: () => setExpr(p.expr) }, p.name))))
+  if (last) kids.push(h('div', { key: 'r4', className: 'dndp-note hl dndp-mono' }, last))
+  return h('div', { key: 'dice', className: 'dndp-dicebox' }, kids)
+}
+function LogRow(props) {
+  const e = props.e || {}
+  const k = LOGK[e.kind] || { n: e.kind || '—', c: '' }
+  const line = []
+  if (e.actor) line.push(h('span', { key: 'a', className: 'dndp-loga' }, e.actor))
+  if (e.text) line.push(h('span', { key: 't', className: 'dndp-logt' }, e.text))
+  const diceTxt = e.detail || ((e.expr && e.total != null) ? (e.expr + ' = ' + e.total) : '')
+  return h('div', { className: 'dndp-logrow' + (e.kind === 'turn' ? ' r' : '') },
+    h('span', { className: 'dndp-logk ' + k.c }, k.n),
+    h('div', { className: 'dndp-logmain' },
+      h('div', { key: 'l', className: 'dndp-logline' }, line),
+      diceTxt ? h('code', { key: 'd', className: 'dndp-logd' }, diceTxt) : null),
+    h('span', { className: 'dndp-time' }, (e.round ? 'R' + e.round + ' · ' : '') + (e.t ? new Date(e.t).toLocaleTimeString() : '')))
+}
+function LogView(props) {
+  const [log, setLog] = React.useState(null)
+  const [err, setErr] = React.useState('')
+  const [party, setParty] = React.useState(props.party || [])
+  const [pcId, setPcId] = React.useState('')
+  const [sheet, setSheet] = React.useState(null)
+  const [auto, setAuto] = React.useState(true)
+  const [only, setOnly] = React.useState('all')
+  const [msg, setMsg] = React.useState('')
+  const load = () => call('log.list', { limit: 300 }).then(r => { if (r && r.ok) { setLog(r); setErr('') } else setErr((r && r.error) || '读取战斗记录失败') }).catch(e => setErr(String(e && e.message || e)))
+  React.useEffect(() => {
+    load()
+    call('party.list', {}).then(r => { if (r && r.ok) setParty(r.items || []) }).catch(() => { })
+  }, [])
+  React.useEffect(() => {
+    if (!pcId) { setSheet(null); return undefined }
+    call('party.sheet', { id: pcId }).then(r => { if (r && r.ok) setSheet(r.sheet) }).catch(() => { })
+    return undefined
+  }, [pcId])
+  React.useEffect(() => {
+    if (!auto || typeof setInterval !== 'function') return undefined
+    const t = setInterval(load, 3000)
+    return () => clearInterval(t)
+  }, [auto])
+  const bump = async (d) => {
+    const r = await call('log.set', { round: Math.max(0, (Number(log && log.round) || 0) + d) })
+    setMsg(r && r.ok ? ('轮次 → R' + r.round) : ((r && r.error) || '设置失败'))
+    load()
+  }
+  const clear = async () => { const r = await call('log.clear', {}); setMsg(r && r.ok ? '已清空战斗记录' : ((r && r.error) || '清空失败')); load() }
+  const all = (log && log.entries) || []
+  const entries = all.filter(e => {
+    if (only === 'all') return true
+    if (only === 'dice') return !!e.expr
+    if (only === 'dm') return e.kind !== 'roll'
+    return e.actor && e.actor === only
+  })
+  const actorName = (party.find(p => p.id === pcId) || {}).name || ''
+  const head = [
+    h('span', { key: 'i', className: 'dndp-ic' }, '🎲'), h('span', { key: 't' }, '战斗记录'),
+    h('div', { key: 'sp', className: 'dndp-sp' }),
+    h('span', { key: 'c', className: 'dndp-chip' }, (log && log.campaign) || '未命名战役'),
+    h('span', { key: 'r', className: 'dndp-chip' }, 'R' + ((log && log.round) || 0)),
+    h('button', { key: 'b', className: 'dndp-btn', onClick: () => bump(1) }, '轮次 +1'),
+    h('button', { key: 'a', className: 'dndp-btn' + (auto ? ' primary' : ''), onClick: () => setAuto(!auto) }, auto ? '自动刷新 开' : '自动刷新 关'),
+    h('button', { key: 'rf', className: 'dndp-btn', onClick: load }, '刷新'),
+    h('button', { key: 'cl', className: 'dndp-btn', onClick: clear }, '清空'),
+    h('button', { key: 'bk', className: 'dndp-btn', onClick: props.onBack }, '返回'),
+  ]
+  const filters = [['all', '全部'], ['dice', '只看骰子'], ['dm', '只看推进']].concat(party.map(p => [p.name, p.name]))
+  const body = []
+  body.push(h(DiceBar, { key: 'dice', party: party, pcId: pcId, actorName: actorName, presets: logPresets(sheet), onPick: setPcId, onDone: load }))
+  body.push(h('div', { key: 'f', className: 'dndp-filters' }, filters.map(f => h('button', { key: f[0], className: 'dndp-btn tiny' + (only === f[0] ? ' primary' : ''), onClick: () => setOnly(f[0]) }, f[1]))))
+  if (msg) body.push(h('div', { key: 'm', className: 'dndp-note hl' }, msg))
+  if (err) body.push(h('div', { key: 'e', className: 'dndp-err' }, err))
+  if (!all.length) body.push(h('div', { key: 'z', className: 'dndp-empty' }, '还没有记录。用上面的骰子投一次，或让 DM 写入战斗记录。'))
+  entries.slice(-200).forEach((e, i) => body.push(h(LogRow, { key: e.id || i, e: e })))
+  if (all.length > 200) body.push(h('div', { key: 'more', className: 'dndp-note' }, '仅显示最近 200 条（共 ' + all.length + ' 条）'))
+  if (props.bare) return h('div', { className: 'dndp-fill' }, msg ? h('div', { key: 'm', className: 'dndp-note hl', style: { padding: '4px 12px' } }, msg) : null, h('div', { className: 'dndp-scroll' }, body))
+  return h('div', { className: 'dndp-root' }, h('div', { className: 'dndp-header' }, head), h('div', { className: 'dndp-scroll' }, body))
+}
+const TERRAIN = {
+  '.': { k: 'floor', n: '石地' },
+  'g': { k: 'grass', n: '草地' },
+  'v': { k: 'dirt', n: '泥土' },
+  's': { k: 'pave', n: '石砖地' },
+  'w': { k: 'wood', n: '木地板' },
+  'f': { k: 'furn', n: '家具/桌椅·困难+半掩体', difficult: true, cover: 2 },
+  'p': { k: 'stair', n: '楼梯/斜坡' },
+  '#': { k: 'wall', n: '岩壁', solid: true },
+  'b': { k: 'brick', n: '砖墙', solid: true },
+  'c': { k: 'pillar', n: '岩柱', solid: true },
+  '~': { k: 'water', n: '浅水·困难', difficult: true },
+  'W': { k: 'deep', n: '深水·困难', difficult: true },
+  ',': { k: 'brush', n: '灌木/荆棘·困难+半掩体', difficult: true, cover: 2 },
+  '^': { k: 'ledge', n: '高地/崖顶' },
+  'o': { k: 'cave', n: '洞口/黑暗' },
+  '+': { k: 'door', n: '木门' },
+  '=': { k: 'plank', n: '木板/桥' },
+  'T': { k: 'tree', n: '树·半掩体', cover: 2 },
+  '!': { k: 'fire', n: '火堆/光源' },
+  'x': { k: 'rubble', n: '碎石/废墟·困难', difficult: true },
+  ' ': { k: 'void', n: '虚空/未开', solid: true },
+}
+// 每格确定性微差：让重复瓦片不至于像贴瓷砖
+function cellVariation(x, y) {
+  let h = ((x + 1) * 73856093) ^ ((y + 1) * 19349663)
+  h = (h >>> 0)
+  const shade = (h % 7) * 0.012
+  return {
+    backgroundPosition: ((h % 23) - 11) + 'px ' + (((h >> 5) % 19) - 9) + 'px',
+    boxShadow: 'inset 0 0 0 40px rgba(0,0,0,' + shade.toFixed(3) + ')',
+  }
+}
+const cellName = (x, y) => {
+  let s = '', n = Math.max(0, Math.floor(x))
+  do { s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n / 26) - 1 } while (n >= 0)
+  return s + (Math.floor(y) + 1)
+}
+function cellDist(a, b) {
+  const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y)
+  const mx = Math.max(dx, dy), mn = Math.min(dx, dy)
+  return { cells: mx, feetSimple: mx * 5, feetStandard: (mx + Math.floor(mn / 2)) * 5 }
+}
+function MapPanel(props) {
+  const [map, setMap] = React.useState(null)
+  const [err, setErr] = React.useState('')
+  const [msg, setMsg] = React.useState('')
+  const [tool, setTool] = React.useState('move')
+  const [tile, setTile] = React.useState(props.full ? 40 : 26)
+  const [sel, setSel] = React.useState(null)
+  const [meas, setMeas] = React.useState({ a: null, b: null })
+  const [areaShape, setAreaShape] = React.useState('sphere')
+  const [areaSize, setAreaSize] = React.useState(20)
+  const [areaDir, setAreaDir] = React.useState('n')
+  const [tpl, setTpl] = React.useState(null)      // 范围模板结果
+  const [losRes, setLosRes] = React.useState(null) // 掩体判定结果
+  const [drag, setDrag] = React.useState(null)
+  const gridRef = React.useRef(null)
+  const fitRef = React.useRef(null)
+  const [fit, setFit] = React.useState(!!props.bare)
+  const [maps, setMaps] = React.useState(null)
+  const [nameDraft, setNameDraft] = React.useState(null)
+  const loadMaps = () => call('map.list', {}).then(r => { if (r && r.ok) setMaps(r) }).catch(() => { })
+  const load = () => call('map.get', {}).then(r => { if (r && r.ok) { setMap(r); setErr('') } else setErr((r && r.error) || '读取地图失败') }).catch(e => setErr(String(e && e.message || e)))
+  React.useEffect(() => { load(); loadMaps() }, [])
+  React.useEffect(() => {
+    const t = (typeof setInterval === 'function') ? setInterval(() => { if (!drag) load() }, 4000) : null
+    return () => { if (t) clearInterval(t) }
+  }, [drag])
+  // 自适应：把格子缩放到刚好填满面板（工作区里地图面板变大变小都跟着重算）
+  React.useEffect(() => {
+    if (!fit || !map || typeof window === 'undefined') return undefined
+    const el = fitRef.current
+    if (!el) return undefined
+    const apply = () => {
+      const w = el.clientWidth - 10, hh = el.clientHeight - 10
+      if (w <= 0 || hh <= 0) return
+      setTile(Math.max(10, Math.min(72, Math.floor(Math.min(w / map.w, hh / map.h)))))
+    }
+    apply()
+    let ro = null
+    if (typeof ResizeObserver !== 'undefined') { try { ro = new ResizeObserver(apply); ro.observe(el) } catch (e) { ro = null } }
+    if (!ro) window.addEventListener('resize', apply)
+    return () => { if (ro) ro.disconnect(); else window.removeEventListener('resize', apply) }
+  }, [fit, !!map, map ? map.w : 0, map ? map.h : 0])
+  const cellFromEvent = (ev) => {
+    const el = gridRef.current
+    if (!el) return null
+    const r = el.getBoundingClientRect()
+    const x = Math.floor((ev.clientX - r.left) / tile)
+    const y = Math.floor((ev.clientY - r.top) / tile)
+    if (!map || x < 0 || y < 0 || x >= map.w || y >= map.h) return null
+    return { x, y }
+  }
+  const moveToken = async (tk, c) => {
+    const d = cellDist({ x: tk.x, y: tk.y }, c)
+    const over = tk.speed ? d.feetStandard - tk.speed : 0
+    setMap(m => Object.assign({}, m, { tokens: (m.tokens || []).map(t => t.id === tk.id ? Object.assign({}, t, { x: c.x, y: c.y }) : t) }))
+    setMsg(tk.name + ' ' + cellName(tk.x, tk.y) + ' → ' + cellName(c.x, c.y) + '：' + d.feetStandard + ' 尺（' + d.cells + ' 格）' + (over > 0 ? ' ⚠ 超出速度 ' + tk.speed + ' 尺，超 ' + over + ' 尺' : '') + '，已记入战斗记录')
+    const r = await call('map.token.move', { id: tk.id, x: c.x, y: c.y })
+    if (!r || !r.ok) setErr((r && r.error) || '移动失败')
+  }
+  const castArea = async (c) => {
+    const r = await call('map.area', { shape: areaShape, size: areaSize, from: c, dir: areaDir })
+    if (r && r.ok) { setTpl(r); setMsg((r.summary || '') + '（' + areaShape + ' ' + areaSize + ' 尺）') } else setMsg('范围计算失败：' + ((r && r.error) || ''))
+  }
+  const castLos = async (c) => {
+    const tk = sel ? (map.tokens || []).find(t => t.id === sel) : (map.tokens || []).find(t => t.kind === 'pc')
+    if (!tk) { setMsg('先点一个单位（或放一个 pc 单位）再量视线'); return }
+    const r = await call('map.los', { from: { x: tk.x, y: tk.y }, to: c })
+    if (r && r.ok) { setLosRes(r); setMsg(r.summary) } else setMsg('视线判定失败：' + ((r && r.error) || ''))
+  }
+  const onCellClick = (c) => {
+    if (tool === 'measure') {
+      if (!meas.a || (meas.a && meas.b)) setMeas({ a: c, b: null })
+      else setMeas({ a: meas.a, b: c })
+      return
+    }
+    if (tool === 'area') { castArea(c); return }
+    if (tool === 'los') { castLos(c); return }
+    if (sel) {
+      const tk = (map.tokens || []).find(t => t.id === sel)
+      if (tk && (tk.x !== c.x || tk.y !== c.y)) moveToken(tk, c)
+      return
+    }
+    setMsg('先点一个单位图标选中它（或用拖动直接移动），再点目标格 = 走过去。')
+  }
+  const onTokDown = (ev, tk) => {
+    if (tool !== 'move') { setSel(tk.id); return }
+    ev.preventDefault()
+    setSel(tk.id)
+    setDrag({ id: tk.id, from: { x: tk.x, y: tk.y }, cur: { x: tk.x, y: tk.y } })
+  }
+  React.useEffect(() => {
+    if (!drag) return undefined
+    const onMove = (ev) => { const c = cellFromEvent(ev); if (c) setDrag(d => d ? Object.assign({}, d, { cur: c }) : d) }
+    const onUp = (ev) => {
+      const c = cellFromEvent(ev)
+      const tk = (map.tokens || []).find(t => t.id === drag.id)
+      if (tk && c && (c.x !== drag.from.x || c.y !== drag.from.y)) moveToken(tk, c)
+      setDrag(null)
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+    return () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp) }
+  }, [drag, map, tile])
+  if (!map) return h('div', { className: 'dndp-root' }, h('div', { className: 'dndp-header' }, h('span', { className: 'dndp-ic' }, '🗺'), h('span', null, '战术地图'), h('div', { className: 'dndp-sp' }), err ? h('span', { className: 'dndp-chip' }, err) : h('span', { className: 'dndp-chip' }, '加载中…')))
+  const tokens = (map.tokens || []).filter(t => !t.hidden)
+  const cells = []
+  for (let y = 0; y < map.h; y++) {
+    const row = (map.terrain[y] || '.'.repeat(map.w)).split('')
+    for (let x = 0; x < map.w; x++) {
+      const ch = row[x] || '.'
+      const td = TERRAIN[ch] || TERRAIN['.']
+      cells.push(h('div', { key: x + '-' + y, className: 'dndp-cell g-' + td.k, style: cellVariation(x, y), onClick: () => onCellClick({ x, y }), title: cellName(x, y) + ' · ' + td.n + (td.solid ? '（不可通行）' : '') + (td.difficult ? '（困难地形）' : '') + (td.cover ? '（半掩体 AC+2）' : '') }))
+    }
+  }
+  const m1 = meas.a, m2 = meas.b
+  const md = (m1 && m2) ? cellDist(m1, m2) : null
+  const grid = h('div', { ref: gridRef, className: 'dndp-mapgrid', style: { gridTemplateColumns: 'repeat(' + map.w + ', var(--dndp-tile))', '--dndp-tile': tile + 'px', position: 'relative' } },
+    cells,
+    tokens.map(tk => {
+      const size = (Number(tk.size) || 1)
+      const isDrag = drag && drag.id === tk.id
+      const px = isDrag ? drag.cur.x : tk.x, py = isDrag ? drag.cur.y : tk.y
+      const bar = (tk.hp != null && tk.max) ? (() => { const pct = Math.max(0, Math.min(100, Math.round(tk.hp / tk.max * 100))); return h('div', { className: 'dndp-tokbar' + (pct <= 25 ? ' crit' : (pct <= 50 ? ' low' : '')) }, h('i', { style: { width: pct + '%' } })) })() : null
+      const d = isDrag ? cellDist(drag.from, drag.cur) : null
+      return h('div', {
+        key: tk.id,
+        className: 'dndp-tok k-' + (tk.kind || 'enemy') + (isDrag ? ' drag' : '') + (sel === tk.id ? ' sel' : ''),
+        style: { left: px * tile + 2, top: py * tile + 2, width: size * tile - 4, height: size * tile - 4, background: tk.color || undefined, zIndex: isDrag ? 20 : 5 },
+        onPointerDown: e => onTokDown(e, tk),
+        title: tk.name + ' @ ' + cellName(px, py) + (tk.hp != null ? ('｜HP ' + tk.hp + (tk.max ? '/' + tk.max : '')) : '') + (tk.speed ? ('｜速度 ' + tk.speed + ' 尺') : '') + (tk.note ? ('｜' + tk.note) : '') + (isDrag ? ('｜正在移动 ' + d.feetStandard + ' 尺') : ''),
+      }, h('span', { className: 'tkname' }, tk.name.slice(0, 4)), bar)
+    }),
+    (tpl && tpl.cells) ? tpl.cells.filter(c => c.x >= 0 && c.y >= 0 && c.x < map.w && c.y < map.h).map(c => h('div', { key: 't' + c.x + '_' + c.y, style: { position: 'absolute', left: c.x * tile, top: c.y * tile, width: tile, height: tile, background: 'rgba(224,166,74,.28)', border: '1px solid rgba(224,166,74,.55)', pointerEvents: 'none', zIndex: 4 } })) : null,
+    (tpl && tpl.tokens) ? tpl.tokens.map(tk2 => h('div', { key: 'th' + tk2.id, style: { position: 'absolute', left: tk2.x * tile - 2, top: tk2.y * tile - 2, width: tile + 4, height: tile + 4, border: '2px solid #e0a64a', borderRadius: 8, pointerEvents: 'none', zIndex: 8 } })) : null,
+    (losRes && losRes.line) ? h('svg', { className: 'dndp-measure', width: '100%', height: '100%' },
+      h('line', { x1: (losRes.from.x + 0.5) * tile, y1: (losRes.from.y + 0.5) * tile, x2: (losRes.to.x + 0.5) * tile, y2: (losRes.to.y + 0.5) * tile, stroke: losRes.blocked ? '#d3564b' : '#5ec27a', strokeWidth: 2, strokeDasharray: '6 4' }),
+      (losRes.blockers || []).map((b, i) => h('rect', { key: 'b' + i, x: b.x * tile + 2, y: b.y * tile + 2, width: tile - 4, height: tile - 4, fill: 'none', stroke: '#d3564b', strokeWidth: 2 })),
+      h('circle', { cx: (losRes.from.x + 0.5) * tile, cy: (losRes.from.y + 0.5) * tile, r: 4, fill: losRes.blocked ? '#d3564b' : '#5ec27a' })) : null,
+    (losRes && losRes.to) ? h('div', { className: 'dndp-mlabel', style: { left: ((losRes.from.x + losRes.to.x) / 2 + 0.5) * tile, top: ((losRes.from.y + losRes.to.y) / 2 + 0.5) * tile - 14, borderColor: losRes.blocked ? '#d3564b' : '#5ec27a' } }, losRes.fromCell + '→' + losRes.toCell + '：' + (losRes.blocked ? '视线被挡' : losRes.coverLabel) + ' · ' + losRes.feet + ' 尺') : null,
+    (tpl && tpl.cells && tpl.cells.length) ? h('div', { className: 'dndp-mlabel', style: { left: (tpl.from.x + 0.5) * tile, top: (tpl.from.y + 0.5) * tile - 16, borderColor: '#e0a64a' } }, tpl.label + '：' + tpl.cellCount + ' 格' + (tpl.tokenCount ? (' · 命中 ' + tpl.tokenCount) : '')) : null,
+    (md && m1 && m2) ? h('svg', { className: 'dndp-measure', width: '100%', height: '100%' },
+      h('line', { x1: (m1.x + 0.5) * tile, y1: (m1.y + 0.5) * tile, x2: (m2.x + 0.5) * tile, y2: (m2.y + 0.5) * tile, stroke: 'var(--dsw-alias-brand-primary)', strokeWidth: 2, strokeDasharray: '5 4' }),
+      h('circle', { cx: (m1.x + 0.5) * tile, cy: (m1.y + 0.5) * tile, r: 4, fill: 'var(--dsw-alias-brand-primary)' }),
+      h('circle', { cx: (m2.x + 0.5) * tile, cy: (m2.y + 0.5) * tile, r: 4, fill: 'var(--dsw-alias-brand-primary)' })) : null,
+    (md && m1 && m2) ? h('div', { className: 'dndp-mlabel', style: { left: ((m1.x + m2.x) / 2 + 0.5) * tile, top: ((m1.y + m2.y) / 2 + 0.5) * tile } }, cellName(m1.x, m1.y) + '→' + cellName(m2.x, m2.y) + '：' + md.feetStandard + ' 尺 / ' + md.cells + ' 格') : null,
+    (sel && map.tokens.find(t => t.id === sel)) ? (() => { const tk = map.tokens.find(t => t.id === sel); const reach = tk.speed ? Math.floor(tk.speed / 5) : 6; const ring = []; for (let dy = -reach; dy <= reach; dy++) for (let dx = -reach; dx <= reach; dx++) { const c = { x: tk.x + dx, y: tk.y + dy }; if (c.x < 0 || c.y < 0 || c.x >= map.w || c.y >= map.h) continue; const dd = cellDist({ x: tk.x, y: tk.y }, c); if (dd.feetStandard > 0 && dd.feetStandard <= tk.speed) ring.push(h('div', { key: 'r' + dx + '_' + dy, style: { position: 'absolute', left: c.x * tile, top: c.y * tile, width: tile, height: tile, background: 'rgba(90,160,255,.16)', border: '1px solid rgba(90,160,255,.25)', pointerEvents: 'none', zIndex: 4 } })) } return ring })() : null)
+  const switchMap = async (id) => { setMsg('切换中…'); const r = await call('map.use', { id: id }); if (r && r.ok) { setMap(r); loadMaps(); setMsg(r.summary || '已切换') } else setMsg('切换失败：' + ((r && r.error) || '')) }
+  const saveName = async () => {
+    if (nameDraft == null) return
+    const r = await call('map.rename', { name: nameDraft })
+    setNameDraft(null)
+    if (r && r.ok) { setMap(r); loadMaps(); setMsg(r.summary || '已改名') } else setMsg('改名失败：' + ((r && r.error) || ''))
+  }
+  const newMap = async () => {
+    const id = 'map-' + Date.now().toString(36)
+    const r = await call('map.create', { id: id, name: '新地图', w: map.w || 24, h: map.h || 16 })
+    if (r && r.ok) { setMap(r); loadMaps(); setMsg(r.summary || '已新建'); setNameDraft('新地图') } else setMsg('新建失败：' + ((r && r.error) || ''))
+  }
+  const tools = h('div', { className: 'dndp-maptools' },
+    maps && maps.items && maps.items.length ? h('select', {
+      className: 'dndp-input', style: { width: 150, flex: 'none' }, value: maps.current || '',
+      title: '切换地图（AI 也能用 map.use 切）',
+      onChange: e => switchMap(e.target.value),
+    }, maps.items.map(m => h('option', { key: m.id, value: m.id }, (m.name || m.id) + '（' + m.w + '×' + m.h + '）'))) : null,
+    nameDraft != null
+      ? h('input', { className: 'dndp-input', style: { width: 130, flex: 'none' }, value: nameDraft, autoFocus: true, onChange: e => setNameDraft(e.target.value), onKeyDown: e => { if (e.key === 'Enter') saveName(); if (e.key === 'Escape') setNameDraft(null) }, onBlur: saveName })
+      : h('button', { className: 'dndp-btn tiny', title: '改地图名', onClick: () => setNameDraft(map.name || '') }, '✎ ' + (map.name || '未命名')),
+    h('button', { className: 'dndp-btn tiny', title: '新建一张空地图', onClick: newMap }, '＋新建'),
+    h('span', { className: 'dndp-chip' }, map.w + '×' + map.h + ' 格（每格 5 尺）'),
+    h('button', { className: 'dndp-btn tiny' + (tool === 'move' ? ' primary' : ''), onClick: () => setTool('move') }, '移动'),
+    h('button', { className: 'dndp-btn tiny' + (tool === 'measure' ? ' primary' : ''), onClick: () => { setTool('measure'); setMeas({ a: null, b: null }) } }, '测距'),
+    h('button', { className: 'dndp-btn tiny' + (tool === 'area' ? ' primary' : ''), title: '点格子放范围模板', onClick: () => { setTool('area'); setMeas({ a: null, b: null }); setLosRes(null) } }, '范围'),
+    h('button', { className: 'dndp-btn tiny' + (tool === 'los' ? ' primary' : ''), title: '以选中单位为起点，点目标格判视线/掩体', onClick: () => { setTool('los'); setTpl(null) } }, '掩体'),
+    tool === 'area' ? h('select', { className: 'dndp-input', style: { width: 78, flex: 'none' }, value: areaShape, onChange: e => setAreaShape(e.target.value) },
+      [['sphere', '球'], ['cone', '锥'], ['line', '线'], ['cube', '立方'], ['cylinder', '柱']].map(x => h('option', { key: x[0], value: x[0] }, x[1]))) : null,
+    tool === 'area' ? h('select', { className: 'dndp-input', style: { width: 84, flex: 'none' }, value: String(areaSize), onChange: e => setAreaSize(Number(e.target.value)) },
+      [5, 10, 15, 20, 30, 60, 100].map(v => h('option', { key: v, value: String(v) }, v + ' 尺'))) : null,
+    (tool === 'area' && (areaShape === 'cone' || areaShape === 'line')) ? h('select', { className: 'dndp-input', style: { width: 62, flex: 'none' }, value: areaDir, onChange: e => setAreaDir(e.target.value) },
+      [['n', '↑'], ['ne', '↗'], ['e', '→'], ['se', '↘'], ['s', '↓'], ['sw', '↙'], ['w', '←'], ['nw', '↖']].map(x => h('option', { key: x[0], value: x[0] }, x[1]))) : null,
+    h('button', { className: 'dndp-btn tiny', onClick: () => { setMeas({ a: null, b: null }); setTpl(null); setLosRes(null); setSel(null); setMsg('') } }, '清除选点'),
+    h('button', { className: 'dndp-btn tiny' + (fit ? ' primary' : ''), onClick: () => setFit(!fit), title: '格子自动缩放到填满面板' }, '自适应'),
+    h('span', { className: 'dndp-note' }, '格距'),
+    h('input', { type: 'range', min: 12, max: 72, value: tile, onChange: e => { setFit(false); setTile(Number(e.target.value)) }, style: { width: 92 } }),
+    h('span', { className: 'dndp-note' }, tile + 'px'),
+    h('button', { className: 'dndp-btn tiny', onClick: load }, '刷新'),
+    h('button', { className: 'dndp-btn tiny', onClick: async () => { setMsg('导出中…'); const r = await call('ext.image.map', {}); setMsg(r && r.ok ? r.summary : ('导出失败：' + ((r && r.error) || '需要重启 DSH 以加载 plugins/')) ) } }, '⬇ 导出图片'),
+    props.onToggleFull ? h('button', { className: 'dndp-btn tiny', onClick: props.onToggleFull }, props.full ? '退出全屏' : '⤢ 全屏') : null)
+  const legend = h('div', { className: 'dndp-legend' }, h('span', null, '图例：'), (map.legend || Object.keys(TERRAIN).map(k => [k, TERRAIN[k].n])).map((L, i) => h('span', { key: i }, h('span', { className: 'sw g-' + ((TERRAIN[L[0]] || {}).k || 'void') }), L[1])))
+  if (props.bare) {
+    return h('div', { className: 'dndp-mapfill' },
+      tools,
+      h('div', { style: { flex: 1, minHeight: 0, padding: '0 10px 6px', display: 'flex' } }, h('div', { ref: fitRef, className: 'dndp-mapwrap', style: { flex: 1, minHeight: 0 } }, grid)),
+      msg ? h('div', { className: 'dndp-note hl', style: { padding: '0 12px 6px' } }, msg) : null,
+      err ? h('div', { className: 'dndp-err' }, err) : null,
+      legend)
+  }
+  const body = [tools, h('div', { key: 'm', style: { padding: '0 10px 10px' } }, h('div', { className: 'dndp-mapwrap', style: { maxHeight: props.full ? 'none' : 420 } }, grid)), msg ? h('div', { key: 'g', className: 'dndp-note hl', style: { padding: '0 12px' } }, msg) : null, err ? h('div', { key: 'e', className: 'dndp-err' }, err) : null, legend,
+    h('div', { key: 't', className: 'dndp-note', style: { padding: '0 12px 12px' } }, '用法：拖动图标移动单位（自动按 5 尺格换算距离并写入战斗记录）；点「测距」后点两格看距离；选中单位会显示其速度范围（蓝色水波纹区）。')]
+  if (props.full) return h('div', { className: 'dndp-overlay' }, h('div', { className: 'dndp-ovhead' }, h('span', { className: 'dndp-ic' }, '🗺'), h('span', null, '战术地图 — ' + (map.name || '未命名')), h('div', { className: 'dndp-sp' }), h('button', { className: 'dndp-btn', onClick: props.onToggleFull }, '关闭（Esc）')), h('div', { className: 'dndp-ovbody' }, body))
+  return h('div', { className: 'dndp-root' }, h('div', { className: 'dndp-header' }, h('span', { className: 'dndp-ic' }, '🗺'), h('span', null, '战术地图'), h('div', { className: 'dndp-sp' }), h('button', { className: 'dndp-btn', onClick: props.onBack }, '返回')), h('div', { className: 'dndp-scroll' }, body))
+}
+// ============ 工作区（IDE 式多面板）============
+const WS_SLOTS = [['left', '左栏'], ['center', '中栏'], ['right', '右栏'], ['bottom', '底栏']]
+const DEFAULT_LAYOUT = {
+  version: 1,
+  slots: {
+    left: { size: 230, panels: ['roster'] },
+    center: { size: 0, panels: ['map', 'sheet'] },
+    right: { size: 430, panels: ['combat', 'ai', 'log'] },
+    bottom: { size: 210, panels: ['dice'] },
+  },
+  weights: { left: [1], center: [3, 2], right: [2, 3, 3], bottom: [1] },
+  collapsed: [], maximized: null, activeSheet: null,
+}
+const PANEL_DEFS = {
+  roster: { title: '角色', icon: '👥' },
+  sheet: { title: '角色卡', icon: '📋' },
+  map: { title: '战术地图', icon: '🗺' },
+  log: { title: '战斗记录', icon: '📜' },
+  combat: { title: '先攻', icon: '⚔' },
+  dice: { title: '骰子', icon: '🎲' },
+  ai: { title: 'AI 对话', icon: '💬' },
+  settings: { title: '设置', icon: '⚙' },
+  rules: { title: '规则速查', icon: '📖' },
+  builder: { title: '新建角色', icon: '➕' },
+  stats: { title: '战况统计', icon: '📊' },
+}
+const cloneLayout = (l) => JSON.parse(JSON.stringify(l || DEFAULT_LAYOUT))
+function normLayout(l) {
+  const out = cloneLayout(l && l.slots ? l : DEFAULT_LAYOUT)
+  out.slots = out.slots || {}
+  out.weights = out.weights || {}
+  for (const [k] of WS_SLOTS) {
+    if (!out.slots[k]) out.slots[k] = { size: k === 'left' ? 240 : (k === 'right' ? 380 : 0), panels: [] }
+    if (!Array.isArray(out.slots[k].panels)) out.slots[k].panels = []
+    out.slots[k].panels = out.slots[k].panels.filter(p => PANEL_DEFS[p])
+    if (!Array.isArray(out.weights[k]) || out.weights[k].length !== out.slots[k].panels.length) out.weights[k] = out.slots[k].panels.map(() => 1)
+  }
+  out.collapsed = Array.isArray(out.collapsed) ? out.collapsed : []
+  return out
+}
+const inLayout = (l, id) => WS_SLOTS.some(([k]) => l.slots[k].panels.indexOf(id) >= 0)
+// 把面板移动到目标槽位的目标位置（同槽位即重排）。纯函数，方便单测。
+function reorderPanels(base, pid, toSlot, toIndex) {
+  const n = cloneLayout(base)
+  if (!n.slots[toSlot] || !PANEL_DEFS[pid]) return n
+  const fromSlot = slotOf(n, pid)
+  if (fromSlot) {
+    const fi = n.slots[fromSlot].panels.indexOf(pid)
+    if (fi >= 0) { n.slots[fromSlot].panels.splice(fi, 1); n.weights[fromSlot].splice(fi, 1) }
+    if (fromSlot === toSlot && fi >= 0 && fi < toIndex) toIndex--
+  }
+  const at = Math.max(0, Math.min(n.slots[toSlot].panels.length, toIndex))
+  n.slots[toSlot].panels.splice(at, 0, pid)
+  n.weights[toSlot].splice(at, 0, 1)
+  n.weights[toSlot] = n.slots[toSlot].panels.map(() => 1)
+  if (fromSlot && n.slots[fromSlot].panels.length) n.weights[fromSlot] = n.slots[fromSlot].panels.map(() => 1)
+  n.collapsed = (n.collapsed || []).filter(x => x !== pid)
+  return n
+}
+function slotOf(l, id) { for (const [k] of WS_SLOTS) if (l.slots[k].panels.indexOf(id) >= 0) return k; return null }
+
+function Roster(props) {
+  const [list, setList] = React.useState(null)
+  const [err, setErr] = React.useState('')
+  const [xpMap, setXpMap] = React.useState({})
+  const cur = props.activeId
+  const load = () => {
+    call('party.list', {}).then(r => { if (r && r.ok) { setList(r.items); setErr('') } else setErr((r && r.error) || '读取失败') }).catch(e => setErr(String(e && e.message || e)))
+    call('party.xp', {}).then(r => { if (r && r.ok) { const m = {}; (r.items || []).forEach(x => { m[x.id] = x }); setXpMap(m) } }).catch(() => { })
+  }
+  React.useEffect(() => { load() }, [props.rev])
+  React.useEffect(() => {
+    const t = (typeof setInterval === 'function') ? setInterval(load, 6000) : null
+    return () => { if (t) clearInterval(t) }
+  }, [])
+  const rows = []
+  if (err) rows.push(h('div', { key: 'e', className: 'dndp-err' }, err))
+  if (!list) rows.push(h('div', { key: 'l', className: 'dndp-empty' }, '加载中…'))
+  ;(list || []).forEach(p => rows.push(
+    h('div', { key: p.id, className: 'dndp-ritem' + (p.id === cur ? ' on' : ''), onClick: () => props.onPick(p.id) },
+      h('div', { className: 'dndp-ava' }, (p.name || '?').slice(0, 1)),
+      h('div', { className: 'dndp-main' },
+        h('div', { className: 'dndp-name', style: { display: 'flex', alignItems: 'center', gap: 6 } },
+          h('span', null, p.name),
+          h(XpMini, { item: (props.xpMap || {})[p.id] || { xp: 0, next: null, pct: 0 } })),
+        h('div', { className: 'dndp-sub' }, (p.race || '') + (p.cls ? ' · ' + p.cls : ''))),
+      h('div', { style: { textAlign: 'right' } },
+        h('div', { className: 'dndp-chip', style: { display: 'block' } }, 'L' + p.level),
+        h('div', { className: 'dndp-sub' }, 'HP ' + p.hp + '/' + p.max)))))
+  rows.push(h('div', { key: 'add', style: { padding: '8px 2px' } },
+    h('button', { className: 'dndp-btn', style: { width: '100%' }, onClick: () => props.onOpen('builder') }, '+ 新建角色')))
+  return h('div', { className: 'dndp-roster' }, rows)
+}
+
+function SheetHost(props) {
+  const [sheet, setSheet] = React.useState(null)
+  const [err, setErr] = React.useState('')
+  const id = props.activeId
+  const load = () => {
+    if (!id) { setSheet(null); return }
+    call('party.sheet', { id }).then(r => { if (r && r.ok) { setSheet(r.sheet); setErr('') } else setErr((r && r.error) || '读取角色卡失败') }).catch(e => setErr(String(e && e.message || e)))
+  }
+  React.useEffect(() => { load() }, [id, props.rev])
+  if (!id) return h('div', { className: 'dndp-empty' }, '在左侧「角色」面板里点一个角色')
+  if (err) return h('div', { className: 'dndp-err' }, err)
+  if (!sheet) return h('div', { className: 'dndp-empty' }, '加载中…')
+  return h('div', { style: { padding: '10px 12px' } }, h(Boundary, null, h(Detail, { s: sheet, noRules: true, onReload: () => { load(); if (props.onReload) props.onReload() } })))
+}
+
+function StatsPanel() {
+  const [rows, setRows] = React.useState(null)
+  const [err, setErr] = React.useState('')
+  const load = () => call('ext.encounter.stats', {}).then(r => { if (r && r.ok) { setRows(r.rows || []); setErr('') } else setErr((r && r.error) || '统计失败（需要 plugins/ 已加载）') }).catch(e => setErr(String(e && e.message || e)))
+  React.useEffect(() => { load() }, [])
+  if (err) return h('div', { className: 'dndp-err' }, err)
+  if (!rows) return h('div', { className: 'dndp-empty' }, '统计中…')
+  if (!rows.length) return h('div', { className: 'dndp-empty' }, '战斗记录里还没有攻防数据')
+  return h('div', { style: { padding: '8px 12px' } },
+    h('div', { className: 'dndp-note' }, '来源：战斗记录（本场累计）'),
+    rows.map((r, i) => h('div', { key: i, className: 'dndp-item' },
+      h('div', { className: 'dndp-main' },
+        h('div', { className: 'dndp-name' }, r.actor),
+        h('div', { className: 'dndp-sub' }, '攻击 ' + r.attacks + '｜命中 ' + r.hits + '（' + r.hitRate + '）｜重击 ' + r.crits + '｜伤害 ' + r.damage + '｜治疗 ' + r.healed + '｜移动 ' + r.feet + ' 尺')))))
+}
+
+function PanelFrame(props) {
+  const [menu, setMenu] = React.useState(null)   // {x,y} 视口坐标：菜单锚在按钮上，不再跑到窗口最右侧
+  const def = PANEL_DEFS[props.id] || { title: props.id, icon: '▫' }
+  const isCol = props.collapsed
+  React.useEffect(() => {
+    if (!menu || typeof window === 'undefined') return undefined
+    const close = () => setMenu(null)
+    const onKey = (e) => { if (e.key === 'Escape') setMenu(null) }
+    window.addEventListener('pointerdown', close)
+    window.addEventListener('keydown', onKey)
+    return () => { window.removeEventListener('pointerdown', close); window.removeEventListener('keydown', onKey) }
+  }, [menu])
+  const openMenu = (e) => {
+    e.stopPropagation()
+    const r = e.currentTarget.getBoundingClientRect()
+    const W = 196, need = 250
+    let x = r.right - W, y = r.bottom + 4
+    if (typeof window !== 'undefined') {
+      x = Math.max(8, Math.min(x, window.innerWidth - W - 8))
+      if (y + need > window.innerHeight) y = Math.max(8, r.top - need - 4)
+    }
+    setMenu({ x: x, y: y })
+  }
+  const onTitleDown = (e) => {
+    const t = e.target
+    if (t && t.tagName === 'BUTTON') return
+    if (e.button !== 0) return
+    if (props.onDragStart) props.onDragStart(e)
+  }
+  const head = h('div', { className: 'dndp-ptitle' + (props.dragging ? ' dragging' : ''), onPointerDown: onTitleDown, title: '按住标题栏拖动可换位置' },
+    h('span', null, def.icon), h('span', null, def.title), h('div', { className: 'sp' }),
+    h('button', { className: 'dndp-pbtn', title: props.collapsed ? '展开' : '折叠', onPointerDown: e => e.stopPropagation(), onClick: () => props.onCollapse() }, props.collapsed ? '▸' : '▾'),
+    h('button', { className: 'dndp-pbtn', title: props.isMax ? '还原' : '最大化', onPointerDown: e => e.stopPropagation(), onClick: () => props.onMax() }, props.isMax ? '❐' : '⤢'),
+    h('button', { className: 'dndp-pbtn', title: '移动 / 关闭', onPointerDown: e => e.stopPropagation(), onClick: openMenu }, '⋯'))
+  const items = [
+    h('div', { key: 'h1', className: 'hd' }, '移到槽位'),
+    ...WS_SLOTS.map(([k, n]) => h('button', { key: k, onClick: () => { props.onMove(k); setMenu(null) } }, n + (slotOf(props.layout, props.id) === k ? '（当前）' : ''))),
+    h('div', { key: 's', className: 'sep' }),
+    h('button', { key: 'add', onClick: () => { props.onAddTo(props.id); setMenu(null) } }, '复制到另一槽位'),
+    h('button', { key: 'rm', onClick: () => { props.onClose(props.id); setMenu(null) } }, '从工作区移除'),
+  ]
+  return h('div', { className: 'dndp-panel' + (isCol ? ' col' : '') + (props.isMax ? ' max' : '') + (props.dragging ? ' dragsrc' : ''), style: props.style },
+    head,
+    menu ? h('div', { className: 'dndp-pmenu', style: { position: 'fixed', left: menu.x, top: menu.y, width: 196 }, onPointerDown: e => e.stopPropagation() }, items) : null,
+    h('div', { className: 'dndp-pbody' }, isCol ? null : props.children))
+}
+
+function Workspace() {
+  const [layout, setLayout] = React.useState(null)
+  const [activeId, setActiveId] = React.useState(null)
+  const [party, setParty] = React.useState([])
+  const [toolCount, setToolCount] = React.useState(null)
+  const [xpMap, setXpMap] = React.useState({})
+  const [xpReady, setXpReady] = React.useState([])
+  const [autoLevelOpened, setAutoLevelOpened] = React.useState(false)
+  const [conditionCatalog, setConditionCatalog] = React.useState([
+    { key: 'blinded', name: '目盲' }, { key: 'charmed', name: '魅惑' }, { key: 'deafened', name: '耳聋' },
+    { key: 'exhaustion', name: '力竭' }, { key: 'frightened', name: '恐慌' }, { key: 'grappled', name: '擒抱' },
+    { key: 'incapacitated', name: '失能' }, { key: 'invisible', name: '隐形' }, { key: 'paralyzed', name: '麻痹' },
+    { key: 'petrified', name: '石化' }, { key: 'poisoned', name: '中毒' }, { key: 'prone', name: '倒地' },
+    { key: 'restrained', name: '束缚' }, { key: 'stunned', name: '震慑' }, { key: 'unconscious', name: '昏迷' },
+  ])
+  const [rev, setRev] = React.useState(0)
+  const [menu, setMenu] = React.useState(false)
+  const [msg, setMsg] = React.useState('')
+  const [pDrag, setPDrag] = React.useState(null)   // 面板拖动：{id, slot, index, x, y, over:{slot,index,bar}}
+  const [theme, setTheme, presets] = useTheme()
+  const rootRef = React.useRef(null)
+  const dragRef = React.useRef(null)
+  const saveTimer = React.useRef(null)
+  const slotRefs = React.useRef({})
+  const panelRefs = React.useRef({})
+  const pDragRef = React.useRef(null)
+  const layoutRef = React.useRef(null)
+  React.useEffect(() => { pDragRef.current = pDrag }, [pDrag])
+  React.useEffect(() => { layoutRef.current = layout }, [layout])
+
+  React.useEffect(() => {
+    call('ws.get', {}).then(r => {
+      const l = normLayout(r && r.ok ? r.layout : DEFAULT_LAYOUT)
+      setLayout(l)
+      setActiveId(l.activeSheet || null)
+    }).catch(() => setLayout(normLayout(DEFAULT_LAYOUT)))
+  }, [])
+  React.useEffect(() => {
+    call('party.list', {}).then(r => { if (r && r.ok) setParty(r.items || []) }).catch(() => { })
+  }, [rev])
+  React.useEffect(() => {
+    call('ai.tools', {}).then(r => { if (r && r.ok) setToolCount(r.count) }).catch(() => { })
+  }, [])
+  // 经验/升级轮询：有人可升级就自动把「升级」面板放出来
+  React.useEffect(() => {
+    const tick = () => call('party.xp', {}).then(r => {
+      if (!r || !r.ok) return
+      const m = {}; (r.items || []).forEach(x => { m[x.id] = x })
+      setXpMap(m); setXpReady(r.ready || [])
+    }).catch(() => { })
+    tick()
+    const t = (typeof setInterval === 'function') ? setInterval(tick, 5000) : null
+    return () => { if (t) clearInterval(t) }
+  }, [rev])
+  // 有经验满的角色：顶栏给一个「✨ 升级」按钮（点了直接打开他的角色卡）
+  React.useEffect(() => {
+    if (!xpReady.length) return
+    setMsg('✨ ' + xpReady.map(x => x.name + ' 可以升到 Lv' + x.targetLevel).join('、') + ' —— 点右上「✨ 升级」去升级或兼职')
+  }, [xpReady.length])
+
+  function commit(next, opts) {
+    setLayout(next)
+    if (opts && opts.noSave) return
+    if (typeof setInterval !== 'function') return
+    if (saveTimer.current) clearInterval(saveTimer.current)
+    saveTimer.current = setInterval(() => {
+      clearInterval(saveTimer.current); saveTimer.current = null
+      call('ws.set', { layout: next }).then(r => { if (r && r.ok && r.saved === false) setMsg(r.summary || '布局未落盘') }).catch(() => { })
+    }, 400)
+  }
+  const pick = (id) => { setActiveId(id); const n = cloneLayout(layout); n.activeSheet = id; commit(n) }
+  // 用函数声明（会提升）：effect 里会在组件体执行后立刻调用它，const 箭头函数会踩 TDZ
+  function openPanel(pid) {
+    const n = cloneLayout(layout)
+    if (inLayout(n, pid)) { for (const [k] of WS_SLOTS) if (n.slots[k].panels.indexOf(pid) >= 0) n.collapsed = n.collapsed.filter(x => x !== pid); commit(n); return }
+    const slot = pid === 'map' ? 'center' : (pid === 'builder' || pid === 'rules' || pid === 'stats' || pid === 'settings' || pid === 'levelup' ? 'right' : 'left')
+    n.slots[slot].panels.push(pid)
+    n.weights[slot] = n.slots[slot].panels.map(() => 1)
+    commit(n)
+  }
+  const closePanel = (pid) => {
+    const n = cloneLayout(layout)
+    for (const [k] of WS_SLOTS) {
+      const i = n.slots[k].panels.indexOf(pid)
+      if (i >= 0) { n.slots[k].panels.splice(i, 1); n.weights[k].splice(i, 1) }
+    }
+    if (n.maximized === pid) n.maximized = null
+    commit(n)
+  }
+  const movePanel = (pid, slot) => {
+    const n = cloneLayout(layout)
+    for (const [k] of WS_SLOTS) { const i = n.slots[k].panels.indexOf(pid); if (i >= 0) { n.slots[k].panels.splice(i, 1); n.weights[k].splice(i, 1) } }
+    n.slots[slot].panels.push(pid)
+    n.weights[slot] = n.slots[slot].panels.map(() => 1)
+    if (n.collapsed.indexOf(pid) >= 0) n.collapsed = n.collapsed.filter(x => x !== pid)
+    commit(n)
+  }
+  const addTo = (pid) => {
+    const cur = slotOf(layout, pid)
+    const order = WS_SLOTS.map(([k]) => k)
+    const next = order[(order.indexOf(cur) + 1) % order.length]
+    const n = cloneLayout(layout)
+    n.slots[next].panels.push(pid)
+    n.weights[next] = n.slots[next].panels.map(() => 1)
+    commit(n)
+    setMsg('已复制到「' + (WS_SLOTS.find(s => s[0] === next) || [])[1] + '」（同一面板可以同时出现在多个槽位）')
+  }
+  // 拖到指定槽位的指定位置（同槽位内即重排）
+  const movePanelTo = (pid, toSlot, toIndex) => {
+    const n = reorderPanels(layoutRef.current || layout, pid, toSlot, toIndex)
+    commit(n)
+    const at = n.slots[toSlot] ? n.slots[toSlot].panels.indexOf(pid) : 0
+    setMsg('已移动到「' + ((WS_SLOTS.find(s => s[0] === toSlot) || [])[1] || toSlot) + '」第 ' + (at + 1) + ' 位')
+  }
+  // 计算拖动落点：命中哪个槽位、插到第几位、指示条画在哪
+  const computeDrop = (x, y) => {
+    const base = layoutRef.current
+    if (!base) return null
+    for (const pair of WS_SLOTS) {
+      const name = pair[0]
+      const el = slotRefs.current[name]
+      if (!el) continue
+      const r = el.getBoundingClientRect()
+      if (x < r.left || x > r.right || y < r.top || y > r.bottom) continue
+      const panels = base.slots[name].panels
+      const horiz = name === 'bottom'
+      for (let i = 0; i < panels.length; i++) {
+        const pe = panelRefs.current[name + ':' + i]
+        if (!pe) continue
+        const pr = pe.getBoundingClientRect()
+        const mid = horiz ? (pr.left + pr.right) / 2 : (pr.top + pr.bottom) / 2
+        if ((horiz ? x : y) < mid) {
+          return { slot: name, index: i, bar: horiz ? { x: pr.left - 2, y: pr.top + 3, w: 4, h: Math.max(8, pr.height - 6) } : { x: pr.left + 6, y: pr.top - 2, w: Math.max(8, pr.width - 12), h: 4 } }
+        }
+      }
+      const lastIdx = panels.length - 1
+      const last = lastIdx >= 0 ? panelRefs.current[name + ':' + lastIdx] : null
+      if (last) {
+        const lr = last.getBoundingClientRect()
+        return { slot: name, index: panels.length, bar: horiz ? { x: lr.right - 2, y: lr.top + 3, w: 4, h: Math.max(8, lr.height - 6) } : { x: lr.left + 6, y: lr.bottom - 2, w: Math.max(8, lr.width - 12), h: 4 } }
+      }
+      return { slot: name, index: 0, bar: horiz ? { x: r.left + 8, y: r.top + 6, w: 4, h: Math.max(8, r.height - 12) } : { x: r.left + 8, y: r.top + 6, w: Math.max(8, r.width - 16), h: 4 } }
+    }
+    return null
+  }
+  const startPanelDrag = (pid, slot, index) => (ev) => {
+    if (ev && ev.preventDefault) ev.preventDefault()
+    setPDrag({ id: pid, slot: slot, index: index, x: ev.clientX, y: ev.clientY, x0: ev.clientX, y0: ev.clientY, moved: false, over: null })
+  }
+  React.useEffect(() => {
+    if (!pDrag || typeof window === 'undefined') return undefined
+    const onMove = (ev) => {
+      ev.preventDefault()
+      setPDrag(d => {
+        if (!d) return d
+        const moved = d.moved || (Math.abs(ev.clientX - d.x0) + Math.abs(ev.clientY - d.y0) > 5)
+        return Object.assign({}, d, { x: ev.clientX, y: ev.clientY, moved: moved, over: moved ? computeDrop(ev.clientX, ev.clientY) : null })
+      })
+    }
+    const onUp = () => {
+      const d = pDragRef.current
+      // 只有真的拖动过才换位，避免「点一下标题栏就把面板挪走」
+      if (d && d.moved && d.over) movePanelTo(d.id, d.over.slot, d.over.index)
+      setPDrag(null)
+    }
+    const onKey = (e) => { if (e.key === 'Escape') setPDrag(null) }
+    window.addEventListener('pointermove', onMove, { passive: false })
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('keydown', onKey)
+    try { document.body.style.userSelect = 'none'; document.body.style.cursor = 'grabbing' } catch (e) { }
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('keydown', onKey)
+      try { document.body.style.userSelect = ''; document.body.style.cursor = '' } catch (e) { }
+    }
+  }, [!!pDrag])
+  const toggleCollapse = (pid) => {
+    const n = cloneLayout(layout)
+    n.collapsed = n.collapsed.indexOf(pid) >= 0 ? n.collapsed.filter(x => x !== pid) : n.collapsed.concat([pid])
+    commit(n)
+  }
+  const toggleMax = (pid) => { const n = cloneLayout(layout); n.maximized = n.maximized === pid ? null : pid; commit(n) }
+  const reset = () => { call('ws.reset', {}).then(r => { setLayout(normLayout(r && r.ok ? r.layout : DEFAULT_LAYOUT)); setMsg('布局已重置') }).catch(() => setMsg('重置失败')) }
+
+  // 拖拽分隔条
+  const startDrag = (kind, slot, index) => (ev) => {
+    ev.preventDefault()
+    const root = rootRef.current
+    if (!root) return
+    const rect = root.getBoundingClientRect()
+    dragRef.current = { kind, slot, index, rect, x: ev.clientX, y: ev.clientY, base: cloneLayout(layout) }
+    const onMove = (e) => {
+      const d = dragRef.current
+      if (!d) return
+      const n = cloneLayout(d.base)
+      const dx = e.clientX - d.x, dy = e.clientY - d.y
+      if (d.kind === 'col') {
+        if (d.slot === 'left') n.slots.left.size = Math.max(150, Math.min(d.rect.width - 320, d.base.slots.left.size + dx))
+        else if (d.slot === 'right') n.slots.right.size = Math.max(200, Math.min(d.rect.width - 320, d.base.slots.right.size - dx))
+      } else if (d.kind === 'bottom') {
+        n.slots.bottom.size = Math.max(0, Math.min(d.rect.height - 200, d.base.slots.bottom.size - dy))
+      } else if (d.kind === 'panel') {
+        const slot = d.slot, idx = d.index
+        const panels = n.slots[slot].panels
+        if (panels.length < 2) return
+        const w = (n.weights[slot] || []).slice()
+        const delta = (d.slot === 'bottom' ? dx : dy) / Math.max(60, (d.slot === 'bottom' ? d.rect.width : d.rect.height)) * 6
+        const a = Math.max(0.4, (d.base.weights[slot][idx] || 1) + delta)
+        const b = Math.max(0.4, (d.base.weights[slot][idx + 1] || 1) - delta)
+        w[idx] = a; w[idx + 1] = b
+        n.weights[slot] = w
+      }
+      setLayout(n)
+    }
+    const onUp = () => {
+      const cur = dragRef.current
+      dragRef.current = null
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      if (cur) {
+        setLayout(prev => { if (prev) call('ws.set', { layout: prev }).catch(() => { }); return prev })
+      }
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+  }
+
+  if (!layout) return h('div', { className: 'dndp-root ' + themeClassOf(theme), style: themeStyleOf(theme) }, h('div', { className: 'dndp-header' }, h('span', { className: 'dndp-ic' }, '⚔'), h('span', null, '工作区'), h('div', { className: 'dndp-sp' }), h('span', { className: 'dndp-chip' }, '加载布局…')))
+
+  const panelProps = { layout, activeId, rev, onOpen: openPanel }
+  const renderPanel = (pid, slot, index, total) => {
+    const collapsed = layout.collapsed.indexOf(pid) >= 0
+    const body = (() => {
+      if (collapsed) return null
+      if (pid === 'roster') return h(Roster, { activeId: activeId, onPick: pick, onOpen: openPanel, rev: rev, xpMap: xpMap })
+      if (pid === 'sheet') return h(SheetHost, { activeId: activeId, rev: rev, onReload: () => setRev(r => r + 1) })
+      if (pid === 'map') return h(MapPanel, { bare: true })
+      if (pid === 'log') return h(LogView, { bare: true, party: party, onBack: null })
+      if (pid === 'ai') return h(AIPanel, { onOpen: openPanel })
+      if (pid === 'combat') return h(CombatPanel, { onChanged: () => setRev(r => r + 1), conditionCatalog: conditionCatalog })
+      if (pid === 'dice') return h(DicePanel, { theme: theme })
+      if (pid === 'settings') return h(SettingsPanel, { toolCount: toolCount, theme: theme, onTheme: async (t) => { const nt = setTheme(t); const r = await call('theme.set', { theme: nt }); return r }, presets: presets })
+      if (pid === 'rules') return h('div', { style: { padding: '10px 12px' } }, h(RulesPanel, {}))
+      if (pid === 'stats') return h(StatsPanel, {})
+      if (pid === 'builder') return h(Wizard, { onDone: () => { setRev(r => r + 1); closePanel('builder') }, onBack: () => closePanel('builder') })
+      return null
+    })()
+    const weight = (layout.weights[slot] || [])[index] || 1
+    const style = collapsed ? { flex: 'none' } : { flex: weight + ' 1 0', minHeight: 0, minWidth: 0 }
+    return h('div', {
+      key: slot + '-' + pid + '-' + index,
+      ref: el => { panelRefs.current[slot + ':' + index] = el },
+      className: 'dndp-panelslot',
+      style: { display: 'flex', flexDirection: 'column', minHeight: 0, minWidth: 0, ...style },
+    },
+      h(PanelFrame, {
+        id: pid, layout: layout, collapsed: collapsed, isMax: layout.maximized === pid, style: { flex: 1, minHeight: 0 },
+        dragging: !!(pDrag && pDrag.id === pid && pDrag.slot === slot),
+        onDragStart: startPanelDrag(pid, slot, index),
+        onCollapse: () => toggleCollapse(pid), onMax: () => toggleMax(pid), onClose: closePanel, onMove: (s) => movePanel(pid, s), onAddTo: addTo,
+      }, body),
+      index < total - 1 ? h('div', { className: 'dndp-ws-split ' + (slot === 'bottom' ? 'v' : 'h'), onPointerDown: startDrag('panel', slot, index) }) : null)
+  }
+
+  const col = (slotName) => {
+    const s = layout.slots[slotName]
+    const panels = s.panels
+    const horiz = slotName === 'bottom'
+    const glowing = !!(pDrag && pDrag.over && pDrag.over.slot === slotName)
+    return h('div', { className: 'dndp-ws-inner ' + (horiz ? 'h' : '') + ' dndp-slot' + (glowing ? ' glow' : ''), style: { flex: 1, minHeight: 0, minWidth: 0 } },
+      panels.length ? panels.map((pid, i) => renderPanel(pid, slotName, i, panels.length)) : h('div', { className: 'dndp-empty', style: { flex: 1, padding: '10px 6px' } }, '（空）把面板拖到这里'))
+  }
+
+  if (layout.maximized && inLayout(layout, layout.maximized)) {
+    const pid = layout.maximized
+    return h('div', { className: 'dndp-ws ' + themeClassOf(theme), style: themeStyleOf(theme), ref: rootRef },
+      h('div', { className: 'dndp-ws-top' }, h('span', { className: 'logo' }, '⚔ SoloTRPG'), h('span', { className: 'dndp-chip' }, PANEL_DEFS[pid].title + ' · 最大化'), h('div', { className: 'dndp-sp' }),
+        h('button', { className: 'dndp-btn tiny', onClick: () => toggleMax(pid) }, '还原布局')),
+      h('div', { className: 'dndp-ws-main' }, h('div', { style: { flex: 1, display: 'flex', minHeight: 0, padding: 6 } }, renderPanel(pid, slotOf(layout, pid) || 'center', 0, 1))))
+  }
+
+  // 空槽位也留出可拖入的区域（左侧窄条 / 右侧窄条 / 拖动时才出现的底栏）
+  const hasBottom = layout.slots.bottom.panels.length > 0
+  const bottomH = hasBottom ? Math.max(80, layout.slots.bottom.size) : 0
+  const leftEmpty = !layout.slots.left.panels.length
+  const rightEmpty = !layout.slots.right.panels.length
+  const refOf = (name) => (el => { slotRefs.current[name] = el })
+  const mainRow = h('div', { className: 'dndp-ws-row', style: { flex: 1, minHeight: 0 } },
+    h('div', {
+      className: 'dndp-ws-col dndp-slotwrap' + (leftEmpty ? ' slim' : ''),
+      ref: refOf('left'),
+      style: { width: leftEmpty ? 118 : layout.slots.left.size, flex: 'none', padding: 4 },
+    }, col('left')),
+    (!leftEmpty || !rightEmpty || layout.slots.center.panels.length) ? h('div', { className: 'dndp-ws-split v', onPointerDown: startDrag('col', 'left') }) : null,
+    h('div', { className: 'dndp-ws-col', ref: refOf('center'), style: { flex: 1, minWidth: 0, padding: 4 } }, col('center')),
+    h('div', { className: 'dndp-ws-split v', onPointerDown: startDrag('col', 'right') }),
+    h('div', {
+      className: 'dndp-ws-col dndp-slotwrap' + (rightEmpty ? ' slim' : ''),
+      ref: refOf('right'),
+      style: { width: rightEmpty ? 132 : layout.slots.right.size, flex: 'none', padding: 4 },
+    }, col('right')))
+
+  const allPanels = Object.keys(PANEL_DEFS)
+  const menuItems = [
+    h('div', { key: 'h', className: 'hd' }, '显示面板'),
+    ...allPanels.map(pid => h('button', { key: pid, onClick: () => { openPanel(pid); setMenu(false) } }, (PANEL_DEFS[pid].icon || '') + ' ' + PANEL_DEFS[pid].title + (inLayout(layout, pid) ? '（已在布局中）' : ''))),
+    h('div', { key: 's', className: 'sep' }),
+    h('button', { key: 'r', onClick: () => { reset(); setMenu(false) } }, '重置为默认布局'),
+  ]
+
+  const ghost = pDrag ? h('div', { className: 'dndp-dragghost', style: { left: pDrag.x, top: pDrag.y } },
+    ((PANEL_DEFS[pDrag.id] || {}).icon || '▫') + ' ' + ((PANEL_DEFS[pDrag.id] || {}).title || pDrag.id)) : null
+  const dropBar = (pDrag && pDrag.over && pDrag.over.bar) ? h('div', { className: 'dndp-drop', style: { position: 'fixed', left: pDrag.over.bar.x, top: pDrag.over.bar.y, width: pDrag.over.bar.w, height: pDrag.over.bar.h } }) : null
+
+  return h('div', { className: 'dndp-ws ' + themeClassOf(theme) + (pDrag ? ' dragging' : ''), style: themeStyleOf(theme), ref: rootRef },
+    h('div', { className: 'dndp-ws-top' },
+      h('span', { className: 'logo' }, '⚔ SoloTRPG'),
+      h('span', { className: 'dndp-chip' }, '工作区'),
+      activeId ? h('span', { className: 'dndp-chip' }, '当前角色：' + (activeId || '')) : null,
+      h('div', { className: 'dndp-sp' }),
+      msg ? h('span', { className: 'dndp-note hl' }, msg) : null,
+      xpReady.length ? h('button', {
+        className: 'dndp-btn tiny primary', title: '经验已满，去升级或兼职',
+        onClick: () => { const x = xpReady[0]; if (x && x.id) { pick(x.id) } ; openPanel('sheet') },
+      }, '✨ 升级（' + xpReady[0].name + '）') : null,
+      h('button', { className: 'dndp-btn tiny', onClick: () => setRev(r => r + 1) }, '刷新数据'),
+      h('div', { style: { position: 'relative' } },
+        h('button', { className: 'dndp-btn tiny', onClick: () => setMenu(!menu) }, '面板 ▾'),
+        menu ? h('div', { className: 'dndp-pmenu', style: { right: 0, top: 26 } }, menuItems) : null),
+      h('button', { className: 'dndp-btn tiny', onClick: reset }, '重置布局')),
+    h('div', { className: 'dndp-ws-main' },
+      h('div', { style: { flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 } },
+        mainRow,
+        (hasBottom || pDrag) ? h('div', { className: 'dndp-ws-split h', onPointerDown: startDrag('bottom', 'bottom') }) : null,
+        (hasBottom || pDrag) ? h('div', { className: 'dndp-ws-col dndp-slotwrap' + (hasBottom ? '' : ' slim'), ref: refOf('bottom'), style: { height: hasBottom ? bottomH : 54, flex: 'none', padding: 4 } }, col('bottom')) : null)),
+    ghost, dropBar)
+}
+
+// ============ 主题 ============
+const DEFAULT_THEME = { name: 'azure', mode: 'dark', accent: '#5aa0ff', lineBoost: true }
+const THEME_LIST = [['azure', '幽蓝'], ['emerald', '翡翠'], ['amber', '琥珀'], ['violet', '紫罗兰'], ['rose', '绯樱'], ['slate', '石板灰']]
+const ACCENT_SWATCH = ['#5aa0ff', '#4fbf8b', '#e0a64a', '#a98bff', '#e07a98', '#93a7bd', '#4dd0e1', '#ff8a65']
+let THEME_CACHE = null
+function normThemeLocal(t) {
+  const o = Object.assign({}, DEFAULT_THEME, t || {})
+  if (!THEME_LIST.some(x => x[0] === o.name)) o.name = 'azure'
+  if (o.mode !== 'light') o.mode = 'dark'
+  if (!/^#[0-9a-fA-F]{6}$/.test(String(o.accent || ''))) o.accent = '#5aa0ff'
+  return o
+}
+// 强调色上的文字用黑还是白：按相对亮度自动选
+function onAccentOf(hex) {
+  const h = String(hex || '').replace('#', '')
+  if (h.length !== 6) return '#0d1015'
+  const r = parseInt(h.slice(0, 2), 16) / 255, g = parseInt(h.slice(2, 4), 16) / 255, b = parseInt(h.slice(4, 6), 16) / 255
+  const lin = (c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4))
+  const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+  return L > 0.45 ? '#0d1015' : '#ffffff'
+}
+function themeClassOf(t) { const th = normThemeLocal(t); return 'dndp-theme-' + th.name + (th.mode === 'light' ? ' dndp-light' : '') }
+function themeStyleOf(t) { const th = normThemeLocal(t); return { '--dsw-alias-brand-primary': th.accent, '--dndp-on-accent': onAccentOf(th.accent) } }
+function applyThemeGlobally(t) {
+  const th = normThemeLocal(t)
+  THEME_CACHE = th
+  try {
+    if (typeof document !== "undefined" && document.documentElement) {
+      const de = document.documentElement
+      de.style.setProperty('--solo-accent', th.accent)
+      de.style.setProperty('--solo-on-accent', onAccentOf(th.accent))
+      de.style.setProperty('--solo-mode', th.mode)
+    }
+    if (typeof window !== 'undefined' && window.dispatchEvent) window.dispatchEvent(new CustomEvent('solotrpg-theme', { detail: th }))
+  } catch (e) { }
+}
+function useTheme() {
+  const [th, setTh] = React.useState(THEME_CACHE || normThemeLocal(DEFAULT_THEME))
+  const [presets, setPresets] = React.useState(null)
+  React.useEffect(() => {
+    if (THEME_CACHE) return
+    call('theme.get', {}).then(r => {
+      if (r && r.ok) { const t = normThemeLocal(r.theme); setTh(t); applyThemeGlobally(t) }
+      if (r && r.ok && r.presets) setPresets(r.presets)
+    }).catch(() => { })
+  }, [])
+  const set = (t) => { const nt = normThemeLocal(t); setTh(nt); applyThemeGlobally(nt); return nt }
+  return [th, set, presets]
+}
+function SettingsPanel(props) {
+  const [st, setSt] = React.useState(null)
+  const [f, setF] = React.useState({ baseUrl: '', model: '', temperature: '0.7', maxSteps: '6', extraPrompt: '', toolset: 'core' })
+  const [key, setKey] = React.useState('')
+  const [msg, setMsg] = React.useState('')
+  const [busy, setBusy] = React.useState(false)
+  const load = () => call('settings.get', {}).then(r => {
+    if (!r || !r.ok) { setMsg((r && r.error) || '读取设置失败'); return }
+    setSt(r)
+    setF({ baseUrl: r.config.baseUrl || '', model: r.config.model || '', temperature: String(r.config.temperature), maxSteps: String(r.config.maxSteps), extraPrompt: r.config.extraPrompt || '', toolset: r.config.toolset || 'core' })
+  }).catch(e => setMsg(String(e && e.message || e)))
+  React.useEffect(() => { load() }, [])
+  const save = async () => {
+    setBusy(true); setMsg('')
+    const patch = { baseUrl: f.baseUrl, model: f.model, temperature: f.temperature, maxSteps: f.maxSteps, extraPrompt: f.extraPrompt, toolset: f.toolset }
+    if (key) patch.apiKey = key
+    const r = await call('settings.set', { patch: patch })
+    const line = r && r.ok ? (r.summary + (r.saved ? '' : '（未落盘：' + (r.saveError || '') + '）')) : ((r && r.error) || '保存失败')
+    setKey('')
+    load()
+    if (!opts || !opts.silent) { setMsg(line); setBusy(false) } else setMsg(line)
+    return r
+  }
+  const test = async () => { setBusy(true); setMsg('保存并测试中…'); await save({ silent: true }); const r = await call('ai.test', {}); setMsg(r && r.ok ? r.summary : ('测试失败：' + ((r && r.error) || '') + (r && r.detail ? ('\n' + r.detail) : ''))); setBusy(false) }
+  const clearKey = async () => { const r = await call('settings.set', { patch: { clearKey: true } }); setMsg(r && r.ok ? '密钥已清除' : '清除失败'); load() }
+  const th = normThemeLocal(props.theme || DEFAULT_THEME)
+  const pickTheme = async (patch) => {
+    const nt = normThemeLocal(Object.assign({}, th, patch))
+    if (props.onTheme) await props.onTheme(nt)
+    setMsg('主题：' + (THEME_LIST.find(x => x[0] === nt.name) || ['', nt.name])[1] + ' · ' + (nt.mode === 'light' ? '浅色' : '深色') + ' · ' + nt.accent)
+  }
+  const appearance = h('div', { key: 'ap', style: { marginBottom: 12 } },
+    h('div', { className: 'dndp-label', style: { marginBottom: 6 } }, '外观主题'),
+    h('div', { className: 'dndp-chips' }, THEME_LIST.map(([k, label]) => h('button', {
+      key: k, className: 'dndp-btn tiny' + (th.name === k ? ' primary' : ''), onClick: () => pickTheme({ name: k }),
+    }, label))),
+    h('div', { className: 'dndp-chips', style: { marginTop: 6, alignItems: 'center' } },
+      h('button', { className: 'dndp-btn tiny' + (th.mode === 'dark' ? ' primary' : ''), onClick: () => pickTheme({ mode: 'dark' }) }, '深色'),
+      h('button', { className: 'dndp-btn tiny' + (th.mode === 'light' ? ' primary' : ''), onClick: () => pickTheme({ mode: 'light' }) }, '浅色'),
+      h('span', { className: 'dndp-note' }, '强调色'),
+      h('input', { type: 'color', value: th.accent, onChange: e => pickTheme({ accent: e.target.value }), style: { width: 38, height: 26, padding: 0, border: '1px solid var(--dndp-line)', borderRadius: 6, background: 'transparent' } }),
+      ...ACCENT_SWATCH.map(c => h('button', { key: c, title: c, onClick: () => pickTheme({ accent: c }), style: { width: 22, height: 22, borderRadius: 6, border: th.accent.toLowerCase() === c ? '2px solid var(--dsw-alias-label-primary)' : '1px solid var(--dndp-line)', background: c, cursor: 'pointer', padding: 0 } })),
+      h('button', { className: 'dndp-btn tiny', onClick: () => pickTheme({ name: 'azure', mode: 'dark', accent: '#5aa0ff' }) }, '恢复默认')),
+    h('div', { className: 'hint', style: { marginTop: 5 } }, '主题只作用于本插件界面（不会改动 DSH 自身配色），保存在 data/theme.json，切面板/刷新都保留。'))
+  if (!st) return h('div', { className: 'dndp-empty' }, msg || '读取设置…')
+  const row = (label, hint, node) => h('div', { key: label, className: 'dndp-setrow' }, h('label', null, label), node, hint ? h('div', { className: 'hint' }, hint) : null)
+  return h('div', { style: { padding: '10px 12px' } },
+    appearance,
+    h('div', { key: 'w', className: 'dndp-warn' }, '密钥以明文保存在 ' + st.path + '（本机文件）。也可以用环境变量 DND5E_AI_KEY 覆盖' + (st.keyFromEnv ? '（当前正由环境变量提供）' : '') + '。不要把该文件提交到公开仓库。'),
+    row('API Base URL', '兼容 OpenAI 的 /chat/completions；末尾不用带 /。快捷：' + Object.keys(st.presets).join(' / '),
+      h('div', { key: 'u' }, h('input', { className: 'dndp-input', value: f.baseUrl, onChange: e => setF(Object.assign({}, f, { baseUrl: e.target.value })) }),
+        h('div', { className: 'dndp-chips', style: { marginTop: 4 } }, Object.keys(st.presets).map(k => h('button', { key: k, className: 'dndp-btn tiny', onClick: () => setF(Object.assign({}, f, { baseUrl: st.presets[k] })) }, k))))),
+    row('API Key', st.hasKey ? ('当前：' + st.keyMask) : '还没有配置密钥', h('input', { className: 'dndp-input', type: 'password', value: key, placeholder: st.hasKey ? '（留空则不修改）' : 'sk-…', onChange: e => setKey(e.target.value) })),
+    row('模型', '例如 gpt-4o-mini / deepseek-chat / qwen2.5:14b', h('input', { className: 'dndp-input', value: f.model, onChange: e => setF(Object.assign({}, f, { model: e.target.value })) })),
+    h('div', { key: 'two', style: { display: 'flex', gap: 8 } },
+      h('div', { style: { flex: 1 } }, row('温度', null, h('input', { className: 'dndp-input', value: f.temperature, onChange: e => setF(Object.assign({}, f, { temperature: e.target.value })) }))),
+      h('div', { style: { flex: 1 } }, row('每轮最多工具步数', null, h('input', { className: 'dndp-input', value: f.maxSteps, onChange: e => setF(Object.assign({}, f, { maxSteps: e.target.value })) })))),
+    row('工具集', 'core = 桌面跑团常用（约 35 个，省 token）；all = 全部（含全部模组/角色管理/插件）',
+      h('select', { className: 'dndp-input', value: f.toolset, onChange: e => setF(Object.assign({}, f, { toolset: e.target.value })) },
+        [['core', 'core · 常用（省 token）'], ['all', 'all · 全部能力']].map(x => h('option', { key: x[0], value: x[0] }, x[1])))),
+    row('补充指令（追加到 DM 系统提示之后）', '例如：叙事更简洁，每次回复不超过 200 字；遇到战斗先确认先攻。', h('textarea', { className: 'dndp-input', rows: 4, value: f.extraPrompt, onChange: e => setF(Object.assign({}, f, { extraPrompt: e.target.value })) })),
+    h('div', { key: 'btns', style: { display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 } },
+      h('button', { className: 'dndp-btn primary', disabled: busy, onClick: () => save() }, '保存'),
+      h('button', { className: 'dndp-btn', disabled: busy, onClick: test }, '保存并测试连接'),
+      h('button', { className: 'dndp-btn', disabled: busy || !st.hasKey, onClick: clearKey }, '清除密钥')),
+    msg ? h('div', { key: 'm', className: 'dndp-note hl', style: { marginTop: 8, whiteSpace: 'pre-wrap' } }, msg) : null,
+    h('div', { key: 'tools', className: 'dndp-note', style: { marginTop: 10 } },
+      'AI 能调用的能力：' + (props.toolCount != null ? props.toolCount : '—') + ' 个（规则书检索、模组检索、怪物数值、角色卡读写、战斗记录、战术地图、掷骰，以及 plugins/ 里的扩展）。'))
+}
+
+function AIPanel(props) {
+  const [msgs, setMsgs] = React.useState([])
+  const [input, setInput] = React.useState('')
+  const [busy, setBusy] = React.useState(false)
+  const [msg, setMsg] = React.useState('')
+  const [st, setSt] = React.useState(null)
+  const [toolCount, setToolCount] = React.useState(null)
+  const bodyRef = React.useRef(null)
+  const load = () => call('ai.history', {}).then(r => { if (r && r.ok) setMsgs(r.messages || []) }).catch(() => { })
+  React.useEffect(() => {
+    load()
+    call('settings.get', {}).then(r => { if (r && r.ok) setSt(r) }).catch(() => { })
+    call('ai.tools', {}).then(r => { if (r && r.ok) setToolCount(r.count) }).catch(() => { })
+  }, [])
+  React.useEffect(() => { const el = bodyRef.current; if (el) el.scrollTop = el.scrollHeight })
+  const send = async (text) => {
+    const t = String(text == null ? input : text).trim()
+    if (!t || busy) return
+    setInput(''); setBusy(true); setMsg('')
+    setMsgs(m => m.concat([{ role: 'user', content: t, t: new Date().toISOString() }]))
+    try {
+      const r = await call('ai.chat', { message: t })
+      if (r && r.ok) {
+        const steps = (r.steps || []).map(s => '· ' + s.name + (s.ok ? ' ✔' : ' ✘') + (s.summary ? ('  ' + String(s.summary).slice(0, 60)) : '')).join('\n')
+        setMsgs(m => m.concat([{ role: 'assistant', content: r.reply, t: new Date().toISOString(), steps: steps, usage: r.usage }]))
+        setMsg(r.summary + (r.saved ? '' : '（未落盘）'))
+      } else {
+        setMsgs(m => m.concat([{ role: 'assistant', content: '⚠ ' + ((r && r.error) || '调用失败'), t: new Date().toISOString(), err: true }]))
+        setMsg('')
+      }
+    } catch (e) { setMsgs(m => m.concat([{ role: 'assistant', content: '⚠ ' + String(e && e.message || e), err: true }])) }
+    setBusy(false)
+    load()
+  }
+  const clear = async () => { const r = await call('ai.clear', {}); setMsg(r && r.ok ? '已清空' : '清空失败'); load() }
+  const quick = ['读取当前战役状态，并简短说明接下来该发生什么', '继续推进剧情（由我扮演图里尔，你先描述场景）', '把当前遭遇摆到战术地图上']
+  const bar = h('div', { className: 'dndp-aibar' },
+    h('span', { className: 'dndp-chip' }, st ? (st.config.model || '未设模型') : '…'),
+    h('span', { className: 'dndp-chip' }, st && st.hasKey ? ('密钥 ' + st.keyMask) : '⚠ 未配置密钥'),
+    h('span', { className: 'dndp-chip' }, '工具 ' + (toolCount == null ? '—' : toolCount)),
+    h('div', { className: 'dndp-sp' }),
+    h('button', { className: 'dndp-btn tiny', onClick: () => props.onOpen && props.onOpen('settings') }, '⚙ 设置'),
+    h('button', { className: 'dndp-btn tiny', onClick: load }, '刷新'),
+    h('button', { className: 'dndp-btn tiny', onClick: clear }, '清空'))
+  const list = []
+  if (!msgs.length) list.push(h('div', { key: 'z', className: 'dndp-note', style: { padding: '8px 2px' } },
+    'AI 会用工具自己查规则书/模组/角色卡/地图，并把结果落到战斗记录与地图上。先在「⚙ 设置」里填 API。试试下面的快捷指令：',
+    h('div', { className: 'dndp-chips', style: { marginTop: 6 } }, quick.map((q, i) => h('button', { key: i, className: 'dndp-btn tiny', onClick: () => send(q) }, q)))))
+  msgs.forEach((m, i) => {
+    const me = m.role === 'user'
+    list.push(h('div', { key: i, className: 'dndp-msg' + (me ? ' me' : '') + (m.err ? ' err' : '') },
+      h('div', { className: 'dndp-who' }, me ? '你' : 'DM' + (m.usage ? '（tokens ' + (m.usage.prompt_tokens || 0) + '+' + (m.usage.completion_tokens || 0) + '）' : '')),
+      h('div', { className: 'dndp-bubble' }, m.content),
+      m.steps ? h('div', { className: 'dndp-steps' }, h('b', null, '工具调用：'), '\n' + m.steps) : null))
+  })
+  if (busy) list.push(h('div', { key: 'b', className: 'dndp-msg' }, h('div', { className: 'dndp-who' }, 'DM'), h('div', { className: 'dndp-bubble' }, '正在思考（会先调用工具查资料）…')))
+  return h('div', { className: 'dndp-ai' },
+    bar,
+    h('div', { className: 'dndp-aibody', ref: bodyRef }, list),
+    msg ? h('div', { className: 'dndp-note hl', style: { padding: '2px 10px' } }, msg) : null,
+    h('div', { className: 'dndp-aiinput' },
+      h('textarea', { value: input, placeholder: '以玩家身份说点什么（Enter 发送，Shift+Enter 换行）', onChange: e => setInput(e.target.value), onKeyDown: e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } } }),
+      h('button', { className: 'dndp-btn primary', disabled: busy, onClick: () => send() }, busy ? '…' : '发送')))
+}
+
+
+// ============ 经验条 / 升级 ============
+function XpMini(props) {
+  const it = props.item || {}
+  const pct = Math.max(0, Math.min(100, Number(it.pct) || 0))
+  const next = it.next
+  return h('span', { className: 'dndp-xpmini', title: '经验 ' + (it.xp || 0) + (next ? (' / ' + next) : '（满级）') + (it.canLevel ? ('｜可升级到 Lv' + it.targetLevel) : '') },
+    h('span', { className: 'dndp-xpminibar' }, h('i', { style: { width: pct + '%' } })),
+    h('span', { className: 'dndp-xpminitxt' }, next ? (it.xp + '/' + next) : (it.xp + ' 满级')),
+    it.canLevel ? h('span', { className: 'dndp-xpup' }, '✨') : null)
+}
+
+// ============ 先攻条 + 行动经济 ============
+const ECONS = [['action', '动作'], ['bonus', '附赠'], ['reaction', '反应']]
+function CombatPanel(props) {
+  const [st, setSt] = React.useState(null)
+  const [err, setErr] = React.useState('')
+  const [msg, setMsg] = React.useState('')
+  const [amt, setAmt] = React.useState('5')
+  const [sel, setSel] = React.useState(null)
+  const [condKey, setCondKey] = React.useState('prone')
+  const [rounds, setRounds] = React.useState('3')
+  const load = () => call('combat.get', {}).then(r => { if (r && r.ok) { setSt(r); setErr('') } else setErr((r && r.error) || '读取失败') }).catch(e => setErr(String(e && e.message || e)))
+  React.useEffect(() => { load() }, [])
+  React.useEffect(() => { const t = (typeof setInterval === 'function') ? setInterval(load, 5000) : null; return () => { if (t) clearInterval(t) } }, [])
+  const act = async (op, args, key) => {
+    setMsg('…')
+    const r = await call(op, args || {})
+    if (r && r.ok) { setSt(r); setMsg(r.summary || 'ok') } else setMsg((r && r.error) || '失败')
+    if (props.onChanged) props.onChanged()
+    return r
+  }
+  if (!st) return h('div', { className: 'dndp-empty' }, err || '读取战斗状态…')
+  const rows = st.order.map(e => {
+    const pct = (e.hp != null && e.max) ? Math.max(0, Math.min(100, Math.round(e.hp / e.max * 100))) : null
+    const conds = (e.conditions || [])
+    return h('div', {
+      key: e.id, className: 'dndp-crow' + (e.active ? ' on' : '') + (sel === e.id ? ' sel' : ''),
+      onClick: () => setSel(e.id), title: (e.note || '') + (e.pcId ? ('｜角色卡 ' + e.pcId) : '') + (e.tokenId ? ('｜地图单位 ' + e.tokenId) : ''),
+    },
+      h('span', { className: 'dndp-chip', style: { minWidth: 26, textAlign: 'center' } }, e.init),
+      h('div', { className: 'dndp-main' },
+        h('div', { className: 'dndp-name' }, (e.active ? '▶ ' : '') + e.name),
+        h('div', { className: 'dndp-sub' },
+          (e.hp != null ? ('HP ' + e.hp + (e.max ? '/' + e.max : '')) : 'HP —'),
+          conds.length ? ('｜' + conds.map(c => c.name + (c.level != null ? c.level : '') + (c.rounds ? '(' + c.rounds + ')' : '')).join(' ')) : '')),
+      h('div', { style: { textAlign: 'right', minWidth: 54 } },
+        pct != null ? h('div', { className: 'dndp-tokbar', style: { position: 'static', width: 46, marginLeft: 'auto' } }, h('i', { style: { width: pct + '%' } })) : null,
+        h('div', { style: { display: 'flex', gap: 2, justifyContent: 'flex-end', marginTop: 3 } },
+          ECONS.map(x => h('span', { key: x[0], title: x[1], className: 'dndp-chip', style: { fontSize: 9, padding: '0 3px', opacity: (e.econ && e.econ[x[0]]) ? 0.35 : 1 } }, x[1][0])),
+          h('span', { title: '已移动', className: 'dndp-chip', style: { fontSize: 9, padding: '0 3px' } }, (e.econ && e.econ.move) ? (e.econ.move + '尺') : '移'))))
+  })
+  const condCat = (st.order.find(e => e.id === sel) || {}).conditions || []
+  return h('div', { className: 'dndp-fill' },
+    h('div', { className: 'dndp-aibar' },
+      h('span', { className: 'dndp-chip' }, st.active ? ('R' + st.round) : '未开始'),
+      h('span', { className: 'dndp-chip' }, st.active ? ('当前：' + (st.current || '—')) : '—'),
+      h('div', { className: 'dndp-sp' }),
+      st.active
+        ? h('button', { className: 'dndp-btn tiny primary', onClick: () => act('combat.next', {}) }, '下一回合 ▸')
+        : h('button', { className: 'dndp-btn tiny primary', onClick: () => act('combat.start', { auto: true, campaign: st.campaign || '' }) }, '开始战斗（自动掷先攻）'),
+      st.active ? h('button', { className: 'dndp-btn tiny', onClick: () => act('combat.end', {}) }, '结束') : null,
+      h('button', { className: 'dndp-btn tiny', onClick: load }, '刷新')),
+    h('div', { className: 'dndp-scroll' },
+      err ? h('div', { className: 'dndp-err' }, err) : null,
+      !st.order.length ? h('div', { className: 'dndp-empty' }, '还没有参战单位。点「开始战斗」会从地图单位 + 角色卡自动掷先攻。') : null,
+      rows,
+      st.order.length ? h('div', { style: { padding: '10px 12px' } },
+        h('div', { className: 'dndp-label' }, '选中单位操作' + (sel ? ('：' + ((st.order.find(e => e.id === sel) || {}).name || '')) : '（先点上面某个单位）')),
+        h('div', { className: 'dndp-chips', style: { marginBottom: 6 } },
+          h('input', { className: 'dndp-input', style: { width: 60 }, value: amt, onChange: e => setAmt(e.target.value) }),
+          h('button', { className: 'dndp-btn tiny', disabled: !sel, onClick: () => act('combat.damage', { id: sel, amount: -Math.abs(Number(amt) || 0) }) }, '受伤'),
+          h('button', { className: 'dndp-btn tiny', disabled: !sel, onClick: () => act('combat.damage', { id: sel, amount: Math.abs(Number(amt) || 0) }) }, '治疗'),
+          h('div', { className: 'dndp-sp' }),
+          ECONS.map(x => h('button', { key: x[0], className: 'dndp-btn tiny', disabled: !sel, onClick: () => act('combat.economy', { id: sel, key: x[0] }) }, '用' + x[1])),
+          h('button', { className: 'dndp-btn tiny', disabled: !sel, onClick: () => act('combat.economy', { id: sel, key: 'action', reset: true }) }, '重置行动经济')),
+        h('div', { className: 'dndp-chips' },
+          h('select', { className: 'dndp-input', style: { width: 110 }, value: condKey, onChange: e => setCondKey(e.target.value) },
+            (props.conditionCatalog || []).map(c => h('option', { key: c.key, value: c.key }, c.name))),
+          h('input', { className: 'dndp-input', style: { width: 58 }, value: rounds, title: '持续回合数（留空=永久）', onChange: e => setRounds(e.target.value) }),
+          h('button', { className: 'dndp-btn tiny', disabled: !sel, onClick: () => act('combat.conditions', { id: sel, add: [{ key: condKey, rounds: rounds === '' ? null : Number(rounds) }], log: '获得状态' }) }, '加状态'),
+          condCat.length ? h('button', { className: 'dndp-btn tiny', disabled: !sel, onClick: () => act('combat.conditions', { id: sel, remove: condCat.map(c => c.key), log: '清除状态' }) }, '清空状态') : null),
+        msg ? h('div', { className: 'dndp-note hl', style: { marginTop: 6, whiteSpace: 'pre-wrap' } }, msg) : null) : null,
+      h('div', { className: 'dndp-note', style: { padding: '0 12px 12px' } },
+        '先攻条由 AI 也能驱动：combat.start / next / damage / conditions / economy。带持续回合的状态会在该单位回合开始时自动递减，到 0 自动结束并提示。')))
+}
+
+// ============ 物理骰子盘 ============
+const DIE_SIDES = { d4: 3, d6: 4, d8: 4, d10: 6, d12: 5, d20: 6, d100: 6 }
+const DIE_COLOR = { d4: '#b4544a', d6: '#4a7cb4', d8: '#5a9c5f', d10: '#a06ab4', d12: '#c08a3a', d20: '#c2944a', d100: '#6a7a8a' }
+const DICE_KINDS = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20', 'd100']
+function buildExpr(pool, mod) {
+  const parts = DICE_KINDS.filter(k => (pool[k] || 0) > 0).map(k => pool[k] + k)
+  const base = parts.join('+') || '1d20'
+  const m = Number(mod) || 0
+  return base + (m ? (m > 0 ? '+' + m : String(m)) : '')
+}
+function DicePanel(props) {
+  const [pool, setPool] = React.useState({ d20: 1 })
+  const [mod, setMod] = React.useState('0')
+  const [adv, setAdv] = React.useState('normal')
+  const [busy, setBusy] = React.useState(false)
+  const [res, setRes] = React.useState(null)
+  const [toy, setToy] = React.useState([])
+  const [pending, setPending] = React.useState([])
+  const [records, setRecords] = React.useState([])
+  const [msg, setMsg] = React.useState('')
+  const canvasRef = React.useRef(null)
+  const bodiesRef = React.useRef([])
+  const rafRef = React.useRef(null)
+  const lastRef = React.useRef(0)
+
+  const loadPending = () => call('dice.pending', {}).then(r => { if (r && r.ok) setPending(r.pending || []) }).catch(() => { })
+  const loadRecords = () => call('dice.results', { limit: 12 }).then(r => { if (r && r.ok) setRecords(r.items || []) }).catch(() => { })
+  React.useEffect(() => { loadPending(); loadRecords() }, [])
+  React.useEffect(() => {
+    const t = (typeof setInterval === 'function') ? setInterval(() => { loadPending(); loadRecords() }, 3000) : null
+    return () => { if (t) clearInterval(t) }
+  }, [])
+
+  const draw = () => { /* 与之前一致：画骰盘 */ }
+  const drawReal = () => {
+    const cv = canvasRef.current
+    if (!cv || typeof cv.getContext !== 'function') return
+    const ctx = cv.getContext('2d')
+    if (!ctx) return
+    const dpr = (typeof window !== 'undefined' && window.devicePixelRatio) || 1
+    const W = cv.clientWidth || 320, H = cv.clientHeight || 150
+    if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr) }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    ctx.clearRect(0, 0, W, H)
+    const light = props.theme && props.theme.mode === 'light'
+    ctx.fillStyle = light ? '#e7ecf2' : '#20252c'
+    ctx.fillRect(0, 0, W, H)
+    ctx.strokeStyle = 'rgba(120,150,190,.35)'
+    ctx.lineWidth = 2
+    ctx.strokeRect(1, 1, W - 2, H - 2)
+    for (const b of bodiesRef.current) {
+      ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.ang)
+      const sides = DIE_SIDES[b.kind] || 6
+      ctx.beginPath()
+      for (let i = 0; i < sides; i++) { const a = -Math.PI / 2 + i * 2 * Math.PI / sides; const px = Math.cos(a) * b.r, py = Math.sin(a) * b.r; if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py) }
+      ctx.closePath()
+      ctx.fillStyle = DIE_COLOR[b.kind] || '#666'; ctx.fill()
+      ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.stroke()
+      ctx.restore()
+      ctx.fillStyle = '#fff'
+      ctx.font = 'bold ' + Math.max(10, Math.round(b.r * 1.05)) + 'px ui-monospace, Menlo, monospace'
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+      ctx.fillText(b.settled && b.value != null ? String(b.value) : '?', b.x, b.y)
+    }
+  }
+  const step = (dt, W, H) => {
+    const bodies = bodiesRef.current
+    for (const b of bodies) {
+      if (b.settled) continue
+      b.vy += 1500 * dt
+      b.x += b.vx * dt; b.y += b.vy * dt; b.ang += b.va * dt
+      b.vx *= 0.994; b.vy *= 0.997; b.va *= 0.986
+      if (b.x - b.r < 4) { b.x = 4 + b.r; b.vx = Math.abs(b.vx) * 0.55 }
+      if (b.x + b.r > W - 4) { b.x = W - 4 - b.r; b.vx = -Math.abs(b.vx) * 0.55 }
+      if (b.y + b.r > H - 4) { b.y = H - 4 - b.r; b.vy = -Math.abs(b.vy) * 0.5; b.vx *= 0.9; b.va *= 0.88 }
+      if (b.y - b.r < 4) { b.y = 4 + b.r; b.vy = Math.abs(b.vy) * 0.5 }
+    }
+    for (let i = 0; i < bodies.length; i++) {
+      for (let j = i + 1; j < bodies.length; j++) {
+        const a = bodies[i], b = bodies[j]
+        const dx = b.x - a.x, dy = b.y - a.y
+        const d = Math.sqrt(dx * dx + dy * dy) || 0.01
+        const min = a.r + b.r
+        if (d < min) {
+          const nx = dx / d, ny = dy / d, push = (min - d) / 2
+          a.x -= nx * push; a.y -= ny * push; b.x += nx * push; b.y += ny * push
+          const p = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny
+          if (p > 0) { const imp = p * 0.55; a.vx -= imp * nx; a.vy -= imp * ny; b.vx += imp * nx; b.vy += imp * ny }
+        }
+      }
+    }
+    for (const b of bodies) {
+      if (b.settled) continue
+      if ((b.y + b.r > H - 40) && Math.sqrt(b.vx * b.vx + b.vy * b.vy) < 26 && Math.abs(b.va) < 1.6) { b.settled = true; b.vx = b.vy = b.va = 0 }
+    }
+    return bodies.every(b => b.settled)
+  }
+  const animate = (expr, vals, onDone) => {
+    const cv = canvasRef.current
+    const W = (cv && cv.clientWidth) || 320, H = (cv && cv.clientHeight) || 150
+    const list = (vals || []).slice(0, 14)
+    const n2 = Math.max(1, list.length)
+    const kindGuess = ((expr || '').match(/(\d*)d(\d+)/) || [])[2]
+    bodiesRef.current = list.map((v, i) => ({
+      kind: 'd' + (kindGuess || 20),
+      x: W * (0.18 + 0.64 * (n2 === 1 ? 0.5 : i / (n2 - 1))), y: -30 - i * 8,
+      r: n2 > 6 ? 12 : (n2 > 3 ? 15 : 20),
+      vx: (Math.random() * 2 - 1) * 460, vy: -180 - Math.random() * 220,
+      ang: Math.random() * 6.28, va: (Math.random() * 2 - 1) * 12, value: v, settled: false,
+    }))
+    const t0 = (typeof performance !== 'undefined' ? performance.now() : Date.now())
+    const tick = (now) => {
+      const dt = Math.min(0.032, (now - (lastRef.current || now)) / 1000)
+      lastRef.current = now
+      const all = step(dt, W, H)
+      drawReal()
+      if (!all && now - t0 < 5000) { rafRef.current = (typeof requestAnimationFrame === 'function') ? requestAnimationFrame(tick) : null; if (!rafRef.current) onDone(); }
+      else onDone()
+    }
+    if (typeof requestAnimationFrame === 'function') { lastRef.current = 0; rafRef.current = requestAnimationFrame(tick) }
+    else { bodiesRef.current.forEach(b => { b.settled = true }); onDone() }
+  }
+
+  // ① 应 DM 要求投掷（唯一会计入战斗记录的骰子）
+  const rollRequested = async (req) => {
+    if (busy || !req) return
+    setBusy(true); setMsg('')
+    const r = await call('roll.dice', { expr: req.expr, advantage: req.advantage || 'normal', append: false })
+    if (!r || !r.ok) { setMsg('投掷失败：' + ((r && r.error) || '')); setBusy(false); return }
+    animate(req.expr, r.dice, async () => {
+      const ans = await call('dice.answer', { id: req.id, dice: r.dice, dropped: r.dropped, total: r.total, detail: r.detail })
+      if (ans && ans.ok) {
+        setRes({ expr: req.expr, total: r.total, detail: r.detail, requested: true, dc: req.dc, success: ans.success, label: req.label || req.why })
+        setMsg(ans.summary)
+      } else setMsg('记录失败：' + ((ans && ans.error) || ''))
+      setBusy(false); loadPending(); loadRecords()
+    })
+  }
+  // ② 随手丢（玩具，不写记录、不计入统计）
+  const rollToy = async () => {
+    if (busy) return
+    const expr = buildExpr(pool, mod)
+    setBusy(true); setMsg('')
+    const r = await call('roll.dice', { expr: expr, advantage: adv, append: false })
+    if (!r || !r.ok) { setMsg('投掷失败：' + ((r && r.error) || '')); setBusy(false); return }
+    animate(expr, r.dice, () => {
+      setRes({ expr: expr, total: r.total, detail: r.detail, requested: false })
+      setToy(list => [{ expr: expr, total: r.total, detail: r.detail, t: new Date().toLocaleTimeString() }].concat(list).slice(0, 8))
+      setBusy(false)
+    })
+  }
+  React.useEffect(() => {
+    drawReal()
+    const cv = canvasRef.current
+    if (!cv || typeof ResizeObserver === 'undefined') return undefined
+    const ro = new ResizeObserver(() => drawReal())
+    ro.observe(cv)
+    return () => { ro.disconnect(); if (rafRef.current && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(rafRef.current) }
+  }, [])
+
+  const bump = (k, d) => setPool(p => { const v = Math.max(0, Math.min(12, (p[k] || 0) + d)); const n2 = Object.assign({}, p, { [k]: v }); if (!DICE_KINDS.some(x => n2[x] > 0)) n2.d20 = 1; return n2 })
+  const total = DICE_KINDS.reduce((a, k) => a + (pool[k] || 0), 0)
+  const req = pending[0] || null
+
+  return h('div', { className: 'dndp-fill' },
+    h('div', { className: 'dndp-aibar' },
+      h('span', { className: 'dndp-chip' }, req ? ('待投 ' + pending.length + ' 条') : '无待投'),
+      h('span', { className: 'dndp-note' }, '战斗判定骰由 DM 发起，玩家点投'),
+      h('div', { className: 'dndp-sp' }),
+      h('button', { className: 'dndp-btn tiny', onClick: () => { loadPending(); loadRecords() } }, '刷新')),
+    h('div', { className: 'dndp-dicebox' },
+      // DM 发起的投骰：有请求时按钮亮起
+      req ? h('div', { key: 'req', className: 'dndp-req' },
+        h('div', null, '📣 DM 要求你投：', h('b', null, req.label || req.why || '（未注明用途）'), req.dc != null ? ('（DC ' + req.dc + '）') : ''),
+        h('div', { className: 'dndp-note', style: { marginTop: 2 } }, h('code', null, req.expr + (req.advantage && req.advantage !== 'normal' ? (' ' + req.advantage) : '')) + (req.why && req.label ? ('　' + req.why) : '')),
+        h('div', { style: { marginTop: 6 } },
+          h('button', { className: 'dndp-dicego live', disabled: busy, onClick: () => rollRequested(req) }, busy ? '翻滚中…' : ('🎲 投掷 ' + req.expr + '（会计入战斗记录）')),
+          h('div', { style: { marginTop: 4 } }, h('button', { className: 'dndp-btn tiny', onClick: () => call('dice.clear', { all: true }).then(() => { loadPending(); loadRecords() }) }, '忽略这条要求')))) : null,
+      h('div', { key: 'go', style: { marginTop: 8 } },
+        h('button', { className: 'dndp-dicego' + (req ? ' live' : ''), disabled: busy || !req, onClick: () => rollRequested(req) }, req ? ('🎲 投掷 ' + req.expr) : '等待 DM 发起投骰要求…')),
+      pending.length > 1 ? h('div', { key: 'more', className: 'dndp-note' }, '还有 ' + (pending.length - 1) + ' 条待投（投完当前这条会自动轮到下一条）') : null,
+      res ? h('div', { key: 'res', className: 'dndp-note hl', style: { marginTop: 6 } }, (res.requested ? '【战斗判定】' : '') + (res.label ? (res.label + '：') : '') + res.detail + (res.dc != null ? ('｜DC ' + res.dc + ' → ' + (res.success ? '成功' : '失败')) : '')) : null,
+      msg ? h('div', { key: 'm', className: 'dndp-note hl' }, msg) : null,
+      h('canvas', { key: 'cv', ref: canvasRef, style: { width: '100%', height: 130, borderRadius: 10, display: 'block', marginTop: 8 } }),
+      // 记录：最新在最上
+      h('div', { key: 'rec', style: { marginTop: 8 } },
+        h('div', { className: 'dndp-label' }, '战斗判定记录（最新在上）'),
+        records.length ? records.map(r2 => h('div', { key: r2.id, className: 'dndp-rec' },
+          h('span', { className: 'tm' }, r2.t ? new Date(r2.t).toLocaleTimeString() : ''),
+          h('span', { className: 'lb' }, (r2.actor ? (r2.actor + ' · ') : '') + (r2.label || r2.why || '未注明用途')),
+          h('code', { className: 'dndp-logd' }, r2.detail || (r2.expr + ' = ' + r2.total)),
+          r2.dc != null ? h('span', { className: r2.success ? 'ok' : 'no' }, 'DC ' + r2.dc + (r2.success ? ' ✔' : ' ✘')) : null)) : h('div', { className: 'dndp-note' }, '还没有战斗判定记录')),
+      // 玩具
+      h('div', { key: 'toy', style: { marginTop: 10, borderTop: '1px solid var(--dndp-line-soft)', paddingTop: 8 } },
+        h('div', { className: 'dndp-label' }, '随手丢（玩具：不写记录、不计入统计）'),
+        h('div', { className: 'dndp-chips', style: { marginBottom: 6 } },
+          DICE_KINDS.map(k => h('span', { key: k, style: { display: 'inline-flex', alignItems: 'center', gap: 2 } },
+            h('button', { className: 'dndp-btn tiny', onClick: () => bump(k, -1), disabled: !(pool[k] > 0) }, '−'),
+            h('b', { style: { color: DIE_COLOR[k], minWidth: 22, textAlign: 'center', display: 'inline-block' } }, k + '×' + (pool[k] || 0)),
+            h('button', { className: 'dndp-btn tiny', onClick: () => bump(k, 1) }, '+')))),
+        h('div', { className: 'dndp-chips' },
+          h('span', { className: 'dndp-note' }, '调整值'),
+          h('input', { className: 'dndp-input', style: { width: 46 }, value: mod, onChange: e => setMod(e.target.value) }),
+          h('div', { className: 'dndp-advgrp' }, [['normal', '普通'], ['adv', '优势'], ['dis', '劣势']].map(x => h('button', { key: x[0], className: 'dndp-btn tiny' + (adv === x[0] ? ' primary' : ''), onClick: () => setAdv(x[0]) }, x[1]))),
+          h('button', { className: 'dndp-btn tiny', disabled: busy, onClick: rollToy }, '丢 ' + total + ' 颗 ' + buildExpr(pool, mod)),
+          h('button', { className: 'dndp-btn tiny', onClick: () => { setPool({ d20: 1 }); setToy([]) } }, '重置')),
+        toy.length ? toy.map((x, i) => h('div', { key: i, className: 'dndp-note' }, x.t + '　' + x.expr + ' = ' + x.total)) : null)))
+}
+function PartyView() {
+  const [theme] = useTheme()
+  const [mode, setMode] = React.useState('list')
+  const [list, setList] = React.useState(null)
+  const [err, setErr] = React.useState('')
+  const [busy, setBusy] = React.useState(false)
+  const [sel, setSel] = React.useState(null)
+  const [loading, setLoading] = React.useState(false)
+  const [mapFull, setMapFull] = React.useState(false)
+  function refresh() { setBusy(true); setErr(''); call('party.list', {}).then(r => { if (r && r.ok) setList(r.items); else setErr((r && r.error) || 'list failed') }).catch(e => setErr(String(e && e.message || e))).then(() => setBusy(false)) }
+  function open(id) { setLoading(true); setErr(''); call('party.sheet', { id }).then(r => { if (r && r.ok) setSel(r.sheet); else setErr((r && r.error) || 'sheet failed') }).catch(e => setErr(String(e && e.message || e))).then(() => setLoading(false)) }
+  React.useEffect(() => { refresh() }, [])
+  React.useEffect(() => {
+    if (!mapFull) return undefined
+    const onKey = (e) => { if (e.key === 'Escape') setMapFull(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [mapFull])
+  if (mapFull) return h(Boundary, null, h(MapPanel, { full: true, onToggleFull: () => setMapFull(false) }))
+  if (mode === 'build') return h(Boundary, null, h(Wizard, { onDone: () => { setMode('list'); refresh() }, onBack: () => setMode('list') }))
+  if (mode === 'log') return h(Boundary, null, h(LogView, { party: list || [], onBack: () => { setMode('list'); refresh() } }))
+  if (mode === 'map') return h(Boundary, null, h(MapPanel, { onBack: () => { setMode('list'); refresh() }, onToggleFull: () => setMapFull(true) }))
+  if (sel) return h('div', { className: 'dndp-root' }, h('div', { className: 'dndp-header' }, h('span', { className: 'dndp-ic' }, '⚔'), h('span', null, sel.name), h('div', { className: 'dndp-sp' }), h(XpWidget, { s: sel }), h('button', { className: 'dndp-btn', onClick: () => setMode('map') }, '🗺 地图'), h('button', { className: 'dndp-btn', onClick: () => setMode('log') }, '🎲 战斗记录'), h('button', { className: 'dndp-btn', onClick: () => setSel(null) }, '返回列表')), h('div', { className: 'dndp-scroll' }, loading ? h('div', { className: 'dndp-empty' }, '加载中…') : h(Boundary, null, h(Detail, { s: sel, onReload: () => { open(sel.id); refresh() } }))))
+  const rows = []
+  if (busy || loading) rows.push(h('div', { key: 'b', className: 'dndp-empty' }, '加载中…'))
+  if (err) rows.push(h('div', { key: 'e', className: 'dndp-err' }, err))
+  if (list && !list.length) rows.push(h('div', { key: 'z', className: 'dndp-empty' }, '暂无角色，点“+ 新建角色”'))
+  ;(list || []).forEach((l, i) => rows.push(h('div', { key: i, className: 'dndp-row', onClick: () => open(l.id) }, h('div', { className: 'dndp-ava' }, (l.name || '?').slice(0, 1)), h('div', { className: 'dndp-main' }, h('div', { className: 'dndp-name' }, l.name), h('div', { className: 'dndp-sub' }, (l.race || '') + (l.cls ? ' · ' + l.cls : ''))), h('span', { className: 'dndp-chip' }, 'L' + l.level), h('span', { className: 'dndp-chip' }, 'HP ' + l.hp + '/' + l.max))))
+  return h('div', { className: 'dndp-root ' + themeClassOf(theme), style: themeStyleOf(theme) }, h('div', { className: 'dndp-header' }, h('span', { className: 'dndp-ic' }, '⚔'), h('span', null, 'D&D 5e 角色'), h('div', { className: 'dndp-sp' }), h(UiBadge, null), h('button', { className: 'dndp-btn', onClick: () => setMode('map') }, '🗺 地图'), h('button', { className: 'dndp-btn', onClick: () => setMode('log') }, '🎲 战斗记录'), h('button', { className: 'dndp-btn primary', onClick: () => setMode('build') }, '+ 新建角色')), h('div', { className: 'dndp-scroll' }, rows))
+}
+return {
+  apply(ctx) {
+    const off = ctx.effect(() => {
+      const clean = styles.insert(css)
+      const bsb = ctx.get('betterSidebar')
+      let d = null
+      if (bsb && typeof bsb.registerTab === 'function') {
+        d = bsb.registerTab({ id: 'dnd5e:workspace', title: '跑团工作区', single: true, component: () => h(Workspace, null) })
+        const d2 = bsb.registerTab({ id: 'dnd5e:party', title: '角色速览', single: true, component: () => h(PartyView, null) })
+        const d1 = d
+        d = () => { if (typeof d1 === 'function') d1(); if (typeof d2 === 'function') d2() }
+      }
+      return () => { if (typeof clean === 'function') clean(); if (typeof d === 'function') d(); tipHide() }
+    })
+    return () => { if (typeof off === 'function') off() }
+  }
+}

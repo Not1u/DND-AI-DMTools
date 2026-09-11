@@ -1,0 +1,26 @@
+/* SoloTRPG 外壳：只负责把整页撑满，具体样式由 UI 源码自己注入（dndp-* 类） */
+html, body { margin: 0; padding: 0; height: 100%; background: #15171a; color: #e8e8ec;
+  font-family: -apple-system, "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; }
+#boot { padding: 16px; font-size: 13px; color: #9aa0a6; }
+#root { height: 100%; }
+.solo-shell { display: flex; flex-direction: column; height: 100%; box-sizing: border-box; }
+.solo-top { flex: none; display: flex; align-items: center; gap: 10px; padding: 8px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.10); background: #1b1e22; }
+.solo-top .logo { font-weight: 700; letter-spacing: .3px; }
+.solo-top .dim { color: #9aa0a6; font-size: 12px; }
+.solo-top .sp { flex: 1; }
+.solo-tabs { display: flex; gap: 6px; }
+.solo-tab { background: #23262b; border: 1px solid rgba(255,255,255,.12); color: #e8e8ec;
+  border-radius: 7px; padding: 4px 12px; font-size: 13px; cursor: pointer; }
+.solo-tab.on { background: #3b5b8c; border-color: transparent; }
+.solo-body { flex: 1; min-height: 0; position: relative; }
+
+/* 跟随插件主题（由 mount.js 注入 --solo-accent / .solo-light） */
+.solo-top{border-bottom:1px solid color-mix(in srgb, var(--solo-accent,#5aa0ff) 34%, #23262b)}
+.solo-top .logo{color:var(--solo-accent,#e8e8ec)}
+.solo-tab{border-color:color-mix(in srgb, var(--solo-accent,#5aa0ff) 28%, #2a2e34)}
+.solo-tab.on{background:var(--solo-accent,#3b5b8c);border-color:transparent;color:#0d1015}
+html.solo-light body{background:#f2f5f9;color:#1b2027}
+html.solo-light .solo-top{background:#ffffff}
+html.solo-light .solo-tab{background:#eaeff5;color:#1b2027}
+body{transition:background .2s ease,color .2s ease}

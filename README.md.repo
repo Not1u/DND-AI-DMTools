@@ -1,0 +1,118 @@
+# dsh-5ednd
+
+> **历史资料（2026-09-11 归档）**：以下描述旧工程，路径、提交号和同步流程不是当前操作依据。本目录现为独立 Git 仓库，后续统一使用 https://github.com/Not1u/DND-AI-DMTools.git 。以 [当前评估](docs/PROJECT_REVIEW.md) 和 [开发工作流](docs/DEVELOPMENT.md) 为准。
+
+D&D 5e 跑团套件 —— 面向各类 Harness（DSH Desktop / MCP / CLI）的角色卡、规则引擎与规则书检索器。
+
+> 三层架构：**核心（core）零依赖** → **适配器（adapters）对接具体 Harness** → **数据（rules / characters）纯 JSON**。
+
+## 功能
+
+| 模块 | 说明 |
+|---|---|
+| **角色卡 UI** | 侧栏页签「D&D 角色」：列表 / 详情（特性悬停、法术伸缩、法术位菱形、状态栏、装备栏、背包卡片、等级调整、手动调整数值、兼职、升级选项） |
+| **建卡向导** | 种族 / 职业 / 子职业（含龙种·地形等子选项）/ 背景 / 27 点购点 / 技能 / 法术 / 起始装备 |
+| **规则引擎** | AC 与攻击推导、法术位（含兼职合并）、升级逐项补选、状态（15 种 5e 状态）、装备与自定物品 |
+| **规则查找器** | 从本地规则书语料建立索引，支持关键词检索、按书过滤、条目全文展开 |
+| **AI DM 工具** | `dnd_sheet` / `dnd_items` / `dnd_equip` / `dnd_conditions` 等，让 AI 直接按描述改写角色状态 |
+| **离线测试** | 假 harness 回归（`tools/test-host.mjs`），改代码先本地跑，不靠线上撞错 |
+
+## 目录结构
+
+```
+core/           零依赖核心：规则检索、配置解析、能力探测
+adapters/       各 Harness 适配层（DSH 动态插件 / 持久插件 / MCP / CLI）
+standalone/     独立运行器外壳（server.mjs + app/ 页面 + 打包脚本）→ 同步到 E:\SoloTRPG
+plugins/        扩展插件（遭遇战统计 / 规则速查 / 地图导出 SVG + 外置图像模型）
+rules/          规则数据：职业、种族、背景、武器护甲、法术(0-9环)、子职业、专长、特性
+characters/     角色档案（demo 模板：矮人战士 / 矮人牧师 / 高等精灵法师）
+schema/         数据 Schema（character.v1）
+tools/          索引器、检索 CLI、迁移脚本、离线测试、UI 冒烟、地图生成
+engine/         引擎源码（host / client）—— DSH 插件与独立运行器共用同一份，支持热重载
+data/rules-index/  规则书索引（按项目决定内置，见下）
+```
+
+## 打包成独立程序（SoloTRPG.exe）
+
+`standalone/` 是"产品形态"的来源；同步并构建：
+
+```bash
+node standalone/tools/sync-from-repo.mjs --from .      # 外壳 + 引擎 + 数据 → E:\SoloTRPG
+cd E:\SoloTRPG
+npm run build:exe                                      # Node SEA 打包单文件 exe（内含 Node 运行时）
+```
+
+细节见 `standalone/README.md`：单文件 exe、5 尺格战术地图、战斗记录、插件热重载都在那里说明。
+
+## 快速开始
+
+```bash
+# 1) 生成规则书索引（需要你本地合法持有的规则书 HTML/CHM 语料）
+node tools/index-rules.mjs --source "<规则书根目录>"        # 默认 PHB/DMG/PHB24/DMG24/速查/XGE/TCE
+node tools/index-rules.mjs --source "<规则书根目录>" --all  # 全部书目
+
+# 2) 检索
+node tools/find-rules.mjs --stats
+node tools/find-rules.mjs "擒抱"
+node tools/find-rules.mjs "长休" --book 玩家手册
+node tools/find-rules.mjs --read 玩家手册:15
+
+# 3) 离线回归测试
+node tools/test-host.mjs
+node tools/test-equip.mjs
+```
+
+## 配置
+
+数据根目录解析顺序（`core/config.mjs`）：
+
+1. 环境变量 `DND5E_DATA_ROOT`
+2. 仓库根目录的 `config.json`（`{ "dataRoot": "...", "indexDir": "..." }`）
+3. 默认：仓库根目录
+
+**不硬编码任何绝对路径**，换机器 / 换目录只需改配置。
+
+## 兼容性策略（声明范围 + 能力探测 + 降级）
+
+- **声明**：`engines.node >= 20`；插件声明 `dsh.client.platform = web`；peer 依赖使用宽松范围。
+- **探测**：`core/capabilities.mjs` 启动时探测 `harness.handle` / `fs` 读写 / `tools` 服务 / Sidebar 服务 / timer 服务 / 主题 token，缺失即降级而非崩溃：
+
+  | 缺失能力 | 降级行为 |
+  |---|---|
+  | Sidebar 服务 | UI 输出到独立面板或静态 HTML 状态页 |
+  | `tools` 服务 | 使用内置 `node:fs` 直接读写档案 |
+  | timer 服务 | 关闭自动热重载，改为手动刷新 |
+  | 主题 token | 回退到内置默认配色 |
+
+- **数据向前兼容**：档案带 `schemaVersion`，迁移脚本（`tools/migrate-*.mjs`）逐步升级，新字段一律可选。
+- **版本锚点**：`dsh.json` 记录已验证的 DSH 版本，不匹配时给出明确提示。
+
+## 工具层（MCP 风格）
+
+所有能力都收敛到一座**同源 HTTP 桥**上：`POST /dnd5e/api {op, args} → {ok, value}`。
+数据（规则书索引 6803 条、模组 624 条、角色卡、地图、战斗记录）**始终留在磁盘**，
+被调用时才按需取用，因此可以把整套资料挂在 AI 旁边而不占用上下文。
+
+- 发现能力：`{op:"tools.list"}`（核心 op，按角色/骰子/战斗记录/地图/规则书/模组/元 分组）、`{op:"ext.list"}`（插件与扩展 op）。
+- 模组：`mod.list` / `mod.search` / `mod.read` / **`mod.statblock`**（把图鉴条目解析成 AC/HP/速度/六维/CR/动作的结构化数值）。
+- 角色：`party.list` / `party.sheet` / **`pc.apply`**（一次改完 HP、XP、状态、物品、货币，并可写入战斗记录）/ `levelset.*` / `multiclass.add` / `sheet.*`。
+- 地图：`map.get` / `map.set` / `map.terrain.set` / `map.token.*` / `map.measure`（5 尺格、5-10-5 距离）。
+- 战斗记录与骰子：`roll.dice`（优势/劣势/弃骰）/ `log.list|append|set|clear`。
+
+**扩展插件**：把 `.mjs` 丢进 `plugins/` 即可自动挂到同一座桥上（`{name, ops}` 或 `setup(api)`），
+`api` 提供 `repoRoot` / `call(op,args)` / `readJson` / `writeJson` / `log`。详见 `plugins/README.md`，
+现成示例：遭遇战统计、规则速查、**地图导出 SVG + 外置图像模型调用**（`plugins/image-export.mjs`）。
+
+命令行探针（推荐，避开 PowerShell 的编码坑）：
+
+```bash
+node tools/dnd-api.mjs tools.list '{}'
+node tools/dnd-api.mjs mod.statblock '{"title":"熊地精"}'
+node tools/dnd-api.mjs pc.apply '{"id":"pc-turiel-mistveil","hp":-3,"log":"被短弓射中"}'
+```
+
+## 许可与版权
+
+- **代码**：MIT。
+- **规则数据**（`rules/*.json`）：基于 SRD 5.1（CC-BY-4.0）整理，署名见 `NOTICE.md`。
+- **规则书原文索引**（`data/rules-index/`）：按本项目决定**随仓库内置**（学习／单人跑团自用），语料由使用者本地合法持有的规则书生成（`tools/index-rules.mjs`）。版权归原作者与出版方，若权利人要求将移除，见 `NOTICE.md`。

@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "slots": {
+    "left": {
+      "size": 712,
+      "panels": [
+        "roster",
+        "dice"
+      ]
+    },
+    "center": {
+      "size": 0,
+      "panels": [
+        "map",
+        "log"
+      ]
+    },
+    "right": {
+      "size": 1021,
+      "panels": [
+        "sheet",
+        "ai",
+        "settings"
+      ]
+    },
+    "bottom": {
+      "size": 640,
+      "panels": []
+    }
+  },
+  "weights": {
+    "left": [
+      1,
+      1
+    ],
+    "center": [
+      1,
+      1
+    ],
+    "right": [
+      1,
+      1,
+      1
+    ],
+    "bottom": []
+  },
+  "collapsed": [
+    "settings"
+  ],
+  "maximized": null,
+  "activeSheet": "pc-turiel-mistveil"
+}

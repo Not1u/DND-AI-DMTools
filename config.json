@@ -1,0 +1,7 @@
+{
+  "port": 4620,
+  "bind": "127.0.0.1",
+  "dataRoot": ".",
+  "campaign": "凡戴尔的失落矿坑",
+  "note": "dataRoot 指向数据根目录（默认本目录）。engine/ 与 plugins/ 改完会自动热重载，不用重启。"
+}

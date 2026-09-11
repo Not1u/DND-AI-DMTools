@@ -1,0 +1,180 @@
+{
+  "schema": "dnd5e.character.v1",
+  "id": "pc-grimbeard",
+  "name": "格瑞姆贝尔·石心",
+  "player": "示例玩家三",
+  "level": 1,
+  "xp": 84,
+  "alignment": null,
+  "race": "dwarf/mountain",
+  "classes": [
+    {
+      "class": "cleric",
+      "level": 1
+    }
+  ],
+  "background": "acolyte",
+  "abilityMethod": "standard-array",
+  "abilities": {
+    "str": 16,
+    "dex": 8,
+    "con": 15,
+    "int": 10,
+    "wis": 15,
+    "cha": 12
+  },
+  "savingThrowProfs": [
+    "wis",
+    "cha"
+  ],
+  "skillProfs": [
+    "insight",
+    "religion",
+    "history",
+    "persuasion"
+  ],
+  "skillExpertise": [],
+  "armor": {
+    "key": "scaleMail",
+    "shield": true
+  },
+  "weapons": [
+    "mace",
+    "lightCrossbow"
+  ],
+  "otherProfs": [
+    "language(2)"
+  ],
+  "features": {
+    "race": [
+      "darkvision60",
+      "dwarvenResilience",
+      "dwarvenCombatTraining",
+      "stonecunning",
+      "armorTraining"
+    ],
+    "class": [
+      "spellcasting",
+      "divineDomain"
+    ],
+    "background": [
+      "shelterOfTheFaithful"
+    ]
+  },
+  "spellcasting": {
+    "ability": "wis",
+    "dc": 12,
+    "attackBonus": 4,
+    "cantrips": [
+      "guidance",
+      "sacredFlame",
+      "thaumaturgy"
+    ],
+    "spells": [
+      "bless",
+      "cureWounds",
+      "guidingBolt"
+    ],
+    "note": "spell catalog pending"
+  },
+  "hp": {
+    "current": 5,
+    "max": 10,
+    "temp": 0,
+    "hitDiceTotal": "1d8",
+    "hitDiceUsed": 0
+  },
+  "resources": {},
+  "inventory": [
+    {
+      "key": "scaleMail",
+      "name": "鳞甲",
+      "qty": 1,
+      "cat": "armor",
+      "kind": "armor"
+    },
+    {
+      "key": "shield",
+      "name": "盾牌",
+      "qty": 1,
+      "cat": "shield",
+      "kind": "shield",
+      "acBonus": 2
+    },
+    {
+      "key": "mace",
+      "name": "硬头锤",
+      "qty": 1,
+      "cat": "weapon",
+      "kind": "weapon",
+      "damage": "1d6",
+      "dmgType": "bludgeoning",
+      "props": []
+    },
+    {
+      "key": "lightCrossbow",
+      "name": "轻弩",
+      "qty": 1,
+      "cat": "weapon",
+      "kind": "weapon",
+      "damage": "1d8",
+      "dmgType": "piercing",
+      "props": [
+        "ammunition",
+        "loading",
+        "twoHanded"
+      ]
+    }
+  ],
+  "currency": {
+    "gp": 0,
+    "sp": 0,
+    "cp": 0
+  },
+  "conditions": [],
+  "inspiration": false,
+  "notes": "插件建卡：山丘矮人牧师",
+  "meta": {
+    "schemaVersion": "dnd5e.character.v1",
+    "campaign": null,
+    "createdAt": "2026-09-09T15:43:42.598Z",
+    "updatedAt": "2026-09-11T10:28:18.832Z"
+  },
+  "equipment": {
+    "armor": {
+      "key": "scaleMail",
+      "name": "鳞甲",
+      "base": 14,
+      "dexCap": 2,
+      "category": "medium",
+      "magicBonus": 0
+    },
+    "shield": {
+      "key": "shield",
+      "name": "盾牌",
+      "acBonus": 2,
+      "magicBonus": 0
+    },
+    "mainHand": {
+      "key": "mace",
+      "name": "硬头锤",
+      "damage": "1d6",
+      "dmgType": "bludgeoning",
+      "props": [],
+      "magicBonus": 0
+    },
+    "offHand": {
+      "key": "lightCrossbow",
+      "name": "轻弩",
+      "damage": "1d8",
+      "dmgType": "piercing",
+      "props": [
+        "ammunition",
+        "loading",
+        "twoHanded"
+      ],
+      "magicBonus": 0
+    },
+    "worn": []
+  }
+}

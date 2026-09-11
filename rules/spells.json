@@ -1,0 +1,7127 @@
+{
+ "schema": "dnd5e.spells.v2",
+ "note": "法术名录（PHB 0-9 环）：key 规范键（英文驼峰），name 中文名，level 环阶，school 学派，classes 可选职业，含施法时间/距离/成分/持续/专注/仪式与简述。由本地 PHB「法术详述」页解析生成。",
+ "count": 361,
+ "spells": [
+  {
+   "key": "acidSplash",
+   "name": "酸液飞溅",
+   "level": 0,
+   "school": "咒法",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你掷出一颗酸液球。在施法距离内指定一个你能看见的生物，或者在施法距离内指定你能看见的两个相距不超过 5 尺的生物。每个目标必须进行一次敏捷豁免，豁免失败则受到 1d6 点强酸伤害。 你到达 5 级时，该法术的伤害增加 1d6（变为2d6）。11 级时再加 1d6（变为 3d6），17 级时再加 1d6（变为 4d…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Acid_Splash"
+  },
+  {
+   "key": "bladeWard",
+   "name": "剑刃防护",
+   "level": 0,
+   "school": "防护",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "1 轮",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 轮 你伸手在空中勾勒出一个防护印记，以令自己在下一回合结束前对武器攻击造成的钝击、穿刺和挥砍伤害具有抗性。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Blade_Ward"
+  },
+  {
+   "key": "chillTouch",
+   "name": "颤栗之触",
+   "level": 0,
+   "school": "死灵",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "1 轮",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 轮 你在施法距离内某生物所在位置召唤出幽魂般的骨手，夹带着墓穴的刺骨冻寒攻击目标。并对该生物进行一次远程法术攻击，命中时，手掌抓住目标并令其受 1d8 点暗蚀伤害，且直至你下一回合开始前都无法恢复生命值。 如果你的命中目标为一个亡灵，则其在你下回合结束之前对你发动的攻击检定都具有劣势。 你到达 5 级时，该法术的伤…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Chill_Touch"
+  },
+  {
+   "key": "dancingLights",
+   "name": "舞光术",
+   "level": 0,
+   "school": "塑能",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在施法距离内创造四个火把大小的光源。法术持续时间内，光源能够以火把，灯笼或光球的形态显现并在空中悬浮。你也可以将四个光源合为一个中型类人的模糊光影。无论选择哪种方式，每处光源都可以发出半径 10 尺的微光光照。 你在自己回合可以用一个附赠动作令这些光源在施法距离内移动至多 60 尺。每个光源必需…",
+   "comp": "V、S、M（一点磷或光榆木，或者一只萤火虫）",
+   "src": "PHB",
+   "anchor": "Dancing_Lights"
+  },
+  {
+   "key": "druidcraft",
+   "name": "德鲁伊伎俩",
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你向自然之魂低语，并创造以下效应之一：",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Druidcraft"
+  },
+  {
+   "key": "eldritchBlast",
+   "name": "魔能爆",
+   "level": 0,
+   "school": "塑能",
+   "classes": [
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一束激烈的能量射向施法距离内一个生物。对该目标发动一次远程法术攻击，如果命中则该目标受 1d10 点力场伤害。 当你到达更高等级时，该法术还可以同时创造更多的射线：5 级时两条，11 级时三条，17 级时四条。你可以决定这些射线攻击同一个目标或分别攻击不同的目标，且为每束射线分别进行攻击检定。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Eldritch_Blast"
+  },
+  {
+   "key": "fireBolt",
+   "name": "火焰箭",
+   "level": 0,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你对施法距离内一个生物或物件掷出一把火焰，对目标进行一次远程法术攻击。若命中，则目标受到 1d10 点火焰伤害。未被着装或携带的可燃物件被该法术命中时将被点燃。 你到达 5 级时，该法术的伤害增加 1d10（变为 2d10）。11 级时再加 1d10（变为 3d10），17 级时再加 1d10（变为 4d10）。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Fire_Bolt"
+  },
+  {
+   "key": "friends",
+   "name": "交友术",
+   "level": 0,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 指定一个对你非敌对的生物，你在法术持续时间内对其进行的所有魅力检定均具有优势。当该法术终止时，该生物将意识到你曾使用魔法操弄他的情绪，从而对你的态度转为敌对。此时如果该生物有暴力倾向则会直接对你发动攻击，而非暴力倾向的生物则会寻求其他的报复形式（由 DM 决定），具体情况视你与其交互时的具体内容而…",
+   "comp": "S、M（法术施展时作用于脸部的一些化妆用品）",
+   "src": "PHB",
+   "anchor": "Friends"
+  },
+  {
+   "key": "guidance",
+   "name": "神导术",
+   "level": 0,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "druid",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你触碰一个自愿的生物。在法术终止前，目标可以选择在一次属性检定时额外掷一粒 d4，并将所得数值加入检定结果中。它可以在进行属性检定之前或之后掷骰。法术随后即终止。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Guidance"
+  },
+  {
+   "key": "light",
+   "name": "光亮术",
+   "level": 0,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "bard",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "1小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1小时 你触碰一个尺寸在任意方向上都不超过 10 尺的物件。在法术终止前，物件将在其 20 尺半径范围内发出明亮光照，并在其外 20 尺范围发出微光光照。光的颜色由你决定，该物件被不透明的东西完全遮盖时，其光照被遮挡。如果你再次施展该法术，或者使用一个动作解散该法术，则该法术终止。 如果你指定敌对生物所持握或着装的一个…",
+   "comp": "V、M（一只萤火虫或一片磷光苔藓）",
+   "src": "PHB",
+   "anchor": "Light"
+  },
+  {
+   "key": "mageHand",
+   "name": "法师之手",
+   "level": 0,
+   "school": "咒法",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 分钟 一只漂浮的幽灵手出现在施法距离内你指定的一点。幽灵手持续存在至法术终止，或直至你以一个动作解散该法术。如果幽灵手距你的距离超过 30 尺，或者当你再次施展了该法术时，则现存的幽灵手消失不见。 你可以用动作控制幽灵手，并通过幽灵手实现一个行为：你可以操控一个物件，或者打开一扇未上锁的门或容器，或者将一件物品放入…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Mage_Hand"
+  },
+  {
+   "key": "mending",
+   "name": "修复术",
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "cleric",
+    "druid",
+    "bard",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 分钟",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 该法术修复你所触碰一个物件上的一处破损或裂缝，例如修复一条断裂的链条，或者一把碎成两半的钥匙、一件撕裂的斗篷、一个漏了的酒袋等。只要破损或断裂处在任意方向上都不超过 1 尺，你就可以不留痕迹地修复它。 该法术可以从物理上修复一件魔法物品或一个构装生物，但不会恢复这类物件上的魔法。",
+   "comp": "V、S、M（两块天然磁石）",
+   "src": "PHB",
+   "anchor": "Mending"
+  },
+  {
+   "key": "message",
+   "name": "传讯术",
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "1 轮",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 轮 你用手指指向施法距离内的一个生物并低声说出一段信息。该目标（且只有该目标）会听到这段信息并可以用只有你能听见的低语回复你。 你可以隔着固态物件施展该法术，但你必须熟悉法术目标并知晓其就在屏障后方。魔法的沉默，1 尺厚的石头，1 寸厚的普通金属，一片薄铅片，或者 3 尺厚的木料都可以阻挡该法术。该法术不需要直线传…",
+   "comp": "V、S、M（一小段铜线）",
+   "src": "PHB",
+   "anchor": "Message"
+  },
+  {
+   "key": "minorIllusion",
+   "name": "次级幻象",
+   "level": 0,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 分钟 你在施法距离内创造一段声响或一个物件的影像，并使之维持至法术持续时间结束。你也可以用一个动作解除幻象，或者再次施展该法术来终止幻象。 如果你创造一段声响，其音量可以是低声耳语也可以是高声尖叫。它可以是你或其他任何人的嗓音，或者是一头狮子的咆哮、一段鼓声以及任何你指定的其他声响。声响在持续时间内不会减弱，或者你…",
+   "comp": "S、M（一小块羊毛）",
+   "src": "PHB",
+   "anchor": "Minor_Illusion"
+  },
+  {
+   "key": "poisonSpray",
+   "name": "毒气喷涌",
+   "level": 0,
+   "school": "咒法",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard",
+    "warlock",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "10 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你伸手向施法距离内一个你能看见的生物喷出一阵毒气。目标必须进行一次体质豁免，豁免失败则受 1d12 毒素伤害。 你到达 5 级时，该法术的伤害增加 1d12（变为 2d12）。11 级时再加 1d12（变为 3d12），17 级时再加 1d12（变为 4d12）。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Poison_Spray"
+  },
+  {
+   "key": "prestidigitation",
+   "name": "魔法伎俩",
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "10 尺",
+   "duration": "至多 1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "至多 1 小时 该法术是一个初级施法者用来练习的魔法小伎俩。你在施法距离内创造下列魔法效果中的一种：",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Prestidigitation"
+  },
+  {
+   "key": "produceFlame",
+   "name": "燃火术",
+   "level": 0,
+   "school": "咒法",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "10分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "10分钟 一朵摇曳的火焰出现在你手中。火焰在法术持续时间存在，并且不会伤害你和你的装备。火焰为其周边半径 10 尺范围内提供明亮光照，以及该范围外 10 尺的微光光照。法术将在再次施展该法术，或者以一个动作解除法术时终止。 此外，你还可以使用火焰发动攻击，并以此终止该法术。施展该法术时，你可以将火焰投向距你 30 尺内…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Produce_Flame"
+  },
+  {
+   "key": "rayOfFrost",
+   "name": "冷冻射线",
+   "level": 0,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一道冰冷的蓝白色光线朝施法距离内的一个生物射去。你对目标进行一次远程法术攻击。若命中，则目标受到 1d8 点寒冷伤害，并且在你的下一回合开始前速度减少 10 尺。 你到达 5 级时，该法术的伤害增加 1d8（变为 2d8）。11 级时再加 1d8（变为 3d8），17 级时再加 1d8（变为 4d8）。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Ray_of_Frost"
+  },
+  {
+   "key": "resistance",
+   "name": "抵抗术",
+   "level": 0,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "druid",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你触碰一个自愿的生物。在法术终止前，目标可以选择在一次豁免检定时额外掷一粒 d4，并将所得数值加入检定结果中。他可以在进行豁免检定之前或之后掷骰。法术随后即终止。",
+   "comp": "V、S、M（一个微型钟表）",
+   "src": "PHB",
+   "anchor": "Resistance"
+  },
+  {
+   "key": "sacredFlame",
+   "name": "圣火术",
+   "level": 0,
+   "school": "塑能",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 如同火焰般的辉光向施法距离内你能看见的一个生物倾泻而下。目标必须要进行一次敏捷豁免，豁免失败则受到 1d8 点光耀伤害。目标在这次豁免检定中无法获得掩护的增益。 你到达 5 级时，该法术的伤害增加 1d8（变为 2d8）。11 级时再加 1d8（变为 3d8），17 级时再加 1d8（变为 4d8）。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Sacred_Flame"
+  },
+  {
+   "key": "shillelagh",
+   "name": "橡棍术",
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "druid"
+   ],
+   "time": "1附赠动作",
+   "range": "触碰",
+   "duration": "一分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "一分钟 你将自然之力灌入手中持握的一根短棒或长棍中。你在法术持续时间内使用该武器进行近战攻击时，可以用你的施法属性值代替力量值来进行攻击检定和伤害掷骰，且该武器的伤害骰变为 d8。此外，若该武器原来不是魔法武器，则它将变成魔法武器。你再次施展该法术或丢掉该武器时，该法术也随之终止。",
+   "comp": "V、S、M（一些槲寄生，一片三叶草叶子，以及一根短棒club或长棍quarterstaff）",
+   "src": "PHB",
+   "anchor": "Shillelagh"
+  },
+  {
+   "key": "shockingGrasp",
+   "name": "电爪",
+   "level": 0,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你的手上发出闪电，并对你触碰的一个生物发动电击。对目标发动一次近战法术攻击。如果目标穿着金属护甲，则你进行该检定时具有优势。若命中，则目标受到 1d8 点闪电伤害，并且在其下一回合开始前不能执行任何反应。 你到达 5 级时，该法术的伤害增加 1d8（变为 2d8）。11 级时再加 1d8（变为 3d8），17 级…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Shocking_Grasp"
+  },
+  {
+   "key": "spareTheDying",
+   "name": "维生术",
+   "level": 0,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你触碰一个生命值为 0 的活体生物，使该生物的伤势立刻稳定下来。该法术对亡灵和构装生物无效。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Spare_the_Dying"
+  },
+  {
+   "key": "thaumaturgy",
+   "name": "奇术",
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "至多 1 分钟 你在施法距离内展示出一个低级奇观，以表现你的超自然力。你在施法距离内创造出下列魔法效应之一：",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Thaumaturgy"
+  },
+  {
+   "key": "thornWhip",
+   "name": "荆棘之鞭",
+   "level": 0,
+   "school": "变化",
+   "classes": [
+    "druid",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你创造出一条藤蔓般的带刺长鞭，并猛抽向施法距离内一个你指定的生物。对目标进行一次近战法术攻击，如果命中，则目标受到 1d6 点穿刺伤害，如果目标生物为大型或更小体型，则其将朝你所在位置拉近至多 10 尺。 你到达 5 级时，该法术的伤害增加 1d6（变为 2d6）。11 级时再加 1d6（变为 3d6），17 级…",
+   "comp": "V、S、M（一根来自带刺植物的茎干）",
+   "src": "PHB",
+   "anchor": "Thorn_Whip"
+  },
+  {
+   "key": "trueStrike",
+   "name": "克敌先击",
+   "level": 0,
+   "school": "预言",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多1 轮",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多1 轮 你伸出手并以手指指向施法距离内的一个生物，并以魔力刹那间看穿目标的防御。如果该法术还未终止，则你在自己的下一回合里，对该目标发动的第一次攻击检定具有优势。",
+   "comp": "S",
+   "src": "PHB",
+   "anchor": "True_Strike"
+  },
+  {
+   "key": "viciousMockery",
+   "name": "恶言相加",
+   "level": 0,
+   "school": "惑控",
+   "classes": [
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你对施法距离内一个你能看见的生物连珠炮式的说出一串蕴涵魔力的咒骂。如果目标能听见你说话（不一定要听懂），它就必须要进行一次感知豁免，豁免失败者将受到 1d4 点心灵伤害，其下一回合结束前进行第一次攻击检定具有劣势。 你到达 5 级时，该法术的伤害增加 1d4（变为 2d4）。11 级时再加 1d4（变为 3d4）…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Vicious_Mockery"
+  },
+  {
+   "key": "alarm",
+   "name": "警报术",
+   "level": 1,
+   "school": "防护",
+   "classes": [
+    "ranger",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 分钟",
+   "range": "30 尺",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": true,
+   "fx": "8 小时 你针对不速之客设置一个警报。在施法距离内指定一扇门窗或选择一个边长不大于 20 尺的立方区域。在法术持续时间内，任何触碰或进入目标区域的微型或更大体型生物都会触发警报。施法时，你可以决定哪些生物不会触发警报，还可以选择警报方式为声音警报或是精神警报。",
+   "comp": "V、S、M（一个小铃铛和一小段银线）",
+   "src": "PHB",
+   "anchor": "Alarm"
+  },
+  {
+   "key": "animalFriendship",
+   "name": "化兽为友",
+   "level": 1,
+   "school": "惑控",
+   "classes": [
+    "ranger",
+    "druid",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "24 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "24 小时 该法术帮你让一只野兽相信你并无恶意。在施法距离内指定一只你能看见的野兽，而它也必须能看见你且能听到你的声音。该野兽必须进行一次感知豁免，豁免失败则将在法术持续时间内被你魅惑。如果它的智力为 4 或更高则法术直接失败。如果你或你的同伴对目标造成伤害，则法术终止。",
+   "comp": "V、S、M（一点食物）",
+   "src": "PHB",
+   "anchor": "Animal_Friendship"
+  },
+  {
+   "key": "armorOfAgathys",
+   "name": "黯冰狱铠",
+   "level": 1,
+   "school": "防护",
+   "classes": [
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 防护性的魔法力量环绕着你，凝聚成覆盖着你和你的装备表面上一层魅影般的凝霜。 你在法术持续时间内获得 5 点临时生命值。如果有生物在你拥有这些临时生命值时以近战攻击命中你，则该生物将受到 5 点寒冷伤害。",
+   "comp": "V、S、M（一杯水）",
+   "src": "PHB",
+   "anchor": "Armor_of_Agathys"
+  },
+  {
+   "key": "armsOfHadar",
+   "name": "哈达之臂",
+   "level": 1,
+   "school": "咒法",
+   "classes": [
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "自身（10 尺半径）",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你祈唤 哈达，乌黯之饥渴Hadar, the Dark Hunger 的力量。黑暗能量构成的触须从你身上蔓延而出并痛击 10 尺内的所有生物。范围内的所有生物都必须进行一次力量豁免，豁免失败者将受到 2d6 点暗蚀伤害，并其下一回合前都无法执行反应。豁免成功的生物伤害减半，且不受其他效应的影响。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Arms_of_Hadar"
+  },
+  {
+   "key": "bane",
+   "name": "灾祸术",
+   "level": 1,
+   "school": "惑控",
+   "classes": [
+    "cleric",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 指定施法距离内至多三个你能看见的生物，并迫使其进行一次魅力豁免。豁免失败者直至法术终止前，在每当进行攻击检定或豁免检定时，必须从投骰结果中减去一个 d4。",
+   "comp": "V、S、M（一滴血）",
+   "src": "PHB",
+   "anchor": "Bane"
+  },
+  {
+   "key": "bless",
+   "name": "祝福术",
+   "level": 1,
+   "school": "惑控",
+   "classes": [
+    "cleric",
+    "paladin"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你用言语祝福施法距离内至多三个生物。在法术终止前，每当受术目标进行攻击检定或豁免检定时，可以额外掷一次 d4 并加在其结果上。",
+   "comp": "V、S、M（几滴圣水）",
+   "src": "PHB",
+   "anchor": "Bless"
+  },
+  {
+   "key": "burningHands",
+   "name": "燃烧之手",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身（15 尺锥状）",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你双手拇指相对，其他手指张开，一道火焰随即从手指间喷出。处于 15 尺锥状区域内的生物必须进行一次敏捷豁免。豁免失败者受到 3d6 点火焰伤害，豁免成功则伤害减半。 该法术的火焰会点燃范围内未被着装或携带的可燃物。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Burning_Hands"
+  },
+  {
+   "key": "charmPerson",
+   "name": "魅惑类人",
+   "level": 1,
+   "school": "惑控",
+   "classes": [
+    "druid",
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你尝试魅惑施法距离内的某个你能看见的类人生物。该生物必须进行一次感知豁免。如果你或你的同伴正在和该生物战斗，则该生物进行该豁免时具有优势。如果豁免失败，则该生物被你魅惑至法术终止，或者直到你或你的同伴对他做出伤害行为为止。此间，被魅惑的生物将视你为友方且熟悉的人。法术终止后，该生物将会发觉曾被你魅惑过。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Charm_Person"
+  },
+  {
+   "key": "chromaticOrb",
+   "name": "繁彩球",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "90 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你向施法距离内某个你能看见的生物掷出一颗直径 4 寸的能量球，并从强酸、寒冷、火焰、闪电、毒素、雷鸣中选择一种类型以对该生物发动一次远程法术攻击。攻击命中时，该生物将受到 3d8 点你所选类型的伤害。",
+   "comp": "V、S、M（一枚至少价值 50gp 的钻石）",
+   "src": "PHB",
+   "anchor": "Chromatic_Orb"
+  },
+  {
+   "key": "colorSpray",
+   "name": "七彩喷射",
+   "level": 1,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身（15 尺锥状）",
+   "duration": "1 轮",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 轮 炫目的彩光从你指间散射而出。掷一次 6d10；其结果为受该法术影响生物的生命值总数。在以你为源点的 15 尺锥状区域内的生物以剩余生命值由小至大的顺序受法术影响（生效时忽略昏迷生物和不能视物的生物）。 计算受法术影响生物时，从剩余生命值最低的生物开始逐个计算。每个受术生物均陷入目盲，直至你的下一回合结束。法术掷…",
+   "comp": "V、S、M（一撮粉末或沙子，其颜色必须包含红、黄、蓝三色）",
+   "src": "PHB",
+   "anchor": "Color_Spray"
+  },
+  {
+   "key": "command",
+   "name": "命令术",
+   "level": 1,
+   "school": "惑控",
+   "classes": [
+    "cleric",
+    "paladin",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "1 轮",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 轮 你对施法距离内一个你能看见的生物说出一个单词的命令。目标生物必须成功通过一次感知豁免，否则必须在其自己的下一回合服从该命令行事。如果目标为亡灵或目标无法听懂你的语言，又或者你的命令对其直接构成损害，则该法术无效。 以下列出一些通常可用的命令单词及其效果。你也可以说出此处没有列明的单词命令，并由DM决定目标将如何…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Command"
+  },
+  {
+   "key": "compelledDuel",
+   "name": "强令对决",
+   "level": 1,
+   "school": "惑控",
+   "classes": [
+    "paladin"
+   ],
+   "time": "1 附赠动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你尝试强令一个生物与你决斗。指定施法距离内一个你能看见的生物作为法术的目标。该生物必须进行一次感知豁免，豁免失败则该生物将被你的神圣要求所吸引。在法术持续时间内，该生物对除你之外任何生物发动攻击检定时都具有劣势，并且每当其试图移动至与你相距超过 30 尺的距离时，都必须进行一次感知豁免。豁免成功，…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Compelled_Duel"
+  },
+  {
+   "key": "comprehendLanguages",
+   "name": "通晓语言",
+   "level": 1,
+   "school": "预言",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": true,
+   "fx": "1 小时 你在法术持续时间内知晓你所听到所有语言的字面意义。你也可以通过触碰书写的文字来读懂其字面意义。以这种方式阅读每页文字需要花费 1 分钟的时间。 某些文字或图形的密语（比如一个奥秘符文）由于不属于书写语言一类所以无法用此法术破译。",
+   "comp": "V、S、M（一撮煤灰和一撮盐）",
+   "src": "PHB",
+   "anchor": "Comprehend_Languages"
+  },
+  {
+   "key": "createOrDestroyWater",
+   "name": "造水/枯水术",
+   "level": 1,
+   "school": "变化",
+   "classes": [
+    "cleric",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你施法创造水或者使水枯竭。",
+   "comp": "V、S、M（造水为一滴水，枯水为一点谷物或沙子）",
+   "src": "PHB",
+   "anchor": "Create_or_Destroy_Water"
+  },
+  {
+   "key": "cureWounds",
+   "name": "疗伤术",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "paladin",
+    "ranger",
+    "druid",
+    "bard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一个你触碰的生物恢复特定数值的生命值，其恢复量等于 1d8+你的施法属性调整值。该法术对亡灵和构装生物无效。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Cure_Wounds"
+  },
+  {
+   "key": "detectEvilAndGood",
+   "name": "侦测善恶",
+   "level": 1,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "paladin"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你在法术持续时间内能感觉到身边 30 尺内出现的任一异怪、天族、元素生物、妖精、邪魔或亡灵的存在，并掌握其具体位置。另外，你也可以知晓 30 尺内的物件或地点是否被祝福或亵渎。 该法术可以穿透大多障碍，但仍会被 1 尺厚石质或 1 寸厚金属质，或一层薄铅质，或 3 尺厚木质或泥质材料阻隔。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Detect_Evil_and_Good"
+  },
+  {
+   "key": "detectMagic",
+   "name": "侦测魔法",
+   "level": 1,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "paladin",
+    "ranger",
+    "druid",
+    "bard",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": true,
+   "fx": "专注，至多 10 分钟 你在法术持续时间内能感测到30尺内存在的魔法。感测到魔法的存在后，你可以使用动作，来看到任何你能看见的具有魔法的生物或物件周围环绕着微弱的灵光，并分辨出其所属的魔法学派（若有）。该法术可以穿透大部分障碍，但仍会被1尺厚石质，或1寸厚金属质，或一层薄铅质，或3尺厚木质或泥质材料阻隔。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Detect_Magic"
+  },
+  {
+   "key": "detectPoisonAndDisease",
+   "name": "侦测毒性和疾病",
+   "level": 1,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "paladin",
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": true,
+   "fx": "专注，至多 10 分钟 你在法术持续时间内可以感测并定位 30 尺内的毒素、有毒生物以及疾病。你还可以判断所感测毒素、毒物或疾病的具体类别。 该法术可以穿透大部分障碍，但仍会被 1 尺厚石质，或 1 寸厚金属质，或一层薄铅质，或 3 尺厚木质或泥质材料阻隔。",
+   "comp": "V、S、M（一片红豆杉叶）",
+   "src": "PHB",
+   "anchor": "Detect_Poison_and_Disease"
+  },
+  {
+   "key": "disguiseSelf",
+   "name": "易容术",
+   "level": 1,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你改变自身以及随身的衣物、护甲、武器等所有物。该效应在法术终止或你使用动作主动解除时结束。肉眼看来你的身高可以有 1 尺的增减，体态可胖可瘦可匀称。但是你不能改变身体的形状，所以你变形的样子必须有四肢或类似的生理结构。此外，幻术的影响范围由你决定。 此法术产生的变化无法应对物理检查。比如，你用此法术添了一顶帽…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Disguise_Self"
+  },
+  {
+   "key": "dissonantWhispers",
+   "name": "不谐低语",
+   "level": 1,
+   "school": "惑控",
+   "classes": [
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你指定一个施法距离内能够听到你声音的生物，并对其说出只有他能听到的不谐低语，使其受强烈的痛苦折磨。目标必须进行一次感知豁免。豁免失败则受到 3d6 点心灵伤害，并立即执行反应往远离你的方向移动其速度所允许的距离。该生物不会进入明显危险的地域，如火堆或陷坑。豁免成功则伤害减半，且不会执行远离的反应。陷入耳聋状态的目…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Dissonant_Whispers"
+  },
+  {
+   "key": "divineFavor",
+   "name": "神恩",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "paladin"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你的祈祷赋予你神圣的光芒。在法术持续时间结束前，你的武器攻击命中时将造成额外 1d4 点光耀伤害。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Divine_Favor"
+  },
+  {
+   "key": "ensnaringStrike",
+   "name": "捕获打击",
+   "level": 1,
+   "school": "咒法",
+   "classes": [
+    "ranger"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在法术终止前的下一次武器攻击命中一个生物时，将在攻击处出现一团扭曲的多刺藤蔓，并迫使目标进行一次力量豁免，豁免失败者将受魔法藤蔓影响而陷入束缚状态，直至法术终止。大型或更大体型的生物进行该豁免时具有优势，如果豁免成功，则藤蔓立即枯萎。 受该法术束缚的目标每回合开始时受到 1d6 的穿刺伤害。该受…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Ensnaring_Strike"
+  },
+  {
+   "key": "entangle",
+   "name": "纠缠术",
+   "level": 1,
+   "school": "咒法",
+   "classes": [
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "90 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 在施法距离内的地面上指定一点，并以其为源点蔓延出 20 尺方形区域的杂草和藤蔓。在法术持续时间内，这片被植物覆盖的区域变为困难地形。 在你施展法术时，该区域内的生物必须成功通过一次力量豁免，否则将因为这些缠绕的植物陷入束缚状态，直到法术终止。一个因此被束缚的生物可以使用其动作进行一次力量检定以对抗…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Entangle"
+  },
+  {
+   "key": "expeditiousRetreat",
+   "name": "脚底抹油",
+   "level": 1,
+   "school": "变化",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock",
+    "artificer"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 此法术让你以惊人的步速移动。施展此法术时，你可以执行 疾走Dash 动作。其后直至法术终止前的每个你自己回合中，你都能再以附赠动作执行 疾走Dash 动作。 （注：一个萌新常见的误区：首次疾走动作是施法动作的一部分，它不需要额外花费你的动作。）",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Expeditious_Retreat"
+  },
+  {
+   "key": "faerieFire",
+   "name": "妖火",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "druid",
+    "bard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 指定施法距离内一处 20 尺立方区域，其内每个物件都将被蓝色、绿色、或紫色的光所包围（颜色由你指定）。区域内的生物则必须进行一次敏捷豁免，豁免失败时也会被光线勾勒出轮廓。受术物件和生物在法术持续时间内发出 10 尺半径的微光。 受术生物或物件无法受益于隐形，且任何能看见他们的攻击者对其发动的攻击检…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Faerie_Fire"
+  },
+  {
+   "key": "falseLife",
+   "name": "虚假生命",
+   "level": 1,
+   "school": "死灵",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你从死灵法术中获得了额外的生命力。在法术持续时间内，你获得 1d4+4 的临时生命值。",
+   "comp": "V、S、M（一小瓶酒或蒸馏酒精）",
+   "src": "PHB",
+   "anchor": "False_Life"
+  },
+  {
+   "key": "featherFall",
+   "name": "羽落术",
+   "level": 1,
+   "school": "变化",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 反应，你 60 尺内有生物坠落时可用",
+   "range": "60 尺",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 分钟 在施法距离内指定至多五个正坠落的生物。受术生物的坠落速度在法术持续时间内降低至每轮 60 尺。如果该生物在法术终止前落地，则其不会受到任何坠落伤害，且可以安全的用脚着地。着地后法术对该生物的效应随即终止。",
+   "comp": "V、M（一小片羽毛或绒毛）",
+   "src": "PHB",
+   "anchor": "Feather_Fall"
+  },
+  {
+   "key": "findFamiliar",
+   "name": "寻获魔宠",
+   "level": 1,
+   "school": "咒法",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 小时",
+   "range": "10 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": true,
+   "fx": "立即 你获得一只为你服务的魔宠。以下列动物为原型选择魔宠的动物精魄外貌：蝙蝠bat、猫cat、螃蟹crab、青蛙frog（蟾蜍toad）、鹰hawk、蜥蜴lizard、章鱼octopus、猫头鹰owl、毒蛇poisonous snake、鱼fish（食人鱼quipper）、老鼠rat、渡鸦raven、海马sea hor…",
+   "comp": "V、S、M（将价值 10gp 的木炭、焚香以及香草，放在黄铜盆中烧尽，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Find_Familiar"
+  },
+  {
+   "key": "fogCloud",
+   "name": "云雾术",
+   "level": 1,
+   "school": "咒法",
+   "classes": [
+    "ranger",
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你以施法距离内一点为中心创造一片半径 20 尺的球状浓雾。浓雾在球形内充斥所有角落，并造成重度遮蔽。浓雾持续至法术持续时间结束，但仍可被和风或更强风势（至少每小时 10 里）所吹散。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Fog_Cloud"
+  },
+  {
+   "key": "goodberry",
+   "name": "神莓术",
+   "level": 1,
+   "school": "变化",
+   "classes": [
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 至多 10 个浆果出现在你手里。果子在法术持续时间内充满魔法，持有浆果的生物可用其动作吃下其中之一并以此恢复 1 生命值，且一枚浆果就可以满足该生物一整天的营养需求。 创造的浆果如果在法术施展后的 24 小时内没有被吃掉就会失去其效力。",
+   "comp": "V、S、M（一枝槲寄生）",
+   "src": "PHB",
+   "anchor": "Goodberry"
+  },
+  {
+   "key": "grease",
+   "name": "油腻术",
+   "level": 1,
+   "school": "咒法",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 分钟 你在施法距离内指定一点，光滑的油脂以该点为中心覆盖一处 10 尺的方状区域。在法术持续时间内。该区域变为困难地形。 油脂出现时，站在其范围内的每个生物必须进行一次敏捷豁免，豁免失败则失足倒地。进入该区域或在区域内结束其回合的生物也必须进行该敏捷豁免，豁免失败则失足倒地。",
+   "comp": "V、S、M（一小块猪皮或黄油）",
+   "src": "PHB",
+   "anchor": "Grease"
+  },
+  {
+   "key": "guidingBolt",
+   "name": "光导箭",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "1 轮",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 轮 一道闪光快速飞向施法距离内你指定的一个生物，并对该目标进行一次远程法术攻击检定。命中时，目标受 4d6 的光耀伤害。由于目标身上闪耀着秘法的微光，在施法者下个回合结束前，对该目标发动的下一次攻击检定具有优势。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Guiding_Bolt"
+  },
+  {
+   "key": "hailOfThorns",
+   "name": "棘雹术",
+   "level": 1,
+   "school": "咒法",
+   "classes": [
+    "ranger"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在法术终止前进行的下一次远程武器攻击命中时会从你的远程武器或弹药中创造出棘刺，并形成一片棘刺之雨。除了攻击产生的正常效果外，受攻击的目标及目标身边 5 尺范围内的所有生物还必须进行一次敏捷豁免，豁免失败者将受到 1d10 点穿刺伤害，豁免成功则伤害减半。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Hail_of_Thorns"
+  },
+  {
+   "key": "healingWord",
+   "name": "治愈真言",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "druid",
+    "bard"
+   ],
+   "time": "1 附赠动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你指定施法距离内一个你能看见的生物并恢复其生命值，恢复量等于 1d4+你的施法属性调整值。该法术对构装生物和亡灵无效。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Healing_Word"
+  },
+  {
+   "key": "hellishRebuke",
+   "name": "炼狱叱喝",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "warlock"
+   ],
+   "time": "1 反应，当 60 尺内一个你能看见的生物对你造成伤害时执行。",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你伸指一点，伤害你的生物立刻被炼狱的烈焰包围。该生物必须进行一次敏捷豁免，豁免失败则受到 2d10 点火焰伤害，豁免成功则伤害减半。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Hellish_Rebuke"
+  },
+  {
+   "key": "heroism",
+   "name": "英雄气概",
+   "level": 1,
+   "school": "惑控",
+   "classes": [
+    "paladin",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你触碰一个自愿生物使其充满勇气。该生物直至法术终止前免疫恐慌，且它将在其每回合开始时获得临时生命值，其数值等于你的施法属性调整值。法术终止时，目标失去所有来自该法术的临时生命值。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Heroism"
+  },
+  {
+   "key": "hex",
+   "name": "脆弱诅咒",
+   "level": 1,
+   "school": "惑控",
+   "classes": [
+    "warlock"
+   ],
+   "time": "1 附赠动作",
+   "range": "90 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你对施法距离内一个你能看见的一个生物施加诅咒。直到法术终止前，你对命中该目标的任意攻击都将额外造成 1d6 点暗蚀伤害。此外，你在施展该法术的同时选择一项属性，使该目标进行所选属性的属性检定时具有劣势。 如果目标在法术终止前 HP 降至 0，则你可以在法术终止前后续的某一回合中使用一个附赠动作诅咒…",
+   "comp": "V、S、M（一只风干的蝾螈眼）",
+   "src": "PHB",
+   "anchor": "Hex"
+  },
+  {
+   "key": "hunterSMark",
+   "name": "猎人印记",
+   "level": 1,
+   "school": "预言",
+   "classes": [
+    "ranger"
+   ],
+   "time": "1 附赠动作",
+   "range": "90 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你指定施法距离内一个你能看见的生物并以魔法标记其作为你的猎物。直至法术终止前，你每次以武器攻击命中该目标时都会额外造成 1d6 点伤害，且每当你为寻找目标生物而进行感知（察觉）或感知（求生）检定时都具有优势。如果在法术结束前目标 HP 降至 0，则你可以在法术结束前的后续某一个回合中用一个附赠动作…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Hunter's_Mark"
+  },
+  {
+   "key": "identify",
+   "name": "鉴定术",
+   "level": 1,
+   "school": "预言",
+   "classes": [
+    "bard",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 分钟",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": true,
+   "fx": "立即 你指定一个物件，并在施法过程中一直与其保持接触。如果该物件是魔法物品或其他附有魔力的物件，则你将知晓其属性和使用方式，以及了解是否需要与之同调。若它是充能物品则你将得知它现存的可用次数。你还可以知晓是否有法术正影响该物件，以及具体是哪些法术。如果该物件由法术所创，你将知晓具体哪项法术创造了这个物件。 你也可以改为…",
+   "comp": "V、S、M（一颗价值至少 100gp 的珍珠和一根猫头鹰羽毛）",
+   "src": "PHB",
+   "anchor": "Identify"
+  },
+  {
+   "key": "illusoryScript",
+   "name": "迷幻手稿",
+   "level": 1,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 分钟",
+   "range": "触碰",
+   "duration": "10 日",
+   "conc": false,
+   "ritual": true,
+   "fx": "10 日 你在羊皮纸，纸张或是其他适合书写的材质上书写文字并对其施加一个强力的幻象。其效应将持续至法术终止。 文件对于你和你施法时所指定的生物而言是一份普通的文件，文件内容即是以你的笔迹传达你写下手稿时想要传达的一切意义。而对于所有其他阅读者而言，该文件看起来就像由难懂的未知文字或魔法文字所书写。此外，你还可以使该文件…",
+   "comp": "S、M（价值至少 10gp 的铅料墨水，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Illusory_Script"
+  },
+  {
+   "key": "inflictWounds",
+   "name": "致伤术",
+   "level": 1,
+   "school": "死灵",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你对触及范围内一个生物发动一次近战法术攻击。命中时，目标受到 3d10 点暗蚀伤害。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Inflict_Wounds"
+  },
+  {
+   "key": "jump",
+   "name": "跳跃术",
+   "level": 1,
+   "school": "变化",
+   "classes": [
+    "ranger",
+    "druid",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 分钟 你触碰一个生物，并使该生物的跳跃距离在法术持续时间内增至三倍。",
+   "comp": "V、S、M（一只蚱蜢的后腿）",
+   "src": "PHB",
+   "anchor": "Jump"
+  },
+  {
+   "key": "longstrider",
+   "name": "大步奔行",
+   "level": 1,
+   "school": "变化",
+   "classes": [
+    "ranger",
+    "druid",
+    "bard",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你触碰一个生物，该目标速度在法术持续时间内增加 10 尺。",
+   "comp": "V、S、M（一撮泥土）",
+   "src": "PHB",
+   "anchor": "Longstrider"
+  },
+  {
+   "key": "mageArmor",
+   "name": "法师护甲",
+   "level": 1,
+   "school": "防护",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "8 小时 你触碰一个未着装护甲的自愿生物，使其受一个保护性魔法力场环绕直至法术终止。目标的基础 AC 变为 13+它的敏捷调整值。目标着装护甲或你以一个动作解散该法术后法术随之终止。",
+   "comp": "V、S、M（一块鞣制过的皮革）",
+   "src": "PHB",
+   "anchor": "Mage_Armor"
+  },
+  {
+   "key": "magicMissile",
+   "name": "魔法飞弹",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你创造三枚由魔法力场形成的闪光飞镖，并让每发飞镖命中施法距离内你能看见的指定生物。每发飞镖对目标造成 1d4+1 的力场伤害。所有飞镖将同时命中目标，而你还可以指定它们击中同一个目标或是分别击中几个目标。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Magic_Missile"
+  },
+  {
+   "key": "protectionFromEvilAndGood",
+   "name": "防护善恶",
+   "level": 1,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin",
+    "druid",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 在法术终止前，你触碰的一个自愿生物获得针对以下这些类型生物的防护：异怪、天族、元素生物、妖精、邪魔和亡灵。 该防护提供以下增益：该类生物对目标生物进行的攻击检定具有劣势；目标不会被该类生物魅惑，恐慌或附身；如果目标已被该类生物影响而陷入魅惑、恐慌，或被附身，则目标之后进行对抗相关效应的豁免检定时…",
+   "comp": "V、S、M（圣水或者银和铁的粉末，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Protection_from_Evil_and_Good"
+  },
+  {
+   "key": "purifyFoodAndDrink",
+   "name": "净化饮食",
+   "level": 1,
+   "school": "变化",
+   "classes": [
+    "cleric",
+    "paladin",
+    "druid",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "10 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": true,
+   "fx": "立即 你指定施法距离内一点，净化指定点周围半径 5 尺球状区域内的非魔法饮食品，并驱除其浸染的所有毒素和疾病。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Purify_Food_and_Drink"
+  },
+  {
+   "key": "rayOfSickness",
+   "name": "致病射线",
+   "level": 1,
+   "school": "死灵",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一道恶心的浅绿射线朝施法距离内一个生物射去。你对目标进行一次远程法术攻击。若命中，则目标受到 2d8 的毒素伤害且必须进行一次体质豁免，豁免失败则目标陷入中毒，该中毒效应持续至你的下一回合结束。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Ray_of_Sickness"
+  },
+  {
+   "key": "sanctuary",
+   "name": "庇护术",
+   "level": 1,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "artificer"
+   ],
+   "time": "1 附赠动作",
+   "range": "30 尺",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 分钟 你的法术保护一个施法距离内的生物不受攻击。在法术终止前，任何试图对受保护者进行攻击或对受保护者施放伤害性法术的生物都必须进行一次感知豁免。豁免失败则该生物必须选定一个新目标，否则将失去本次的攻击或法术。该法术不能保护受术者免受范围效应（如爆炸或火球）的影响。 若受保护生物发动一次攻击，施展一道影响敌人的法术，…",
+   "comp": "V、S、M（一小块银镜）",
+   "src": "PHB",
+   "anchor": "Sanctuary"
+  },
+  {
+   "key": "searingSmite",
+   "name": "炽焰斩",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "paladin",
+    "ranger"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在法术持续时间内下一次用近战武器攻击命中某个生物时将在武器上闪现出白热的光芒。该攻击对目标造成额外的 1d6 点火焰伤害，并点燃目标。直至法术终止前，目标在自己每一回合开始时都要进行一次体质豁免。豁免失败则受到 1d6 点火焰伤害。豁免成功则法术终止。如果目标或其身边 5 尺内的另一个生物用一个…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Searing_Smite"
+  },
+  {
+   "key": "shield",
+   "name": "护盾术",
+   "level": 1,
+   "school": "防护",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 反应，当你被攻击命中或被作为魔法飞弹的目标时执行",
+   "range": "自身",
+   "duration": "1 轮",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 轮 一道看不见的力场制护盾浮现在你身旁，保护着你。在你的下一回合开始前，你的 AC 具有+5 加值（在触发该法术的攻击之前生效），并且不会受到魔法飞弹的伤害。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Shield"
+  },
+  {
+   "key": "shieldOfFaith",
+   "name": "虔诚护盾",
+   "level": 1,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin"
+   ],
+   "time": "1 附赠动作",
+   "range": "60 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 围绕着施法距离内你指定的一个生物出现一片闪着微光的魔法力场。使目标在法术持续时间内 AC 获得+2 加值。",
+   "comp": "V、S、M（一小块写有神圣文字的羊皮纸）",
+   "src": "PHB",
+   "anchor": "Shield_of_Faith"
+  },
+  {
+   "key": "silentImage",
+   "name": "无声幻影",
+   "level": 1,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你创造一个影像，其形象来自一个大小不超过边长 15 尺立方体的物件，生物或其他的可视现象。影像出现在施法距离内你能看见的一处位置并在法术持续时间内持续存在。该影像是纯粹的视觉影像；它不会被听觉，嗅觉或其他感官感受到。 你可以用动作将影像移动到施法距离内的另一个位置。影像改变位置时，你可以改变影像…",
+   "comp": "V、S、M（少量羊毛）",
+   "src": "PHB",
+   "anchor": "Silent_Image"
+  },
+  {
+   "key": "sleep",
+   "name": "睡眠术",
+   "level": 1,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "90 尺",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 分钟 该法术使一些生物陷入魔法造成的沉睡中。掷一次 5d8；其结果为受该法术影响生物的生命值总数。你指定施法距离一点，该点周围 20 尺区域内的生物以剩余生命值由小至大的顺序受法术影响（生效时忽略昏迷生物）。 计算受法术影响生物时，从剩余生命值最低的生物开始逐个计算。每个受术生物均陷入昏迷，直至法术终止。睡眠者受到…",
+   "comp": "V、S、M（一把细沙，玫瑰花瓣，或一只蟋蟀）",
+   "src": "PHB",
+   "anchor": "Sleep"
+  },
+  {
+   "key": "speakWithAnimals",
+   "name": "动物交谈",
+   "level": 1,
+   "school": "预言",
+   "classes": [
+    "ranger",
+    "druid",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "10 分钟",
+   "conc": false,
+   "ritual": true,
+   "fx": "10 分钟 你在法术持续时间内获得理解野兽并与其沟通的能力。许多野兽智力不高，因此它们的认知水平相当有限，但它们至少能向你提供关于周围地域和怪物的情报，包括任何它们现在以及在前一日内察觉到的东西。你也许可以说服野兽帮你一些小忙，是否成功则由 DM 来判断。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Speak_with_Animals"
+  },
+  {
+   "key": "tashaSHideousLaughter",
+   "name": "塔莎狂笑术",
+   "level": 1,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 指定施法距离内一个你能看见的生物，如果该生物可受法术影响，则一切事物在该生物眼中都变得滑稽可笑，使它开始狂笑起来。目标必须进行一次感知豁免，豁免失败则俯身倒地，并在法术持续时间内陷入失能状态且无法起立。该效应对智力为 4 或更低的生物无效。 目标在其每回合结束或受到伤害时，可以再进行一次感知豁免。…",
+   "comp": "V、S、M（一些小甜饼以及一片空中飘荡的羽毛）",
+   "src": "PHB",
+   "anchor": "Tasha's_Hideous_Laughter"
+  },
+  {
+   "key": "tenserSFloatingDisk",
+   "name": "谭森浮碟术",
+   "level": 1,
+   "school": "咒法",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": true,
+   "fx": "1 小时 指定施法距离内一处你能看见的未占据空间，并在该处创造一个圆盘状的碟型水平力场。浮碟直径 3 尺，厚 1 寸，悬浮在离地 3 尺的半空。其可以在法术持续时间内持续存在，并至多可负载 500 磅重量。如果放在浮碟上的物件重量超过 500 磅，则该法术立即终止，浮碟上的所有东西也将掉落地面。 浮碟在你 20 尺内时…",
+   "comp": "V、S、M（一滴水银）",
+   "src": "PHB",
+   "anchor": "Tenser's_Floating_Disk"
+  },
+  {
+   "key": "thunderousSmite",
+   "name": "雷鸣斩",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "paladin"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在法术持续时间内下一次用近战武器攻击命中某个生物时将发出雷霆巨响，并使你周围 300 尺都能听见该响声。该攻击对目标造成额外 2d6 点雷鸣伤害，如果目标是一个生物，则它必须要进行一次力量豁免，豁免失败则目标往远离你的方向推动 10 尺并应击倒地。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Thunderous_Smite"
+  },
+  {
+   "key": "thunderwave",
+   "name": "雷鸣波",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "druid",
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身（15 尺立方）",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一道雷鸣波从你的身体向外扫去。在以你为源点 15 尺立方区域内的每个生物必须进行一次体质豁免。豁免失败者将受到 2d8 点雷鸣伤害，并被推离 10 尺。豁免成功则伤害减半，且不会被推离。 此外，所有完全位于该区域内且没被固定住的物件都将被自动推离 10 尺。而该法术还会发出方圆 300 尺内都能听见的雷霆巨响。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Thunderwave"
+  },
+  {
+   "key": "unseenServant",
+   "name": "隐形仆役",
+   "level": 1,
+   "school": "咒法",
+   "classes": [
+    "bard",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": true,
+   "fx": "1 小时 该法术创造出一个隐形、无心智、无实体的中体型力场。你可以在法术终止前命令它进行简单的工作。该仆从被创造出来后出现在施法距离内一处未占据空间的地面上。其 AC 为 10，生命值为 1，力量为 2，且不能攻击。若仆从的生命值降至 0，则法术终止。 你可以自己每个回合内以一个附赠动作对仆役下达精神命令，使它移动最多…",
+   "comp": "V、S、M（一根线和一块木头）",
+   "src": "PHB",
+   "anchor": "Unseen_Servant"
+  },
+  {
+   "key": "witchBolt",
+   "name": "巫术箭",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 一支缠绕着碎裂魔力的蓝色能量长矛射向施法距离内的一个生物，并在你与目标之间生成一道持久的闪电弧。对目标生物进行一次远程法术攻击。若命中，则目标受到 1d12 点闪电伤害。在法术持续时间内，你在每个自己的回合中可以用一个动作直接对目标造成 1d12 点闪电伤害。如果你执行动作做其他任何事情，法术将随…",
+   "comp": "V、S、M（从一棵被闪电击中的树上取来的树枝）",
+   "src": "PHB",
+   "anchor": "Witch_Bolt"
+  },
+  {
+   "key": "wrathfulSmite",
+   "name": "激愤斩",
+   "level": 1,
+   "school": "塑能",
+   "classes": [
+    "paladin"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在法术持续时间内，下一次近战武器攻击命中时，对目标造成额外 1d6 点心灵伤害。此外，如果目标是一个生物，则其必须进行一次感知豁免。豁免失败则目标生物将在法术终止前持续陷入对你恐慌的状态。该生物可以用一个动作来尝试重拾斗志，并进行一次对抗该法术 DC 的感知检定，检定成功则法术即刻终止。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Wrathful_Smite"
+  },
+  {
+   "key": "aid",
+   "name": "援助术",
+   "level": 2,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin",
+    "ranger",
+    "bard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "8 小时 你的法术增强了盟友的韧性和毅力。在施法距离内指定至多三个生物。每个目标的当前生命值及其上限在法术持续时间内提高 5 点。",
+   "comp": "V、S、M（一小片白布）",
+   "src": "PHB",
+   "anchor": "Aid"
+  },
+  {
+   "key": "alterSelf",
+   "name": "变身术",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你变换了自身形态。施法时，从以下选项中选择其一生效，并维持至其持续时间结束。你还可以在持续时间内以一个动作在选项间切换。 水生适应Aquaatic Adaptation。 你长出鳃和蹼以适应水中行动。你可以在水下呼吸，并且获得等同于步行速度的游泳速度。 改变外貌Change Appearance。…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Alter_Self"
+  },
+  {
+   "key": "animalMessenger",
+   "name": "动物信使",
+   "level": 2,
+   "school": "惑控",
+   "classes": [
+    "ranger",
+    "druid",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "24小时",
+   "conc": false,
+   "ritual": true,
+   "fx": "24小时 该法术令你可以利用动物传递信息。在施法距离内指定一只你能看见的微型野兽（比如松鼠squirrel，蓝松鸦blue jay，或是蝙蝠bat）。再选择一个你曾造访过的地点，然后描述收信人的基本信息，如“一个穿着城镇守卫制服的男人或女人”或“一个戴着尖顶帽子的红发矮人”。最后再说出一段不超过二十五个单词的信息。目标…",
+   "comp": "V、S、M（一点食物）",
+   "src": "PHB",
+   "anchor": "Animal_Messenger"
+  },
+  {
+   "key": "arcaneLock",
+   "name": "秘法锁",
+   "level": 2,
+   "school": "防护",
+   "classes": [
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "直到被解除",
+   "conc": false,
+   "ritual": false,
+   "fx": "直到被解除 你触碰关上的一扇门，一扇窗，一个箱子或其他出入口，并使目标在法术持续时间内保持锁闭状态。施法时，你还可以设定允许你和其他若干生物正常打开该物件。你还可以设置一条密语，在该锁闭物件 5 尺内念出密语时，秘法锁将被压制 1 分钟。该物件只有在法术被压制、被解除，或物件本身遭破坏时才能打开。对物件施放敲击术 将使…",
+   "comp": "V、S、M（至少价值 25gp 的金粉，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Arcane_Lock"
+  },
+  {
+   "key": "augury",
+   "name": "卜筮术",
+   "level": 2,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "druid",
+    "wizard"
+   ],
+   "time": "1 分钟",
+   "range": "自身",
+   "duration": "立即",
+   "conc": false,
+   "ritual": true,
+   "fx": "立即 借由镶嵌宝石的小短棒，龙骨，卡牌或是其他占卜器具，你从异界存在处获得对某件你计划在接下来的 30 分钟内做的事的预示。DM 从下列预示中选取一个：",
+   "comp": "V、S、M（一套绘有标记的短棒，骨头，或类似的象征物，价值至少 25gp）",
+   "src": "PHB",
+   "anchor": "Augury"
+  },
+  {
+   "key": "barkskin",
+   "name": "树肤术",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你触碰一个自愿生物，并使目标的皮肤在法术终止前呈现粗糙的树皮状外观。期间目标无论着装何种护甲，其 AC 将不会降至 16 以下。",
+   "comp": "V、S、M（一把橡树皮）",
+   "src": "PHB",
+   "anchor": "Barkskin"
+  },
+  {
+   "key": "beastSense",
+   "name": "野兽知觉",
+   "level": 2,
+   "school": "预言",
+   "classes": [
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": true,
+   "fx": "专注，至多 1 小时 你触碰一只自愿的野兽。在法术持续时间内，你可以使用动作来将自己的视觉和听觉切换至受术野兽的感官，随后直至你再使用动作来恢复正常的知觉。 通过野兽的感官感知四周时，你还会获得该生物本身具有的特殊感官，不过你对本体周围的状况视为等同于同时陷入目盲和耳聋状态。",
+   "comp": "S",
+   "src": "PHB",
+   "anchor": "Beast_Sense"
+  },
+  {
+   "key": "blindnessDeafness",
+   "name": "目盲术/耳聋术",
+   "level": 2,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 分钟 你尝试令敌人目盲或耳聋。在施法距离内指定一个你能看见的生物，并迫使其进行一次体质豁免。豁免失败者将在法术持续时间内陷入目盲或耳聋（由你选择）。目标可以在每次自己回合结束时再进行一次体质豁免，豁免成功则法术终止。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "BlindnessDeafness"
+  },
+  {
+   "key": "blur",
+   "name": "朦胧术",
+   "level": 2,
+   "school": "幻术",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你的身影变得模糊，并在别人眼里闪烁不定。在法术持续时间内，任何生物对你发动的攻击检定具有劣势。不依赖视觉（例如盲视）或可以看穿幻象（例如真实视觉）的攻击者免疫此效应。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Blur"
+  },
+  {
+   "key": "brandingSmite",
+   "name": "印记斩",
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "paladin"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在法术终止前的下一次武器攻击命中某生物时武器闪烁如明星，并对目标额外造成 2d6 点光耀伤害。如果目标处于隐形状态，则该斩击将使其可见，且因其身上散发出 5 尺半径的微光而无法隐形，直至该法术终止。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Branding_Smite"
+  },
+  {
+   "key": "calmEmotions",
+   "name": "安定心神",
+   "level": 2,
+   "school": "惑控",
+   "classes": [
+    "cleric",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你试图抑制一群人的强烈情感。指定施法距离内一点，并迫使该点周边半径20尺球状区域内的每个类人生物进行一次魅力豁免。受术生物可以自愿放弃豁免。豁免失败者将由你选择以下两项效应之一对其生效。 你可以选择压制任何使目标受魅惑或恐慌的效应。法术终止时，若被压制效应持续时间仍未完结，则该效应继续生效。 或者…",
+   "comp": "V，S",
+   "src": "PHB",
+   "anchor": "Calm_Emotions"
+  },
+  {
+   "key": "cloudOfDaggers",
+   "name": "匕首之云",
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在施法距离内指定一点，以该点为中心将一处边长 5 尺的立方区域充满旋转的匕首。生物在区域内开始其回合，或者在一个回合内第一次进入该区域时将受到 4d4 的挥砍伤害。",
+   "comp": "V、S、M（一小片玻璃）",
+   "src": "PHB",
+   "anchor": "Cloud_of_Daggers"
+  },
+  {
+   "key": "continualFlame",
+   "name": "不灭明焰",
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "druid",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "直至被解除",
+   "conc": false,
+   "ritual": false,
+   "fx": "直至被解除 你在所触碰物件上制造如火把一样亮的火焰，使其看上去与一般火焰无异，不过其并不会发热，也不需要燃烧氧气。你可以掩盖或隐藏它，但无法将之闷熄或扑灭。",
+   "comp": "V、S、M（价值 50gp 的红宝石粉末，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Continual_Flame"
+  },
+  {
+   "key": "cordonOfArrows",
+   "name": "警戒箭阵",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "ranger"
+   ],
+   "time": "1 动作",
+   "range": "5尺",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "8 小时 你将四发非魔法的弹药（弓箭或弩矢皆可）插在施法距离内的地面并在其上附加魔法让其防御一片区域。直至法术终止前，箭矢将警戒其周围 30 尺的区域，任何生物在一回合内第一次进入该区域或者在该区域结束其回合时，其中一发箭矢将飞起并射向该生物。该生物必须进行一次敏捷豁免，豁免失败者将受到 1d6 点穿刺伤害，而射向目标…",
+   "comp": "V、S、M（四支或更多的箭或矢）",
+   "src": "PHB",
+   "anchor": "Cordon_of_Arrows"
+  },
+  {
+   "key": "crownOfMadness",
+   "name": "疯狂冠冕",
+   "level": 2,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你指定施法距离内一名你能看见的类人生物，并迫使该生物进行一次感知豁免，豁免失败则该生物将在法术持续时间内受你魅惑。以该方式被魅惑的生物其头顶上将出现铁质锯齿的扭曲头冠，而其眼神则闪烁着疯狂。 受魅惑目标在其每个回合中，必须在移动前使用其动作对一名你在心中指定的除其自身以外的生物发动一次近战攻击。如…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Crown_of_Madness"
+  },
+  {
+   "key": "darkness",
+   "name": "黑暗术",
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你在施法距离内指定一点，并在法术持续时间内使魔法的黑暗充斥该点半径 15 尺的球状区域。该黑暗会绕过拐角扩散，连拥有黑暗视觉的生物也无法看穿这种黑暗，而非魔法的光照也无法在区域内提供照明。 如果你将法术目标设置于你正持握或未被穿着携带的物件，则黑暗将从物件周围漫出并跟随物件移动。将该物件完全掩盖…",
+   "comp": "V、M（蝙蝠毛发，以及一滴沥青或一小块煤）",
+   "src": "PHB",
+   "anchor": "Darkness"
+  },
+  {
+   "key": "darkvision",
+   "name": "黑暗视觉",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "ranger",
+    "druid",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "8 小时 你触碰一个自愿的生物，并给予其在黑暗中视物的能力。在法术持续时间内，该生物将拥有 60 尺的黑暗视觉。",
+   "comp": "V、S、M（一点胡萝卜干或一个玛瑙）",
+   "src": "PHB",
+   "anchor": "Darkvision"
+  },
+  {
+   "key": "detectThoughts",
+   "name": "侦测思想",
+   "level": 2,
+   "school": "预言",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在法术持续时间内能读取特定生物的思想。你可以在施展法术时，或者在法术持续时间内以一个动作实现该效应。此时，受术生物必须身处你 30 尺内并且能被你看见，而你必须对其集中注意力。如果该生物智力为 3 或更低，或者不懂任何语言，则该生物不受影响。 你最初了解的是该生物的表面想法，一般就是其此刻正想着…",
+   "comp": "V、S、M（一块铜片）",
+   "src": "PHB",
+   "anchor": "Detect_Thoughts"
+  },
+  {
+   "key": "enhanceAbility",
+   "name": "强化属性",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "cleric",
+    "ranger",
+    "druid",
+    "bard",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你触碰一个生物，并为其附上魔力强化。选择下列效应之一生效，而目标将在法术终止前维持该法术效应。",
+   "comp": "V、S、M（野兽的毛皮或羽毛）",
+   "src": "PHB",
+   "anchor": "Enhance_Ability"
+  },
+  {
+   "key": "enlargeReduce",
+   "name": "变巨术/缩小术",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "druid",
+    "bard",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你使施法距离内一个你能看见的生物或物件的大小发生改变，并在法术持续时间内维持其效应。指定一个生物或一件没有被着装携带的物品，如果目标并非自愿，则其可以进行一次体质豁免，豁免成功则法术无效。 如果目标是生物，则其着装物和携带物的尺寸也随之变化。随后任何从该生物身上脱离的物品都会恢复其正常大小。",
+   "comp": "V、S、M（一撮铁粉）",
+   "src": "PHB",
+   "anchor": "Enlarge_Reduce"
+  },
+  {
+   "key": "enthrall",
+   "name": "注目术",
+   "level": 2,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 分钟 你编排了一段使人分心的话语，并指定施法距离内任何你能看见且可以听到你声音的生物作为法术目标。目标生物必须进行一次感知豁免并成功通过。任何不能被魅惑的生物进行该豁免时直接判定为豁免成功。如果你或你的同伴正在和该生物战斗，则其进行该豁免时具有优势。豁免失败时，目标对除你以外其他生物进行的感知（察觉）检定具有劣势，…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Enthrall"
+  },
+  {
+   "key": "findSteed",
+   "name": "寻获坐骑",
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "paladin"
+   ],
+   "time": "10 分钟",
+   "range": "30 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你召唤一只拥有超凡智力、力量和忠诚的灵体作为坐骑，同时与其立长期的契约。坐骑显现在施法距离内未占据空间，其外形由你从以下形态中选择：战马、矮种马、骆驼、赤鹿、獒犬（DM 也可以允许你选择其他动物作坐骑）。坐骑拥有你所选形态的属性数据，但他实际上属于天族，妖精或邪魔的一种（由你选择）而不是通常类型。另外，如果你的坐…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Find_Steed"
+  },
+  {
+   "key": "findTraps",
+   "name": "寻找陷阱",
+   "level": 2,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你感测到施法距离范围内，且在你视线范围内的任何陷阱。该法术的目标“陷阱”包括任何可能引发的，对你有害或对你构成妨碍的突发性意外效应，而其性质也正是其创作者的意图。因此该法术可以感测警报术alarm和守卫刻纹glyph of warding的效应区域，也可以发现某个陷坑型机械陷阱。不过它不能揭示地板的某处脆弱点，或…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Find_Traps"
+  },
+  {
+   "key": "flameBlade",
+   "name": "火焰刀",
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "druid",
+    "sorcerer"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你在一只空闲的手上召唤出一把炽热的刀刃。该到刀刃的尺寸和形状近似于一把弯刀并在法术持续时间内维持存在。当你放下刀刃时其将消失不见，但你可以用一个附赠动作重新将其唤出。 你可以用你的动作以该热刃发动一次近战法术攻击。若命中，则目标受到3d6点火焰伤害。 烈焰刀向周围提供半径 10 尺的明亮光照，以…",
+   "comp": "V、S、M（漆树的叶子）",
+   "src": "PHB",
+   "anchor": "Flame_Blade"
+  },
+  {
+   "key": "flamingSphere",
+   "name": "炽焰法球",
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 一个直径 5 尺的球状火焰显现在施法距离内你指定的一处未占据空间，并在法术持续时间内维持存在。任何生物在火球周围 5 尺内结束其回合时必须进行一次敏捷豁免。豁免失败者将受到 2d6 点火焰伤害，豁免成功则伤害减半。 你可以用一个附赠动作将火球移动 30 尺。如果你将火球推向某生物，则该生物必须进行…",
+   "comp": "V、S、M（一小块兽脂、一小撮硫磺石和少量铁粉）",
+   "src": "PHB",
+   "anchor": "Flaming_Sphere"
+  },
+  {
+   "key": "gentleRepose",
+   "name": "遗体防腐",
+   "level": 2,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "paladin",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "10 日",
+   "conc": false,
+   "ritual": true,
+   "fx": "10 日 你触碰一具尸体或其他遗骸。目标将在法术持续时间内受保护并免于腐烂且无法转变为亡灵。 该法术同样可以有效的延长复活目标的时间限制，因为受该法术影响下度过的时间不计入法术如死者复活raise dead的时间限制内。",
+   "comp": "V、S、M（一撮盐，以及尸体每只眼睛上必须放置的铜币，铜币必须在法术持续时间内一直保留在眼睛上）",
+   "src": "PHB",
+   "anchor": "Gentle_Repose"
+  },
+  {
+   "key": "gustOfWind",
+   "name": "造风术",
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "ranger",
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身（60尺线状）",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 在法术持续时间内，一道长 60 尺，宽 10 尺的线状强风从你吹向你指定的方向。每个在线状区域内开始其回合的生物必须进行一次力量豁免，豁免失败则沿着风向被推开 15 尺。 任何生物在线状区域内向你移动时，其每移动 1 尺必须花费 2 尺的移动力。 强风吹散区域内的毒气或雾气，并吹熄蜡烛、火把及不受…",
+   "comp": "V、S、M（一粒豆科植物的种子）",
+   "src": "PHB",
+   "anchor": "Gust_of_Wind"
+  },
+  {
+   "key": "heatMetal",
+   "name": "灼热金属",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "druid",
+    "bard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 指定施法距离内一件你能看见的人造金属物件（例如一把金属武器，或者一套金属质的重甲或中甲），并使该物件变得炽热。施展该法术时，任何与该物件有物理接触的生物均受到 2d8 的火焰伤害。直到法术终止前，你都可以在你随后的每个回合在以一个附赠动作来再次造成此伤害。 若握持或着装该物件的生物因此受到伤害，则…",
+   "comp": "V、S、M（一片铁片和一团火焰）",
+   "src": "PHB",
+   "anchor": "Heat_Metal"
+  },
+  {
+   "key": "holdPerson",
+   "name": "定身类人",
+   "level": 2,
+   "school": "惑控",
+   "classes": [
+    "cleric",
+    "druid",
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 指定施法距离内一个你能看见的类人生物。该目标必须进行一次感知豁免，豁免失败则其在法术持续时间内陷入麻痹。目标在其每回合结束时可以再进行一次感知豁免，豁免成功则终止其身上该法术的效应。",
+   "comp": "V、S、M（一片直的小铁片）",
+   "src": "PHB",
+   "anchor": "Hold_Person"
+  },
+  {
+   "key": "invisibility",
+   "name": "隐形术",
+   "level": 2,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你触碰的一个生物变为隐形并维持至法术终止。目标的穿着物和携带物只要保持在其身上也随之保持隐形状态。如果目标发动攻击或施展法术，则该法术终止。",
+   "comp": "V、S、M（一根包裹在阿拉伯胶中的睫毛）",
+   "src": "PHB",
+   "anchor": "Invisibility"
+  },
+  {
+   "key": "knock",
+   "name": "敲击术",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 指定施法距离内一个你能看见的物件。该物件可以是一扇门，一个盒子，一个箱子，一副镣铐，一把挂锁，或是一个其他的通过魔法或普通手段来防止被打开的物件。 被一把普通锁锁住的目标其锁会被解开，被卡死的目标会被松开，被闩住的目标会被打开。如果目标被多把锁锁住，则只有一把锁会被打开。 若你指定的目标被法术秘法锁arcane …",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Knock"
+  },
+  {
+   "key": "lesserRestoration",
+   "name": "次等复原术",
+   "level": 2,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin",
+    "ranger",
+    "druid",
+    "bard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你触碰一个生物，并终止正影响它的一项疾病或一种状态。该状态可以是目盲，耳聋，麻痹或中毒其一。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Lesser_Restoration"
+  },
+  {
+   "key": "levitate",
+   "name": "浮空术",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 指定施法距离内你能看见的一个生物或松散放置的物件，使其垂直上升至多 20 尺，并在该处维持悬浮直至持续时间结束。该法术可悬浮一个重量至多 500 磅的目标。一个非自愿的生物可以对法术进行一次体质豁免以避免受其影响。 目标只能通过推或拉一个固定的物件或平面（例如一面墙或者天花板）来进行移动，这种移…",
+   "comp": "V、S、M（一个小皮圈，或者一段弯成长柄杯状的金线）",
+   "src": "PHB",
+   "anchor": "Levitate"
+  },
+  {
+   "key": "locateAnimalsOrPlants",
+   "name": "动植物定位术",
+   "level": 2,
+   "school": "预言",
+   "classes": [
+    "ranger",
+    "druid",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "立即",
+   "conc": false,
+   "ritual": true,
+   "fx": "立即 你点名或描述一种野兽或植物，并专注于附近的自然之音。如果 5 里内存在该类生物，你将知晓其中最接近个体与你的相对方位和距离。",
+   "comp": "V、S、M（一块寻血猎犬的皮毛）",
+   "src": "PHB",
+   "anchor": "Locate_Animals_or_Plants"
+  },
+  {
+   "key": "locateObject",
+   "name": "物件定位术",
+   "level": 2,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "paladin",
+    "ranger",
+    "druid",
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你点名或描述一个你熟悉的物件。只要该物件与你相距不超过 1000 尺，你就会感测到该物件的方位。如果该物件正在移动，则你也将知晓其移动的方向。 该法术可定位一个你认识的特定物件，不过你需要在 30 尺内近距离看到过该物件至少一次；或者它也可定位特定的一类物件（如某种服装、珠宝、家具、工具或武器）…",
+   "comp": "V、S、M（一根分叉的树枝）",
+   "src": "PHB",
+   "anchor": "Locate_Object"
+  },
+  {
+   "key": "magicMouth",
+   "name": "魔嘴术",
+   "level": 2,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 分钟",
+   "range": "30 尺",
+   "duration": "直至解除",
+   "conc": false,
+   "ritual": true,
+   "fx": "直至解除 你将一段信息植入施法距离内的一个物件中，其信息会在满足预设条件时说出。指定一个你能看见且未被另一生物穿着或携带的物件。然后，你可以使用至多 10 分钟来传达这段不超过 25 个单词的信息。最后再来设定触发法术传达信息的事件。 预设的事件发生时，目标物件上的魔法将形成一张嘴，并用与你相同的声音和音量复述所存储的…",
+   "comp": "V、S、M（一小块蜂窝和至少价值 10gp 的玉粉，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Magic_Mouth"
+  },
+  {
+   "key": "magicWeapon",
+   "name": "魔化武器",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "paladin",
+    "ranger",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 附赠动作",
+   "range": "触碰",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你触碰一件非魔法武器，并使其在法术持续时间内成为魔法武器。该武器进行攻击检定和伤害掷骰时具有+1 加值。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Magic_Weapon"
+  },
+  {
+   "key": "melfSAcidArrow",
+   "name": "马友夫强酸箭",
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "90尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一支闪烁的绿色箭矢疾速的飞向一个施法距离内的目标，并爆散成强酸水雾。法术对目标发动一次远程法术攻击。若命中，则目标立即受到 4d4 点强酸伤害，并在其下一回合结束时再受到 2d4 点强酸伤害。若未命中，则酸液箭矢溅射到了目标，造成初始伤害一半的伤害，并且不会在下一回合结束时造成伤害。",
+   "comp": "V、S、M（磨碎的大黄叶和一只蝰蛇的胃囊）",
+   "src": "PHB",
+   "anchor": "Melf's_Acid_Arrow"
+  },
+  {
+   "key": "mirrorImage",
+   "name": "镜影术",
+   "level": 2,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 分钟 三个与你自身一模一样的幻象分身出现在你所处的空间中。直至法术终止前，所有分身都会随你移动、模仿你的动作、并不断地变换位置，使人无法追踪判断哪个是你的分身哪个是你的真身。分身存在期间，你可以用动作来消解这些幻象分身。 在法术持续时间内，每当有生物以你为目标发动攻击时，其攻击都有概率改为以三个分身之一为目标，你掷…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Mirror_Image"
+  },
+  {
+   "key": "mistyStep",
+   "name": "迷踪步",
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你短暂地被银白的雾气所笼罩，传送到至多 30 尺内一个你能看见且未被占据的位置。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Misty_Step"
+  },
+  {
+   "key": "moonbeam",
+   "name": "月华之光",
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 指定施法距离内一点，以该点为中心半径 5 尺、高 40 尺的柱状区域内沐浴在一束淡淡的银光中。直至法术终止前，柱状区域内充满微光光照。 生物在一个回合内第一次进入该区域，或在该区域内开始其回合时，将被幽灵般的火焰吞噬并引起剧烈的灼痛。该生物必须进行一次体质豁免，豁免失败则受到 2d10 的光耀伤害…",
+   "comp": "V、S、M（几粒月籽藤种子和一块乳白色的长石）",
+   "src": "PHB",
+   "anchor": "Moonbeam"
+  },
+  {
+   "key": "nystulSMagicAura",
+   "name": "涅斯图魔法灵光",
+   "level": 2,
+   "school": "幻术",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "24 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "24 小时 你触碰一个生物或一个物件，在其身上设置一个幻术，使得预言法术在此目标身上只能揭示出错误的信息。此目标可以是一个自愿的生物，或者是一个未被其他生物着装或携带的物件。施展此法术时，你可以选择下列幻术效应中的一个，或是两个效应一并生效。幻术效应在持续时间内将一直存在。如果你连续30天每天都对同一个生物或物件施展此…",
+   "comp": "V、S、M（一小块方形丝绸）",
+   "src": "PHB",
+   "anchor": "Nystul's_Magic_Aura"
+  },
+  {
+   "key": "passWithoutTrace",
+   "name": "行动无踪",
+   "level": 2,
+   "school": "防护",
+   "classes": [
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 阴影和沉默的幕障从你身上辐射而出，并隔绝任何对你和你的同伴进行的探测。持续时间内，位于你30尺内的所有你选择的生物（包括你自己）进行的敏捷（隐匿）检定具有+10加值，且你们的踪迹无法被追踪（魔法手段除外）。受此增益的生物在其途径之处将不会留下任何足迹或其他踪迹。",
+   "comp": "V、S、M（一片槲寄生叶子烧成的灰和一小枝云杉）",
+   "src": "PHB",
+   "anchor": "Pass_without_Trace"
+  },
+  {
+   "key": "phantasmalForce",
+   "name": "魅影之力",
+   "level": 2,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你指定施法距离内一个你能够看见的生物，并创造一个根植于其意识的幻象。该目标必须进行一次智力豁免。豁免失败时，你创造出一个不大于 10 尺立方且只能被目标感知到的幻影物件，生物或其他你指定的可见现象。该创造将持续存在直至法术终止。且该法术对亡灵和构装生物无效。 该幻象包括声音、温度和其他反应因素，同…",
+   "comp": "V、S、M（一点羊毛）",
+   "src": "PHB",
+   "anchor": "Phantasmal_Force"
+  },
+  {
+   "key": "prayerOfHealing",
+   "name": "治疗祷言",
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "paladin"
+   ],
+   "time": "10 分钟",
+   "range": "30 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你指定施法距离内至多六个你能看见的生物，并使其每人恢复 2d8+你施法属性调整值的生命值。该法术对亡灵和构装生物不产生任何效应。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Prayer_of_Healing"
+  },
+  {
+   "key": "protectionFromPoison",
+   "name": "防护毒素",
+   "level": 2,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin",
+    "ranger",
+    "druid",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你触碰一个生物。如果处于中毒状态，则中和其所受毒素。如果目标身上具有超过一种毒素，则选择你所了解一种或随机选择其一进行中和。 在法术持续时间内，目标对抗中毒所豁免具有优势，并且对毒素伤害具有抗性。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Protection_from_Poison"
+  },
+  {
+   "key": "rayOfEnfeeblement",
+   "name": "衰弱射线",
+   "level": 2,
+   "school": "死灵",
+   "classes": [
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你从指尖射出一道让人衰弱的黑色能量射线并射向施法距离内的一个生物。你对目标进行一次远程法术攻击。若命中，则目标在法术终止前，其使用基于力量的武器进行攻击时只造成一半伤害。 目标在其每回合结束时可以进行一次对抗该法术的体质豁免。豁免成功则法术终止。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Ray_of_Enfeeblement"
+  },
+  {
+   "key": "ropeTrick",
+   "name": "魔绳术",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你触碰一段长度不超过 60 尺的绳子。绳的一端会向上升起，直到整条绳索都垂直于地面挂在空中。绳子的上端存在一个隐形的入口，其通往一个法术持续时间内一直存在的异次元空间。 该异次元空间可以从绳子的顶端进入，其内至多可容纳八个中型或更小的生物。魔绳可以被拉回到此空间里，此时从异次元空间外面就再看不到这条绳索。 攻…",
+   "comp": "V、S、M（玉米粉和一卷羊皮纸绞成的纸圈）",
+   "src": "PHB",
+   "anchor": "Rope_Trick"
+  },
+  {
+   "key": "scorchingRay",
+   "name": "灼热射线",
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你创造出三道火焰的射线，随即将其射向施法距离内的目标。你可以把全部射线对准同一个目标，也可以瞄准不同目标。每道射线需要你分别进行一次远程法术攻击。若命中，则目标受到 2d6 点火焰伤害。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Scorching_Ray"
+  },
+  {
+   "key": "seeInvisibility",
+   "name": "识破隐形",
+   "level": 2,
+   "school": "预言",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你能在法术持续时间内能看见任何隐形的生物和物件，如同其处于正常可见状态一样。你还能够看见以太位面，以太位面的生物和物件在你眼中会以幽灵般的半透明形状显现。",
+   "comp": "V、S、M（一撮滑石粉和少量银粉）",
+   "src": "PHB",
+   "anchor": "See_Invisibility"
+  },
+  {
+   "key": "shatter",
+   "name": "粉碎音波",
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你指定施法距离内一点，并在其上忽然爆发一阵震耳欲聋的噪音。以该点为中心半径 10 尺球状区域内的所有生物必须要进行一次体质豁免。豁免失败者将受到 3d8 点雷鸣伤害；豁免成功则伤害减半。以无机物质（如石头，水晶或金属）构成的生物进行该豁免时具有劣势。 如果法术的范围内有一个不被任何生物着装携带的非魔法物件，则它也…",
+   "comp": "V、S、M（一片云母）",
+   "src": "PHB",
+   "anchor": "Shatter"
+  },
+  {
+   "key": "silence",
+   "name": "沉默术",
+   "level": 2,
+   "school": "幻术",
+   "classes": [
+    "cleric",
+    "ranger",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": true,
+   "fx": "专注，至多 10 分钟 你指定施法距离内一点，以该点为中心半径 20 尺的球状区域在法术持续时间内将无法产生任何声音，且外界的声音也无法进入该区域内。任何完全位于该区域内的生物和物件都将免疫雷鸣伤害，而任何生物在完全位于该区域内时都将陷入耳聋。此外，该区域内无法施展包含言语成分的法术。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Silence"
+  },
+  {
+   "key": "spiderClimb",
+   "name": "蛛行术",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你触碰一个自愿的生物，并使其在法术终止前能够在垂直表面上下或横向移动，其甚至可以在天花板上倒挂着移动而不需要用到双手。另外，目标获得与步行速度相等的攀爬速度。",
+   "comp": "V、S、M（一滴沥青和一只蜘蛛）",
+   "src": "PHB",
+   "anchor": "Spider_Climb"
+  },
+  {
+   "key": "spikeGrowth",
+   "name": "荆棘丛生",
+   "level": 2,
+   "school": "变化",
+   "classes": [
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "150尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 以施法距离内一点为中心周围 20 尺的地面扭曲变形，大片坚硬的棘刺破土而出。该区域在法术持续时间内视为困难地形。而生物进入该区域或在其中移动时，其每移动 5 尺就要受到 2d4 点穿刺伤害。 法术导致的地面变形经过刻意的掩饰，使其看起来并无异样。如果生物在你施展该法术时不能看见该区域，则它必须进…",
+   "comp": "V、S、M（七根棘刺或七根嫩枝，每根都要削尖）",
+   "src": "PHB",
+   "anchor": "Spike_Growth"
+  },
+  {
+   "key": "spiritualWeapon",
+   "name": "灵体武器",
+   "level": 2,
+   "school": "塑能",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 附赠动作",
+   "range": "60 尺",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 分钟 你在施法距离内的一点创造出一把浮空的虚幻武器，并使其持续到法术持续时间结束或你再次施展该法术为止。施展该法术时，你可以对该武器周围 5 尺内的一个生物发动一次近战法术攻击。若命中，则目标受到 1d8+你的施法属性调整值的力场伤害。 你可以在自己回合内以一个附赠动作让该武器移动至多 20 尺，并再对它周围 5 …",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Spiritual_Weapon"
+  },
+  {
+   "key": "suggestion",
+   "name": "暗示术",
+   "level": 2,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 8 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 8 小时 你以魔法影响施法距离内一个你能看见的生物，并对其施以某种行动暗示（至多以一两句话的形式）。由你指定的受术目标必须能听到并理解你的话语。而不能被魅惑的生物也将免疫此效应。你的暗示言辞必须能让其行为听起来合乎情理。要求生物刺伤它自己，自己撞向矛尖上，让它自我牺牲，或是让它做任何明显有害的行为都会直接取…",
+   "comp": "V、M（一条蛇舌，加上一小块蜂巢或一滴甜油）",
+   "src": "PHB",
+   "anchor": "Suggestion"
+  },
+  {
+   "key": "wardingBond",
+   "name": "守护之链",
+   "level": 2,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你触碰一个自愿的生物，并让该法术的魔力保护它。该法术在你和目标之间建立一种神秘的连接，并一直持续至法术终止。目标位于你身边 60 尺内时，其 AC 和豁免检定具有+1 加值，且对所有伤害具有抗性。此外，每当目标受到伤害时，你也会受到同样的伤害。 如果你的生命值降至 0，或你与目标距离超过 60 尺，则该法术终…",
+   "comp": "V、S、M（一对单个价值至少 50gp 的铂金戒指，并由你和目标在法术持续时间内一直佩戴）",
+   "src": "PHB",
+   "anchor": "Warding_Bond"
+  },
+  {
+   "key": "web",
+   "name": "蛛网术",
+   "level": 2,
+   "school": "咒法",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多一小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多一小时 你在施法距离内指定一点，并召唤出一大片粘厚的网状物。蛛网覆盖以该点为源点的 20 尺立方区域，并在法术持续时间内维持存在。蛛网使该区成为困难地形并造成轻度遮蔽。 如果蛛网没有被固定在两个固体中间（例如墙和树）或跨在一片地板、墙壁、天花板中间，则你召唤出的蛛网会自动坍塌，而导致法术在你的下一回合开始时终…",
+   "comp": "V、S、M（少量蜘蛛网）",
+   "src": "PHB",
+   "anchor": "Web"
+  },
+  {
+   "key": "zoneOfTruth",
+   "name": "诚实之域",
+   "level": 2,
+   "school": "惑控",
+   "classes": [
+    "cleric",
+    "paladin",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "10 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "10 分钟 你创造一个抵御谎言的魔法区域，该区域以施法距离内一点为中心，覆盖该点周边 15 尺半径的球状区域。在法术终止前，生物在其回合内第一次进入该区域，或在该区域内开始其回合时，必须进行一次魅力豁免。豁免失败者在该区域内不能故意说谎。而你可以知晓每个受术生物的豁免是成功与否。 受影响的生物可以意识到该效果的存在，因…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Zone_of_Truth"
+  },
+  {
+   "key": "animateDead",
+   "name": "活化死尸",
+   "level": 3,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "wizard"
+   ],
+   "time": "1 分钟",
+   "range": "10 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 该法术创造一个亡灵仆从。在施法距离内指定一具中型或小型类人遗骨或遗体，并以该法术将污秽的虚假生命力量注入其中，将之唤起为一个亡灵。如果你选择的是遗骨，则目标变为骷髅skeleton；选择的是遗体则变为丧尸zombie。该生物的具体游戏资料由 DM 掌控。 在你的任一回合内，你可以使用一个附赠动作并以精神命令操纵 …",
+   "comp": "V、S、M（一滴血，一块肉，以及一点骨灰）",
+   "src": "PHB",
+   "anchor": "Animate_Dead"
+  },
+  {
+   "key": "auraOfVitality",
+   "name": "活力灵光",
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "paladin",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "自身（30 尺半径）",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你身上发出的治愈能量形成半径 30 尺的灵光。法术持续时间内灵光将以你为中心随你移动。你可以用一个附赠动作为灵光范围内的一名生物（包括你自己）恢复 2d6 的生命值。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Aura_of_Vitality"
+  },
+  {
+   "key": "beaconOfHope",
+   "name": "希望信标",
+   "level": 3,
+   "school": "防护",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 该法术带来活力与希望。在施法距离内指定任意数量的生物，并使其在法术持续时间内进行的感知豁免和死亡豁免具有优势。此外，其获得治疗时均以骰子最大值来决定其恢复的生命值。",
+   "comp": "V，S",
+   "src": "PHB",
+   "anchor": "Beacon_of_Hope"
+  },
+  {
+   "key": "bestowCurse",
+   "name": "降咒",
+   "level": 3,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你触碰一名生物。该生物必须进行一次感知豁免并成功通过，否则将在法术持续时间内被诅咒。施展法术时，你从以下诅咒选项选择其一：",
+   "comp": "V，S",
+   "src": "PHB",
+   "anchor": "Bestow_Curse"
+  },
+  {
+   "key": "blindingSmite",
+   "name": "致盲斩",
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "paladin"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在法术终止前的下一次武器攻击命中某生物时将爆发出强光，并对目标额外造成 3d8 点光耀伤害。此外，目标必须进行一次体质豁免，豁免失败则陷入目盲直至法术终止。 受法术目盲效应影响的生物在其每个回合结束时可以再进行一次体质豁免，豁免成功则其目盲状态终止。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Blinding_Smite"
+  },
+  {
+   "key": "blink",
+   "name": "闪现术",
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 分钟 你在法术持续时间内每次自己回合结束时掷一次 d20。如果结果大于等于 11，则你从所处位面消失并出现在以太位面（如果你已经在以太位面，则法术失败且被消耗）。在你每次自己回合开始以及法术终止时，如果你身处以太位面，则你在之前消失的位置 10 尺内自选一处未被占据且你能看见的空间出现。如果范围内没有未占据空间，则…",
+   "comp": "V，S",
+   "src": "PHB",
+   "anchor": "Blink"
+  },
+  {
+   "key": "callLightning",
+   "name": "召雷术",
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你指定施法距离内，自己上方一处能看见的点，并在该处生成一片高 10 尺、半径 60 尺的柱状雷云区域。如果你无法看到空中雷云可能形成的位置，则法术失败（例如，当你身处一间不够高大的房间内时）。 施法时，指定该雷云下一处你能看见的点。再令一束闪电从云端射向该点。在该点 5 尺内的生物必须进行一次敏…",
+   "comp": "V，S",
+   "src": "PHB",
+   "anchor": "Call_Lightning"
+  },
+  {
+   "key": "clairvoyance",
+   "name": "鹰眼术",
+   "level": 3,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "10 分钟",
+   "range": "1 里",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你在施法距离内某处创造一个隐形的传感器，该处可以是你熟悉的地点（你曾到访过或看见过的地方），也可以是你不熟悉的显眼处（比如一扇门后，拐角位置或树林里）。该传感器在法术持续时间内停留在该地且无法被攻击或与之互动。 施展该法术时，你可以选择进行观察或是聆听。你可以通过传感器以所选的感官方式感测目标空…",
+   "comp": "V、S、M（价值至少 100gp 的法器，选择聆听时用一个以珠宝装饰的号角，选择观察时用一颗玻璃眼珠）",
+   "src": "PHB",
+   "anchor": "Clairvoyance"
+  },
+  {
+   "key": "conjureAnimals",
+   "name": "动物咒唤术",
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你召唤野兽形态的精魄，并使其显现在施法范围内一处你能看见但未占据空间。选择以下选项之一作为显现的生物：",
+   "comp": "V，S",
+   "src": "PHB",
+   "anchor": "Conjure_Animals"
+  },
+  {
+   "key": "conjureBarrage",
+   "name": "箭如雨下",
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "ranger"
+   ],
+   "time": "1 动作",
+   "range": "自身（60 尺锥状）",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你向空中射出一发非魔法的弹药或者掷出一把非魔法的投掷武器，并以之为原型向前方锥状区域内射出一片同样的武器，而这些创造出的武器将在攻击完成后消失不见。前方 60 尺锥状区域内的每个生物都必须进行一次敏捷豁免，豁免失败者将受到 3d8 点伤害，豁免成功则伤害减半。法术所造成伤害的类型与用作法术成分材料的弹药或武器相同…",
+   "comp": "V、S、M（一发弹药或一把投掷武器）",
+   "src": "PHB",
+   "anchor": "Conjure_Barrage"
+  },
+  {
+   "key": "counterspell",
+   "name": "法术反制",
+   "level": 3,
+   "school": "防护",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 反应，当你看见身边 60 尺范围内一个生物施展法术时执行",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你试图打断一个生物正在施展的一个法术。如果该生物正在施展三环或更低环阶法术，则其法术失败且不产生任何效应。如果该生物正在施展四环或更高环阶法术，则你以施法属性进行一次属性检定，其检定 DC 等于 10+目标法术的环阶。检定成功则目标法术失败且不产生任何效应。",
+   "comp": "S",
+   "src": "PHB",
+   "anchor": "Counterspell"
+  },
+  {
+   "key": "createFoodAndWater",
+   "name": "造粮术",
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "cleric",
+    "paladin",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你在施法距离内的地面或容器上创造 45 磅的食物和 30 加仑的水，其总量可以满足十五个类人生物或者五匹坐骑 24 小时的补给需求。食物非常清淡但营养丰富，并且如果 24 小时内不食用即会变坏。创造的水清洁可饮用且不会以该方式变质。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Create_Food_and_Water"
+  },
+  {
+   "key": "crusaderSMantle",
+   "name": "十字军披风",
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "paladin"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 神圣的能量自你身上发出并形成 30 尺半径的灵光，并为友方生物激励勇气。在法术持续时间内，灵光将以你为中心随你移动。灵光范围内的非敌对生物（包括你自己）的武器攻击命中时将额外造成 1d4 的光耀伤害。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Crusader's_Mantle"
+  },
+  {
+   "key": "daylight",
+   "name": "昼明术",
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "paladin",
+    "ranger",
+    "druid",
+    "sorcerer"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你在施法距离内指定一点，并从中释放光亮蔓延至半径 60 尺的球状区域。法术产生的光亮为区域内提供明亮光照并向其外提供 60 尺的微光光照。 如果你将作为法术目标的点设置于你正持握或未被穿着携带的物件，则光亮将从物件周围漫出并跟随物件移动。将该物件完全掩盖时（比如用碗或头盔盖住），也会将其漫出的光亮隔绝。 如果…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Daylight"
+  },
+  {
+   "key": "dispelMagic",
+   "name": "解除魔法",
+   "level": 3,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin",
+    "druid",
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 在施法距离内指定一个生物、一个物件或一处魔法效应，并终止所有影响该目标的三环或更低环阶法术。每个影响目标的四环或更高环阶法术都需要以你的施法属性进行一次属性检定，其 DC 等于 10+目标法术的环阶，检定成功时目标法术终止。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Dispel_Magic"
+  },
+  {
+   "key": "elementalWeapon",
+   "name": "元素武器",
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "paladin",
+    "ranger",
+    "druid",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你触碰的一把非魔法武器并使其变成魔法武器。选择以下伤害类型其中之一：强酸、寒冷、火焰、闪电、雷鸣。在法术持续时间内，该武器进行攻击检定时将获得+1 加值，且在命中时额外造成1d4点所选类型的伤害。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Elemental_Weapon"
+  },
+  {
+   "key": "fear",
+   "name": "恐惧术",
+   "level": 3,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "自身（30 尺锥状）",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你制造一个目标最惧怕的幻象，并迫使 30 尺锥状区域内的所有生物进行一次感知豁免，豁免失败者将丢弃其所有持握物，并在法术持续时间内陷入恐慌。 被法术恐慌的生物必须在其回合内执行疾走动作，并以此寻找最安全的路线远离施法者，直至其无路可走为止。如果该生物结束其回合时位于一处使其视觉线中没有你的空间，则…",
+   "comp": "V、S、M（一片白羽毛或一颗母鸡心）",
+   "src": "PHB",
+   "anchor": "Fear"
+  },
+  {
+   "key": "feignDeath",
+   "name": "假死术",
+   "level": 3,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "druid",
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": true,
+   "fx": "1 小时 你触碰一自愿生物并将其变得如死去一样的僵直状态。 你可以用一个动作再次触碰该目标以终止该法术。在法术持续时间内，对目标进行的任何肉体检查和法术检测都显示目标已处于死亡状态。该状态下的目标陷入目盲以及失能状态，且其移动速度降低为 0。目标对除了心灵伤害外的所有伤害类型具有抗性。如果目标在受术时正陷入疾病或中毒状…",
+   "comp": "V、S、M（一把坟土）",
+   "src": "PHB",
+   "anchor": "Feign_Death"
+  },
+  {
+   "key": "fireball",
+   "name": "火球术",
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "150 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 明亮的闪光从你的指间飞驰向施法距离内你指定的一点，并随着一声低吼迸成一片烈焰。目标点周围半径 20 尺球状区域内的每个生物必须进行一次敏捷豁免。豁免失败者将受到 8d6 点火焰伤害，豁免成功则伤害减半。 迸发的火焰将绕过拐角扩散。并点燃区域内所有未被着装或携带的可燃物件。",
+   "comp": "V、S、M（一小球蝙蝠粪及硫磺）",
+   "src": "PHB",
+   "anchor": "Fireball"
+  },
+  {
+   "key": "fly",
+   "name": "飞行术",
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你触碰一个自愿生物，并使该目标在法术持续时间内获得 60 尺的飞行速度。法术终止时，如果目标仍在空中则随即坠落。",
+   "comp": "V、S、M（任意鸟类翅膀上的羽毛）",
+   "src": "PHB",
+   "anchor": "Fly"
+  },
+  {
+   "key": "gaseousForm",
+   "name": "气化形体",
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 在法术持续时间内，你将触碰到的一个自愿生物连同其穿着携带物一起转化为一团云雾。如果生物的生命值降至 0 则法术终止。非实体的生物不受该效应影响。 在该形态下，目标唯一的移动方式即是 10 尺的飞行速度。该目标可以进入并占据一个已有生物占据的空间。其拥有非魔法伤害的抗性，且进行力量、敏捷和体质豁免时…",
+   "comp": "V、S、M（一小片薄纱和一缕清烟）",
+   "src": "PHB",
+   "anchor": "Gaseous_Form"
+  },
+  {
+   "key": "glyphOfWarding",
+   "name": "守卫刻纹",
+   "level": 3,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "bard",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 小时",
+   "range": "触碰",
+   "duration": "直到被解除或触发",
+   "conc": false,
+   "ritual": false,
+   "fx": "直到被解除或触发 施展该法术时，你在某个表面（诸如桌面、地板、墙等）或某个能被关闭以隐藏符纹的物件里（诸如书本、卷轴、宝箱等）刻画一个不一定对生物造成伤害的符纹。如果你指定某个表面，则该符纹可以覆盖内径不超过 10 尺直径的区域。如果受术的物件或表面从被施法位置被移开超过 10 尺，则其符纹被破坏且法术不被触发即告终止…",
+   "comp": "V、S、M（熏香和至少价值 200gp 的钻石粉，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Glyph_of_Warding"
+  },
+  {
+   "key": "haste",
+   "name": "加速术",
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 指定施法距离内一个你能看见的自愿生物。直至法术终止前，你使目标速度翻倍；其 AC 获得+2 加值；其进行敏捷豁免时具有优势；其每个回合都可作出一个额外的动作，但该动作只能用于执行攻击（只限一次武器攻击），或者疾走、撤离、躲藏和使用物件动作。 法术终止时，目标将泛起一阵倦意使其不能移动也无法执行动作…",
+   "comp": "V、S、M（一片甘草根切片）",
+   "src": "PHB",
+   "anchor": "Haste"
+  },
+  {
+   "key": "hungerOfHadar",
+   "name": "哈达之欲",
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "150 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你打开一个通道，并连接到群星间黑暗处某个遍布未知恐怖之物的领域。以施法距离内一点为中心，一个半径 20 尺，漆黑而冷冻的球状区域显现并持续至该法术终止。这个虚无区域外 30 尺范围内能听到充斥在空气中的不谐耳语和啜嚼噪音。任何光照，魔法或其他手段都无法照亮这个区域，而完全进入该区域内的生物将陷入目…",
+   "comp": "V、S、M（一条酸洗过的章鱼触须）",
+   "src": "PHB",
+   "anchor": "Hunger_of_Hadar"
+  },
+  {
+   "key": "hypnoticPattern",
+   "name": "催眠图纹",
+   "level": 3,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在施法距离内一处边长 30 尺的立方区域内创造出一个在空中舞动旋转的彩色图纹。图纹在出现片刻后消失，然后迫使区域内每个看到它的生物进行一次感知豁免，豁免失败者将在法术持续时间内被魅惑。被该法术魅惑的生物陷入失能状态，且速度降为 0。 如果受术生物受到任何伤害，或有其他生物用动作将其从恍惚中摇醒，…",
+   "comp": "S、M（一根点燃的熏香或一个装有磷光材料的水晶小瓶）",
+   "src": "PHB",
+   "anchor": "Hypnotic_Pattern"
+  },
+  {
+   "key": "leomundSTinyHut",
+   "name": "李欧蒙小屋",
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "1 分钟",
+   "range": "自身（10 尺半径半球状）",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": true,
+   "fx": "8 小时 一个半径 10 尺的半球形力场出现在你周围和上方，并在法术持续时间内保持固定。当你离开该区域时法术将随之终止。 半球可以容纳你和九个中型或更小的生物。如果区域内容纳了一个体型更大的生物或者容纳了多于九个生物，则法术失效。在施展此法术时即处于半球内的生物和物件可以自由进出半球。而所有其他生物和物件都将被阻挡而无…",
+   "comp": "V、S、M（一个小水晶珠子）",
+   "src": "PHB",
+   "anchor": "Leomund's_Tiny_Hut"
+  },
+  {
+   "key": "lightningArrow",
+   "name": "闪电箭矢",
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "ranger"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在法术持续时间内下一次进行的远程武器攻击时，该武器的弹药或该武器本身（如果该武器是投掷武器）变为一束闪电。以正常方式进行攻击检定，若该攻击命中则目标受到 4d8 点闪电伤害，若未命中则伤害减半。即以该闪电伤害代替武器正常伤害。 无论你的攻击是否命中，目标周围 10 尺范围内的每个生物都必须进行一…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Lightning_Arrows"
+  },
+  {
+   "key": "lightningBolt",
+   "name": "闪电束",
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身（100 尺线状）",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一束 100 尺长，5 尺宽的线状闪电从你的位置向你指定的任意方向爆发迸出。在线状区域内的每个生物必须进行一次敏捷豁免，豁免失败者将受到 8d6 的闪电伤害，豁免成功则伤害减半。 闪电会将区域内未被着装或携带的可燃物件点燃。",
+   "comp": "V、S、M（一些毛皮和琥珀质、水晶质或玻璃质的一根棒子）",
+   "src": "PHB",
+   "anchor": "Lightning_Bolt"
+  },
+  {
+   "key": "magicCircle",
+   "name": "防护法阵",
+   "level": 3,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 分钟",
+   "range": "10 尺",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 指定施法距离内地面上你能看见的一点，并在该处创造了一个 10 尺半径、20 尺高的柱状魔法能量。而承载能量柱的地面或其他平面上则会显现出闪光的符文。 指定以下生物类型中的一种或多种：天族、元素生物、妖精、邪魔、亡灵。法阵将会对被指定类型的生物产生以下效应：",
+   "comp": "V、S、M（总价值至少 100gp 的圣水或银、铁粉，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Magic_Circle"
+  },
+  {
+   "key": "majorImage",
+   "name": "高级幻影",
+   "level": 3,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你创造一个影像，其形象来自一个大小不超过边长 20 尺立方体的物件，生物或其他的可视现象。影像出现在施法距离内你能看见的一处位置并在法术持续时间内维持存在。它看起来完全是真实的，并且还具有相应的声音、气味和温度。你不能创造出足以造成伤害的酷热或严寒，也不能创造出音量大到足以造成雷鸣伤害或者震聋生…",
+   "comp": "V、S、M（一小块羊毛）",
+   "src": "PHB",
+   "anchor": "Major_Image"
+  },
+  {
+   "key": "massHealingWord",
+   "name": "群体治愈真言",
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "bard"
+   ],
+   "time": "1 附赠动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你高声诵出复原的真言，并指定施法距离内至多六个你能看见的生物，使其各自恢复一定的生命值，其数值等于 1d4+你的施法属性调整值。该法术对亡灵和构装生物无效。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Mass_Healing_Word"
+  },
+  {
+   "key": "meldIntoStone",
+   "name": "融身入石",
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "cleric",
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": true,
+   "fx": "8 小时 你进入一个足以完全容纳你身体的石制物件或石材表面内，使你自己和你携带的所有装备在法术持续时间内与石头融为一体。你可以在移动时从一个你能接触到的位置进入石中。此后，任何非魔法的感官都无法看到或侦测到你的存在。 与石头融合后，你看不到外界发生了什么，并且你为了聆听外界声音而进行的任何感知（察觉）检定都具有劣势。与…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Meld_Into_Stone"
+  },
+  {
+   "key": "nondetection",
+   "name": "回避侦测",
+   "level": 3,
+   "school": "防护",
+   "classes": [
+    "ranger",
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "8 小时 在法术持续时间内，你将触碰的目标隐藏起来，使其在法术持续时间内躲开来自预言魔法的侦测。目标可以是一个自愿生物，一处地点或一个在各个方向上不超过 10 尺的物件。目标在持续时间内不能成为预言魔法的目标，也不能通过魔法探知传感器被感测到。",
+   "comp": "V、S、M（一撮价值至少 25gp 的钻石粉末，撒在目标身上，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Nondetection"
+  },
+  {
+   "key": "phantomSteed",
+   "name": "魅影驹",
+   "level": 3,
+   "school": "幻术",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 分钟",
+   "range": "30 尺",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": true,
+   "fx": "1 小时 你指定施法距离内一处未占据空间，并从中显现一只似幻似真的马形生物。该生物的外形由你决定，但它必须装备着鞍座和辔具。而这些随法术创造的装备一旦离开战驹 10 尺即化作一阵烟消失不见。 在法术持续时间内，你或者一个你指定的生物可以骑乘此战驹。战驹使用骑乘用马的属性数据，不过其具有速度 100 尺，其每小时路程普通…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Phantom_Steed"
+  },
+  {
+   "key": "plantGrowth",
+   "name": "植物滋长",
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "ranger",
+    "druid",
+    "bard"
+   ],
+   "time": "1 动作或 8 小时",
+   "range": "150 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 该法术将活力引导给特定区域中的植物。该法术有两种用法，其一可产生即时增益，另一种则产生长期的增益。 用 1 动作施展该法术时，你指定施法距离内一点，该点周边半径 100 尺内的普通植物将变的粗壮和茂盛。一个穿过该区域的生物每移动 1 尺必须花费 4 尺的移动力。 你可以在该法术范围内空出一块或多块任意大小的区域，…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Plant_Growth"
+  },
+  {
+   "key": "protectionFromEnergy",
+   "name": "防护能量",
+   "level": 3,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "ranger",
+    "druid",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 受你触碰的一个自愿生物在法术持续时间内对下列你指定的一种伤害类型具有抗性：强酸、寒冷、火焰、闪电、雷鸣。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Protection_from_Energy"
+  },
+  {
+   "key": "removeCurse",
+   "name": "移除诅咒",
+   "level": 3,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你的触碰立即为一个生物或一个物件解除其身上的所有诅咒。如果目标物体是一件被诅咒的魔法物品则其上的诅咒不会因此解除，不过该法术可以打破诅咒物品与其所有者之间的同调，使其所有者可以将其卸下或丢弃。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Remove_Curse"
+  },
+  {
+   "key": "revivify",
+   "name": "回生术",
+   "level": 3,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "paladin",
+    "ranger",
+    "druid",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你触碰一个在前一分钟内刚刚死去的生物，使该生物以 1 点生命值重生。该法术不能复活老死的生物，也不能恢复失去的身体部位。",
+   "comp": "V、S、M（消耗总价值至少 300gp 的钻石）",
+   "src": "PHB",
+   "anchor": "Revivify"
+  },
+  {
+   "key": "sending",
+   "name": "短讯术",
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "无限",
+   "duration": "1 轮",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 轮 你向你所熟识的一个生物发送一小段二十五个单词以内的信息。该生物将在心中听到你的信息，他可以认出你是发讯人（如果他认识你），还可以用同样的方式立即回复一条讯息。对方的智力值必须至少为 1 才能理解你的信息。 你的传讯可以跨越任意长的距离，甚至能跨越位面。但如果目标和你不在同一个存在位面，则短讯术有 5%的概率无法…",
+   "comp": "V、S、M（一小段细铜线）",
+   "src": "PHB",
+   "anchor": "Sending"
+  },
+  {
+   "key": "sleetStorm",
+   "name": "雪雨暴",
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "150 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你指定施法距离内一点,并使以该点为中心，半径 40 尺、高 20 尺的区域内降下冷冻刺骨的冻雨和冰雹直至法术终止。该区域将造成重度遮蔽，且该区域内的一切开放的明火都将被浇熄。 该区域的地面上覆着一层光滑的冰，使地面变成困难地形。生物在一个回合内第一次进入该区域或在区域内开始其回合时，必须进行一次敏…",
+   "comp": "V、S、M（一撮灰尘和几滴水）",
+   "src": "PHB",
+   "anchor": "Sleet_Storm"
+  },
+  {
+   "key": "slow",
+   "name": "缓慢术",
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在施法距离内一处 40 尺立方区域内指定至多六个生物并扭曲其周围的时间流。每个目标都要进行一次感知豁免，豁免失败则受到该法术影响直至法术终止。 受术生物的速度减半，而其 AC 和敏捷豁免都具有-2 减值，且不能执行反应。该生物在其回合内可以执行一个动作或一个附赠动作，但不能在一回合内同时执行以上…",
+   "comp": "V、S、M（一滴糖浆）",
+   "src": "PHB",
+   "anchor": "Slow"
+  },
+  {
+   "key": "speakWithDead",
+   "name": "死者交谈",
+   "level": 3,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "10 尺",
+   "duration": "10 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "10 分钟 你给施法距离内一具尸体赋予少许生命与智力，让其可回答你的问题。这具尸体必须还有一张嘴，且不能是亡灵。若目标尸体在最近十日内曾被作为该法术的目标，则本次施法失败。 你可以在法术终止前向尸体提出最多五个问题。尸体的知识仅限于其生前所知，包括它所讲的语言。回答通常是简短，含糊或重复的语句，而且如果你对尸体抱有敌意…",
+   "comp": "V、S、M（燃烧的香）",
+   "src": "PHB",
+   "anchor": "Speak_with_Dead"
+  },
+  {
+   "key": "speakWithPlants",
+   "name": "植物交谈",
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "ranger",
+    "druid",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "自身（半径 30 尺）",
+   "duration": "10 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "10 分钟 你给周围 30 尺内的植物赋予有限的知觉与活力，使其能够与你沟通和按你的命令行事。你可以向植物询问最近一日里该区域发生的事，由此了解曾路过这里的生物、天气和其他状况。 你可以让区域内因植物生长形成的困难地形（如灌木丛）在法术持续时间内变为普通地形。你也可以将有植物生长的普通地形变成困难地形（如让藤蔓树枝阻碍…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Speak_with_Plants"
+  },
+  {
+   "key": "spiritGuardians",
+   "name": "灵体卫士",
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "自身（半径 15 尺）",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你唤来四只灵体来守护你。法术持续时间内，这些灵体会在距你 15 尺的位置环绕着你飞舞。如果你属于善良或中立阵营，则它们飘渺的身形看起来像是天使或妖精（由你选择）。如果你属于邪恶阵营，则它们将形如邪魔。 施展此法术时，你可以指定你能看见的内任意数量生物让其不受该法术影响。除此之外的生物在这 15 …",
+   "comp": "V、S、M（一面圣徽）",
+   "src": "PHB",
+   "anchor": "Spirit_Guardians"
+  },
+  {
+   "key": "stinkingCloud",
+   "name": "臭云术",
+   "level": 3,
+   "school": "咒法",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "90 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你以施法距离内一点为中心创造出一团半径 20 尺的黄色恶心气体云团。云团会绕过拐角扩散，并能造成重度遮蔽。在法术持续时间结束前云团都会一直在空气中徘徊。 如果一个生物在其回合开始时完全位于云团内，则它必须进行一次对抗毒素的体质豁免。豁免失败则该生物必须因呕吐和蹒跚浪费掉其本回合的动作。如果生物不需…",
+   "comp": "V、S、M（一个臭鸡蛋或几根臭菘草）",
+   "src": "PHB",
+   "anchor": "Stinking_Cloud"
+  },
+  {
+   "key": "tongues",
+   "name": "巧言术",
+   "level": 3,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 该法术赋予你所触碰生物听懂任何语言的能力。此外，当目标生物说话时，任何能听见其话语且掌握至少一门语言的生物都能听懂它的话。",
+   "comp": "V、M（一个陶制阶梯金字塔小模型）",
+   "src": "PHB",
+   "anchor": "Tongues"
+  },
+  {
+   "key": "vampiricTouch",
+   "name": "汲血之触",
+   "level": 3,
+   "school": "死灵",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你的手上环绕着阴影，只要触碰一下就可以吸取他人的生命力来为自己疗伤。对你触及范围内的一个生物进行一次近战法术攻击。若命中，则目标受到 3d6 点暗蚀伤害，而你则恢复数值等于所造成暗蚀伤害一半的生命值。你可以在该法术终止前的每个回合内以一个动作完成一次这样的攻击。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Vampiric_Touch"
+  },
+  {
+   "key": "waterBreathing",
+   "name": "水下呼吸",
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "ranger",
+    "druid",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "24 小时",
+   "conc": false,
+   "ritual": true,
+   "fx": "24 小时 在法术终止前，该法术让施法距离内你能看见的至多十个自愿生物获得在水下呼吸的能力。此外，受术者依然保有正常的呼吸能力。",
+   "comp": "V、S、M（一根芦苇或稻草）",
+   "src": "PHB",
+   "anchor": "Water_Breathing"
+  },
+  {
+   "key": "waterWalk",
+   "name": "水上行走",
+   "level": 3,
+   "school": "变化",
+   "classes": [
+    "cleric",
+    "ranger",
+    "druid",
+    "sorcerer",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": true,
+   "fx": "1 小时 此法术使受术者行走于任何液体表面时（例如流水、酸液、泥浆、雪地、流沙、熔岩）都如同行走在无伤害性的实体地面上。（但走在熔岩上的生物仍会因高热而受伤）。你可以将此能力赋予施法距离内你能看见的至多十个自愿生物，并使其在法术持续时间内拥有该能力。 如果你选择一个浸没在水中的生物作为该法术的目标，则受术者将会以每轮 …",
+   "comp": "V、S、M（一个软木塞）",
+   "src": "PHB",
+   "anchor": "Water_Walk"
+  },
+  {
+   "key": "windWall",
+   "name": "风墙术",
+   "level": 3,
+   "school": "塑能",
+   "classes": [
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你指定施法距离内地面上一点并从中升起了一道烈风形成的墙壁。你可以造出长度至多 50 尺、高度至多 15 尺、厚度至多 1 尺的风墙。你可以自由塑造该墙的形状，不过它必须沿着地面形成一条连续的轨道。风墙持续存在至法术终止。 风墙出现时，所有位于风墙区域内的生物必须进行一次力量豁免。豁免失败者，将受到…",
+   "comp": "V、S、M（一把小扇和一根稀有生物的羽毛）",
+   "src": "PHB",
+   "anchor": "Wind_Wall"
+  },
+  {
+   "key": "arcaneEye",
+   "name": "秘法眼",
+   "level": 4,
+   "school": "预言",
+   "classes": [
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你在施法距离内创造出一个漂浮在空中的隐形魔法眼。 秘法眼拥有 30 尺普通视觉和黑暗视觉且可以观察任何方向。你通过精神连接接收秘法眼传来的视觉信息。 你可以使用一个动作让秘法眼向任意方向移动 30 尺。秘法眼远离你的距离没有限制，但它无法进入另一个位面。固体障碍物会阻挡秘法眼的移动，但它可以穿过任…",
+   "comp": "V、S、M（一点蝙蝠毛皮）",
+   "src": "PHB",
+   "anchor": "Arcane_Eye"
+  },
+  {
+   "key": "auraOfLife",
+   "name": "生命灵光",
+   "level": 4,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin"
+   ],
+   "time": "1 动作",
+   "range": "自身（30 尺半径）",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 护佑的能量自你身上发出并形成 30 尺半径的灵光，在法术持续时间内，灵光将以你为中心随你移动。灵光范围内的非敌对生物（包括你自己）获得对暗蚀伤害的抗性，其生命值上限也无法被降低。另外，生命值为 0 的非敌对活体生物，在灵光范围内开始其回合时会恢复 1 点生命值。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Aura_of_Life"
+  },
+  {
+   "key": "auraOfPurity",
+   "name": "净化灵光",
+   "level": 4,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin"
+   ],
+   "time": "1 动作",
+   "range": "自身（30 尺半径）",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 净化的能量自你身上发出并形成 30 尺半径的灵光，在法术持续时间内，灵光将以你为中心随你移动。灵光范围内的非敌对生物（包括你自己）不会陷入疾病状态，并获得对毒素伤害的抗性，其进行对抗下列状态的豁免时具有优势：目盲、魅惑、耳聋、恐慌、麻痹、中毒和震慑。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Aura_of_Purity"
+  },
+  {
+   "key": "banishment",
+   "name": "放逐术",
+   "level": 4,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你试图将一名你能看见的生物送往另一位面。目标必须进行一次魅力豁免并成功通过，否则将被放逐。 如果目标是你所处位面的原住民，则他被放逐到一个无害的半位面。在半位面期间该生物处于失能状态。法术终止时，目标重新出现在被放逐前的空间。如果该空间被占据，则它将出现在最近的未占据空间。 如果目标不是你所处位面…",
+   "comp": "V、S、M（一件令目标厌恶的物品）",
+   "src": "PHB",
+   "anchor": "Banishment"
+  },
+  {
+   "key": "blight",
+   "name": "枯萎术",
+   "level": 4,
+   "school": "死灵",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 死灵魔法的能量袭向一个施法距离内你能看见的生物，并榨取他的水分和活力。目标必须进行一次体质豁免，豁免失败者将受到8d8点暗蚀伤害，豁免成功则伤害减半。本法术对构装和亡灵生物无效。 若你以一个植物类生物或魔法植物为目标，则其豁免检定具有劣势，且法术对它的伤害取最大值。 若你以一个非魔法非生物的植物为目标，如一棵树或…",
+   "comp": "V，S",
+   "src": "PHB",
+   "anchor": "Blight"
+  },
+  {
+   "key": "compulsion",
+   "name": "强迫术",
+   "level": 4,
+   "school": "惑控",
+   "classes": [
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 指定施法距离内你能看到，且能听到你声音的若干生物并迫使其分别进行一次感知豁免。其中无法被魅惑的目标将直接豁免成功，而豁免失败者将受到该法术效应的影响。直至该法术终止前，你可以在你每个回合中用一个附赠动作指向某个水平方向。随后，每个受术目标在其下一回合里必须使用其所有的移动力尽可能的向该方向移动。目…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Compulsion"
+  },
+  {
+   "key": "confusion",
+   "name": "困惑术",
+   "level": 4,
+   "school": "惑控",
+   "classes": [
+    "druid",
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "90 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 此法术冲击并扭曲生物的意志，并使其产生错觉并引发不受控的行动。在施法距离内指定一点，以该点为中心的 10 尺半径球状区域内的所有生物必须进行一次感知豁免并成功通过，否则将受到该法术的影响。 受术目标不能执行反应并且必须在其回合开始时掷一次 d10 以决定该生物本回合的行为。",
+   "comp": "V、S、M（三颗坚果壳）",
+   "src": "PHB",
+   "anchor": "Confusion"
+  },
+  {
+   "key": "conjureMinorElementals",
+   "name": "次级元素咒唤术",
+   "level": 4,
+   "school": "咒法",
+   "classes": [
+    "druid",
+    "wizard"
+   ],
+   "time": "1 分钟",
+   "range": "90 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你元素咒唤术并使其显现在施法范围内一处你能看见但未占据空间。选择以下选项之一作为显现的生物：",
+   "comp": "V，S",
+   "src": "PHB",
+   "anchor": "Conjure_Minor_Elementals"
+  },
+  {
+   "key": "conjureWoodlandBeings",
+   "name": "林地之精咒唤术",
+   "level": 4,
+   "school": "咒法",
+   "classes": [
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你召唤出妖精并使其显现在施法范围内一处你能看见但未占据空间。选择以下选项之一作为显现的生物：",
+   "comp": "V、S、M（每个被召唤生物一枚冬青浆果）",
+   "src": "PHB",
+   "anchor": "Conjure_Woodland_Beings"
+  },
+  {
+   "key": "controlWater",
+   "name": "操控水体",
+   "level": 4,
+   "school": "变化",
+   "classes": [
+    "cleric",
+    "druid",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "300 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你在法术终止前控制任一片独立的水体，控制范围为你指定的一处边长 100 尺的立方区域。施展该法术时，你可以从以下效应中选择其一生效。在你之后的每个自己回合中，你可以用一个动作重复生效同一效应，或是选择实现另一效应。",
+   "comp": "V、S、M（一滴水和一撮土）",
+   "src": "PHB",
+   "anchor": "Control_Water"
+  },
+  {
+   "key": "deathWard",
+   "name": "防死结界",
+   "level": 4,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "8 小时 你触碰一个生物，并给予其对死亡的防护。 目标第一次生命值因承受伤害而降至 0 时，改为生命值降至 1，并终止本法术效应。 法术生效时，如果目标受到不造成伤害但直接致死效应影响时，改为该致死效应被取消，并终止本法术效应。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Death_Ward"
+  },
+  {
+   "key": "dimensionDoor",
+   "name": "任意门",
+   "level": 4,
+   "school": "咒法",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "500 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你将自己从当前位置传送至施法距离内的任意地点，并准确到达该目的地。法术的目的地可以是你能看见的、可想象的地点，也可以是通过距离和方向说明的地点，比如“径直向下 200 尺”，“西北向上 45 度 300 尺”。 进行传送时，你的随身物件不能超过你的负重。你还可以带上一个自愿的生物，且其体型不能比你大，而他的随身物…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Dimension_Door"
+  },
+  {
+   "key": "divination",
+   "name": "预言术",
+   "level": 4,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "druid",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "立即",
+   "conc": false,
+   "ritual": true,
+   "fx": "立即 你的魔法和贡品让你得以与一名神或神仆取得联络。你可以就某个特定的目标、事件或活动提问一个与其未来 7 日内状况相关的问题。 DM 将给予你真实的答复，这个答复可能是一段短语、一节神秘的短诗或是一个预兆。 此法术的回答并不会顾及所有可能影响结果的情况。比如其他法术的影响，或者同伴的加入和离开等状况。 若你在两次长休…",
+   "comp": "V、S、M（适合你宗教信仰的熏香和祭品，总共价值至少 25gp，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Divination"
+  },
+  {
+   "key": "dominateBeast",
+   "name": "支配野兽",
+   "level": 4,
+   "school": "惑控",
+   "classes": [
+    "ranger",
+    "druid",
+    "sorcerer"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你试图安抚一头施法距离内你能看见的野兽，目标野兽必须成功通过一次感知豁免，否则将在法术持续时间内被你魅惑。若它正与你或你的友方生物战斗，则其进行该豁免时具有优势。 该野兽被魅惑时，只要你与其处于同一位面就可以与之保持心灵感应。你在有意识时，可以通过心灵感应命令该生物（不需要作动作），而它则会尽量服…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Dominate_Beast"
+  },
+  {
+   "key": "evardSBlackTentacles",
+   "name": "艾伐黑触手",
+   "level": 4,
+   "school": "咒法",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "90 尺",
+   "duration": "最长 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，最长 1 分钟 你指定一处施法距离内你能看见的 20 尺方形区域，使其内布满蠕动的乌黑触须，进而使该区域成为困难地形。 任何生物在一个回合内第一次进入该区域，或者在区域内开始其回合时，必须进行一次敏捷豁免。豁免失败者将受到 3d6 点钝击伤害，并且被触须束缚直至法术终止。生物在区域内开始其回合时，如果已受触须束缚…",
+   "comp": "V、S、M（巨章鱼或巨鱿鱼的一条触须）",
+   "src": "PHB",
+   "anchor": "Evard's_Black_Tentacles"
+  },
+  {
+   "key": "fabricate",
+   "name": "鬼斧神工",
+   "level": 4,
+   "school": "变化",
+   "classes": [
+    "wizard",
+    "artificer"
+   ],
+   "time": "10 分钟",
+   "range": "120 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你将一种原材料转化成该材料制作的成品。例如，你可以将一丛树木转化为一座木桥，一把麻草化为绳子，或是将亚麻和羊毛化作衣物。 指定施法距离内你能看见的原材料。只要有足够的材料，你就可以将他们转化为一件大型或更小的物件（至多占据 10 尺立方区域或八个相邻的 5 尺立方区域）。如果你的目标材料是金属、石料或者其他矿石材…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Fabricate"
+  },
+  {
+   "key": "fireShield",
+   "name": "火焰护盾",
+   "level": 4,
+   "school": "塑能",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "10 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "10 分钟 轻薄缥缈的火焰在法术持续期间环绕着你的身体，散发出10尺半径的明亮光照和再延伸10尺的微光光照。你可以借由使用一个动作解消它以提早结束此法术。 这层火焰可以提供你温暖的护盾或寒冷的护盾，由你选择。温暖的护盾将赋予你对寒冷伤害的抗性，而寒冷的护盾则会赋予你对火焰伤害的抗性。 此外，每当一个距离你5尺内的生物以…",
+   "comp": "V、S、M（一小块磷或者一只萤火虫）",
+   "src": "PHB",
+   "anchor": "Fire_Shield"
+  },
+  {
+   "key": "freedomOfMovement",
+   "name": "行动自如",
+   "level": 4,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "ranger",
+    "druid",
+    "bard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你触碰一个自愿生物，并使目标在法术持续时间内移动时不受困难地形限制，并使任何降低目标速度，或者使目标陷入麻痹或束缚的法术或魔法效应对其无法生效。 该目标还可以花费 5 尺移动力直接从非魔法的束缚中挣脱（诸如镣铐或生物的擒抱等）。此外，目标在水下进行移动和攻击时不再受减益规则的限制。",
+   "comp": "V、S、M（一条绑在手臂或其他肢体上的皮带）",
+   "src": "PHB",
+   "anchor": "Freedom_of_Movement"
+  },
+  {
+   "key": "giantInsect",
+   "name": "巨虫术",
+   "level": 4,
+   "school": "变化",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你指定施法距离内至多十只蜈蚣，或三只蜘蛛，或五只黄蜂，或一只蝎子作为法术目标，在法术持续时间内你将其转化为它们自然形态的巨大版本。蜈蚣变成巨蜈蚣，蜘蛛变成巨蜘蛛，黄蜂变成巨黄蜂，蝎子变成巨蝎。 每只生物都将服从你的口头命令。在战斗中，它们每轮在你的回合行动。这些生物的属性数据及其动作选项和移动能…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Giant_Insect"
+  },
+  {
+   "key": "graspingVine",
+   "name": "擒抱藤",
+   "level": 4,
+   "school": "咒法",
+   "classes": [
+    "ranger",
+    "druid"
+   ],
+   "time": "1 附赠动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你指定施法距离内一个你能够看见的未占据空间，并召唤一条藤蔓使其从该空间的地面上破土而出。施展该法术时，你可以指使该藤蔓抽拉其 30 尺范围内一个你能看见的生物。该生物必须进行一次敏捷豁免，豁免失败则被往藤蔓所在方向拉近 20 尺。 直至该法术终止前，你可以在你的回合里用一个附赠动作指使藤蔓抽拉同一…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Grasping_Vine"
+  },
+  {
+   "key": "greaterInvisibility",
+   "name": "高等隐形术",
+   "level": 4,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你或一个你触碰的生物变为隐形，直至法术终止。任何保持在目标身上的着装物和携带物也可以维持隐形状态。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Greater_Invisibility"
+  },
+  {
+   "key": "guardianOfFaith",
+   "name": "信仰守卫",
+   "level": 4,
+   "school": "咒法",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "8 小时 一个大型的灵体守护者出现在施法距离内一个你能看见且由你指定的未占据空间，并在法术持续时间内在该处悬浮。占据该空间的守护者除了一把闪光的剑和饰有你守护神标志的盾牌外，其他部位都只是一片模糊。 任何与你敌对的生物在一回合内第一次进入守护者身边 10 尺范围内时必须进行一次敏捷豁免。豁免失败者将受到 20 点光耀伤…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Guardian_of_Faith"
+  },
+  {
+   "key": "hallucinatoryTerrain",
+   "name": "幻景",
+   "level": 4,
+   "school": "幻术",
+   "classes": [
+    "druid",
+    "bard",
+    "wizard",
+    "warlock"
+   ],
+   "time": "10 分钟",
+   "range": "300 尺",
+   "duration": "24 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "24 小时 你使施法距离内一处 150 尺立方区域内的自然地形在视觉、听觉、嗅觉上都像是另一种自然地形。因此，开阔的平原或者一条路可能会变得像是一片沼泽，或是丘陵、裂谷以及其他困难地形，甚至是无法通过的地形。一个池塘可能变得看起来像一片草地，一个悬崖像是一个缓坡，或者使一条乱石沟像是一条宽阔平坦的道路。区域内经过加工的…",
+   "comp": "V、S、M（一块石头、一枝嫩枝和一小片绿色植物）",
+   "src": "PHB",
+   "anchor": "Hallucinatory_Terrain"
+  },
+  {
+   "key": "iceStorm",
+   "name": "冰风暴",
+   "level": 4,
+   "school": "塑能",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "300 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 以施法距离内一点为中心的一处半径20尺，高40尺的柱状区域内，岩石般坚硬的冰雹重重地砸向地面。每个处在范围内的生物都必须进行一次敏捷豁免，豁免失败者将受到2d8钝击伤害和4d6寒冷伤害，豁免成功则伤害减半。 冰雹使风暴影响的区域变为困难地形，直至你的下一回合结束。",
+   "comp": "V、S、M（一撮尘土和几滴水）",
+   "src": "PHB",
+   "anchor": "Ice_Storm"
+  },
+  {
+   "key": "leomundSSecretChest",
+   "name": "李欧蒙秘藏箱",
+   "level": 4,
+   "school": "咒法",
+   "classes": [
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你将一个箱子及其内容物藏在以太位面。你必须同时接触箱子和作为法术材料成分的微缩模型。箱子最多可容纳 12 立方尺的非活体物质（3×2×2 尺）。 箱子处于以太位面时，你可以用一个动作并触碰箱子的模型来召回箱子。箱子出现在你 5 尺内一个未占据空间的地面。随后，你可以使用一个动作并同时触碰箱子与复制品来把箱子送回以…",
+   "comp": "V、S、M（一个 3×2×2 尺，由稀有材料制成的精致箱子至少价值 5000gp；以及由同样材料制成的一个箱子的微缩模型至少价值 50gp）",
+   "src": "PHB",
+   "anchor": "Leomund's_Secret_Chest"
+  },
+  {
+   "key": "locateCreature",
+   "name": "生物定位术",
+   "level": 4,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "paladin",
+    "ranger",
+    "druid",
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你点名或描述一个你熟悉的生物。只要该生物与你相距不超过 1000 尺，你就会感测到该生物的方位。如果该生物正在移动，则你也将知晓其移动的方向。 该法术可以定位一个你认识的特定生物；或者它也可以定位特定的一类生物（例如人类或独角兽）中距你最近个体，不过你需要在 30 尺的近距离内看到过该类生物至少一…",
+   "comp": "V、S、M（一块寻血猎犬的皮毛）",
+   "src": "PHB",
+   "anchor": "Locate_Creature"
+  },
+  {
+   "key": "mordenkainenSFaithfulHound",
+   "name": "魔邓肯忠犬",
+   "level": 4,
+   "school": "咒法",
+   "classes": [
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "8 小时 指定施法距离内一处你能看见且未占据空间，你在该处创造出一只幻影守护犬。守护犬会在法术持续时间内留在原地，直到你使用一个动作将其解散，或者直到你移动到距它 100 尺外。 除你之外的所有生物视守护犬处于隐形状态，且无法对其造成伤害。当一个小型或更大的生物进入守护犬 30 尺内时，如果该生物无法说出你在施法时设定…",
+   "comp": "V、S、M（一只微型银质哨子、一块骨头和一根线）",
+   "src": "PHB",
+   "anchor": "Mordenkainen's_Faithful_Hound"
+  },
+  {
+   "key": "mordenkainenSPrivateSanctum",
+   "name": "魔邓肯私人密室",
+   "level": 4,
+   "school": "防护",
+   "classes": [
+    "wizard",
+    "artificer"
+   ],
+   "time": "10 分钟",
+   "range": "120 尺",
+   "duration": "24 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "24 小时 你对施法距离内一片区域施以魔法防护。该区域为一立方区域，其边长至小 5 尺，大至 100 尺。该法术一直持续至持续时间结束或施法者以一个动作主动解除。 施展该法术时，其生效的保护内容由你决定。在以下几项属性中作选择，你可以选择若干项或者全部选择：",
+   "comp": "V、S、M（一片薄铅片、一块不透明的玻璃、一小块棉花或布料和贵橄榄石粉末）",
+   "src": "PHB",
+   "anchor": "Mordenkainen's_Private_Sanctum"
+  },
+  {
+   "key": "otilukeSResilientSphere",
+   "name": "欧提路克弹力法球",
+   "level": 4,
+   "school": "塑能",
+   "classes": [
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 一个微微发光的力场球将施法距离内一个大型或更小的生物或物件封在其中。一个非自愿的生物必须进行一次敏捷豁免，豁免失败则该生物在法术持续时间内被关封在球体中。 任何事物——包括实体物件、能量或其他法术效应都不能穿透力场球的障壁进出其内，不过生物在球内仍可以正常呼吸。球体免疫一切伤害，且球内的生物或物件…",
+   "comp": "V、S、M（一块透明的半球形水晶和一块与之形状相配的半球形阿拉伯胶）",
+   "src": "PHB",
+   "anchor": "Otiluke's_Resilient_Sphere"
+  },
+  {
+   "key": "phantasmalKiller",
+   "name": "魅影杀手",
+   "level": 4,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你指定施法距离内一个你能看见的生物，并窥探其噩梦以具象其最深的恐惧，依此创造一个只有目标能看见的幻象化身。目标生物必须进行一次感知豁免。豁免失败时，目标将在法术持续时间内陷入恐慌。在法术终止前，目标必须在其每回合结束时进行一次感知豁免，豁免失败则受 4d10 的心灵伤害。豁免成功则法术终止。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Phantasmal_Killer"
+  },
+  {
+   "key": "polymorph",
+   "name": "变形术",
+   "level": 4,
+   "school": "变化",
+   "classes": [
+    "druid",
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 该法术将一个施法距离内你能看见的生物变化为一个新的形态。一个非自愿的生物必须进行一次感知豁免来避免此效应。该法术无法对变形生物或生命值为 0 的生物生效。 法术产生的变化在法术持续时间内得以维持，或直至目标的生命值降为 0 或死亡。新形态可以是任何挑战等级小于等于目标本身的野兽（如果目标没有挑战等…",
+   "comp": "V、S、M（一个毛虫虫茧）",
+   "src": "PHB",
+   "anchor": "Polymorph"
+  },
+  {
+   "key": "staggeringSmite",
+   "name": "惊惧斩",
+   "level": 4,
+   "school": "塑能",
+   "classes": [
+    "paladin"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在法术持续时间内下一次用近战武器攻击命中某个生物时你的武器将同时贯穿对方的身体与心智。该攻击对目标造成额外 4d6 的心灵伤害。该目标必须进行一次感知豁免，豁免失败则目标进行攻击检定和属性检定时具有劣势，且不能执行反应直至其下一回合结束。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Staggering_Smite"
+  },
+  {
+   "key": "stoneShape",
+   "name": "塑石术",
+   "level": 4,
+   "school": "变化",
+   "classes": [
+    "cleric",
+    "druid",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你触碰一个体积为中型或更小的石质物件或某块岩石长宽高都不超过 5 尺的一部分，并将其塑造成你想要的任意形状。比如你可以将一块大石头变成一件武器、一尊塑像、一具棺材，也可以在石墙上开出一条小通道，前提是墙的厚度不能超过 5 尺。你也可以使一扇石门或石质门框变形来将门封死。你创造的物件最多可以有两条铰链和一道闩，除此…",
+   "comp": "V、S、M（软粘土，必须捏成你想塑造的大致形状）",
+   "src": "PHB",
+   "anchor": "Stone_Shape"
+  },
+  {
+   "key": "stoneskin",
+   "name": "石肤术",
+   "level": 4,
+   "school": "防护",
+   "classes": [
+    "ranger",
+    "druid",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 该法术使你触碰的一个自愿生物皮肤变得硬如岩石。目标在法术终止前对非魔法的钝击、穿刺和挥砍伤害具有抗性。",
+   "comp": "V、S、M（价值 100gp 的钻石粉尘，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Stoneskin"
+  },
+  {
+   "key": "wallOfFire",
+   "name": "火墙术",
+   "level": 4,
+   "school": "塑能",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在施法距离内一块实体地面上创造出一面火墙。你可以选择创造长不过 60 尺、高不过 20 尺、厚不过 1 尺的直线型火墙；或是直径不过 20 尺、高不过 20 尺、厚不过 1 尺的环形火墙。火墙不透明，且将持续存在至法术终止。 火墙出现时，所有位于火墙区域内的生物必须进行一次敏捷豁免。豁免失败者将…",
+   "comp": "V、S、M（一小块磷）",
+   "src": "PHB",
+   "anchor": "Wall_of_Fire"
+  },
+  {
+   "key": "animateObjects",
+   "name": "活化物件",
+   "level": 5,
+   "school": "变化",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 物件在你的命令下“活”了过来。在施法距离内指定至多十个未被持用或穿戴的非魔法物件作为法术目标。其中，中型目标视为两个物件，大型目标视为四个物件，而巨型目标则视为八个物件，而你无法活化比巨型更大的物件。施法后，每个目标被唤起为受你控制的生物直至法术终止，或直至该生物生命值降至 0。 你可以使用一个附…",
+   "comp": "V，S",
+   "src": "PHB",
+   "anchor": "Animate_Objects"
+  },
+  {
+   "key": "antilifeShell",
+   "name": "防活物护罩",
+   "level": 5,
+   "school": "防护",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "自身（10 尺半径）",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 一道半径10尺的闪光屏障以你中心展开，并阻隔一切非不死非构装的生物。护罩持续存在至法术终止，且期间会跟随着你一同移动，始终保持以你为中心。 护罩会阻止受影响生物移动穿过它，也会阻止受影响生物穿过护罩去触及事物，不过受影响的生物仍然可以使用法术、远程武器或触及武器穿过护罩发动攻击。 若因你的移动导致…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Antilife_Shell"
+  },
+  {
+   "key": "awaken",
+   "name": "启蒙术",
+   "level": 5,
+   "school": "变化",
+   "classes": [
+    "druid",
+    "bard"
+   ],
+   "time": "8 小时",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 利用施法的 8 小时引导一块昂贵宝石中的魔法回路后，你触碰一个巨型或更小的野兽或植物作为法术目标。目标必须没有智力值或智力小于等于 3。受术后其智力变为 10，且学会说一门你所掌握的语言。如果目标是植物，则他获得使用枝、根、藤、蔓或类似部位移动的能力，并获得类似于人类的感官。DM 为启蒙植物决定属性数据，例子可参…",
+   "comp": "V、S、M（一块价值至少 1000gp 的玛瑙，作为该法术的耗材。）",
+   "src": "PHB",
+   "anchor": "Awaken"
+  },
+  {
+   "key": "banishingSmite",
+   "name": "放逐斩",
+   "level": 5,
+   "school": "防护",
+   "classes": [
+    "paladin"
+   ],
+   "time": "1 附赠动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在法术终止前的下一次武器攻击命中某生物时将从武器中爆发巨力，使该次攻击对目标额外造成 5d10 点力场伤害。此外，如果本攻击将目标的生命值降低至 50 以下，则该生物被放逐。如果目标不是你所处位面的原住民，则他将被放逐回其家园位面。如果目标是你所处位面的原住民，则他将被放逐到一个无害的半位面。在…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Banishing_Smite"
+  },
+  {
+   "key": "bigbySHand",
+   "name": "毕格比之手",
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在施法距离内指定一处你能看见且未占据空间，并在该处创造出一只闪烁着微光的大型手掌。巨手在法术持续时间内维持存在，并听从你的命令进行移动，模仿你自己手掌的各类动作。 巨手是一个物件，其AC为20，其生命值等于你的生命值上限。如果它的生命值降至0则法术将提前终止。其力量属性为26（+8），敏捷属性为…",
+   "comp": "V、S、M（一块蛋壳和一只蛇鳞手套）",
+   "src": "PHB",
+   "anchor": "Bigby's_Hand"
+  },
+  {
+   "key": "circleOfPower",
+   "name": "原力法阵",
+   "level": 5,
+   "school": "防护",
+   "classes": [
+    "paladin"
+   ],
+   "time": "1 动作",
+   "range": "自身（30 尺半径）",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你身上发出神圣能量并以扭曲散溢的魔法能量构成一个半径 30 尺的球状力场。法术持续时间内力场将以你为中心随你移动。力场范围内的友方生物（包括你自己）为对抗法术和其他魔法效应而进行的豁免检定具有优势。此外，受该法术效应影响的生物在对抗豁免成功则伤害减半的法术或魔法效应时，若成功则不受伤害。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Circle_of_Power"
+  },
+  {
+   "key": "cloudkill",
+   "name": "死云术",
+   "level": 5,
+   "school": "咒法",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你在施法距离内指定一点，并以该点为中心创造一片 20 尺半径的球状黄绿色剧毒浓雾，且该浓雾会围绕拐角扩散。雾气在法术持续时间内维持存在，但仍会被强风吹散。而其存在区域则视为重度遮蔽。 任何生物在一个回合内第一次进入法术区域，或者在区域内开始其回合时，必须进行一次体质豁免。豁免失败者将受到 5d8…",
+   "comp": "V，S",
+   "src": "PHB",
+   "anchor": "Cloudkill"
+  },
+  {
+   "key": "commune",
+   "name": "通神术",
+   "level": 5,
+   "school": "预言",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 分钟",
+   "range": "自身",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": true,
+   "fx": "1 分钟 你与所信奉神或其代理人进行联系，并询问至多三个能以“是”或“否”回答的问题。你必须在法术终止前完成提问，并在随后分别获得每个问题的答案。 这些神能存在也并非全知全能，因此当问题涉及的信息超过神的认知范围时，你可能会得到一句“不确定”作为回答。另外当一个单词可能引致误导，或者与神的兴致相违背时，DM 可能会提供…",
+   "comp": "V、S、M（焚香和一小瓶圣水或邪水）",
+   "src": "PHB",
+   "anchor": "Commune"
+  },
+  {
+   "key": "communeWithNature",
+   "name": "问道自然",
+   "level": 5,
+   "school": "预言",
+   "classes": [
+    "ranger",
+    "druid"
+   ],
+   "time": "1 分钟",
+   "range": "自身",
+   "duration": "立即",
+   "conc": false,
+   "ritual": true,
+   "fx": "立即 你短暂的成为大自然的一部分并以此获得周围地形的信息。在户外时，该法术可以让你了解 3 里内大地的状况。在洞穴和其他天然地下场所中，其范围缩小为 300 尺半径区域内。自然环境中被建筑覆盖的区域里（比如地下城或城镇中）法术无法生效。 你立即获得的自然资讯至多与该地域三个方面的主题相关，在以下项目中进行选择：",
+   "comp": "V，S",
+   "src": "PHB",
+   "anchor": "Commune_with_Nature"
+  },
+  {
+   "key": "coneOfCold",
+   "name": "寒冰锥",
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身（60 尺锥状）",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一片冷空气从你手上迸发而出。在 60 尺锥状区域内的每个生物必须进行一次体质豁免。豁免失败者将受到 8d8 点寒冷伤害，豁免成功则伤害减半。 被该法术杀死的生物将成为一尊冰冻塑像并持续至被解冻。",
+   "comp": "V、S、M（一个小水晶或玻璃锥）",
+   "src": "PHB",
+   "anchor": "Cone_of_Cold"
+  },
+  {
+   "key": "conjureElemental",
+   "name": "元素咒唤术",
+   "level": 5,
+   "school": "咒法",
+   "classes": [
+    "druid",
+    "wizard"
+   ],
+   "time": "1 分钟",
+   "range": "90 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你召唤出一个元素生物仆从。在施法距离内指定一处充满气、土、火、水四物质其一的 10 尺立方区域作为法术目标。例如，一只火元素从篝火中成型，而一只土元素则从地面上浮现。一个挑战等级 5 或者更低的元素生物从目标区域成型，并显现在该区域 10 尺内一处未占据空间。该生物在生命值降至 0 时，或者法术终…",
+   "comp": "V、S、M（气元素为点燃的焚香，土元素为陶土，火元素为硫和磷，水元素为水和沙子）",
+   "src": "PHB",
+   "anchor": "Conjure_Elemental"
+  },
+  {
+   "key": "conjureVolley",
+   "name": "万箭齐发",
+   "level": 5,
+   "school": "咒法",
+   "classes": [
+    "ranger"
+   ],
+   "time": "1 动作",
+   "range": "150 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你向空中用远程武器射出一发非魔法的弹药或者掷出一把非魔法的投掷武器，并指定施法距离内一点，随后，无数以所发射弹药或武器为原型的复制体向该点倾盆而下，并在完成攻击后消失不见。箭雨充斥以目标点为中心半径 40 尺，高 20 尺的柱状区域，其内的每个生物都必须进行一次敏捷豁免，豁免失败者将受到 8d8 点伤害，豁免成功…",
+   "comp": "V、S、M（一发弹药或一把投掷武器）",
+   "src": "PHB",
+   "anchor": "Conjure_Volley"
+  },
+  {
+   "key": "contactOtherPlane",
+   "name": "异界探知",
+   "level": 5,
+   "school": "预言",
+   "classes": [
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 分钟",
+   "range": "自身",
+   "duration": "1 分钟",
+   "conc": false,
+   "ritual": true,
+   "fx": "1 分钟 你与一名半神，或者一个古老的贤者亡魂，又或是其他异位面的神秘实体建立了精神的连接。与这些跨位面亚种生物进行的知性接触可能会增加你的精神负担，甚至导致精神崩溃。当你施展此法术时，进行一个 DC15 的智力豁免。豁免失败时，你受到 6d6 点心灵伤害并因此而变得错乱，直至完成一个长休以结束该状态。处于错乱状态时，…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Contact_Other_Plane"
+  },
+  {
+   "key": "contagion",
+   "name": "疫病术",
+   "level": 5,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "7 日",
+   "conc": false,
+   "ritual": false,
+   "fx": "7 日 你的触碰带着疾病。你对触及范围内一个生物发动一次近战法术攻击。若命中，则该目标中毒。 该中毒目标的每一回合结束时，必须进行一次体质豁免。若该目标累计三次该豁免成功，则其不再中毒且该法术终止。若该目标累计三次该豁免失败，其亦不再中毒，但必须从以下描述的疾病中选择其一。随后该目标将受选定的疾病影响直至该法术持续时间…",
+   "comp": "V，S",
+   "src": "PHB",
+   "anchor": "Contagion"
+  },
+  {
+   "key": "creation",
+   "name": "造物术",
+   "level": 5,
+   "school": "幻术",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 分钟",
+   "range": "30 尺",
+   "duration": "特殊",
+   "conc": false,
+   "ritual": false,
+   "fx": "特殊 你从堕影冥界取来一些暗影物质，并在施法距离内创造一个非活体的物件。你可以创造一个植物质（类似纺织品、绳索、木质等）的物件。也可以创造一个矿物质（类似石质、水晶、金属等）的物件。创造出来的物件大小必需在 5 立方尺内，且其形态与材质你必需曾经见过。 法术的持续时间由所创造物件的材质决定。如果所创造物件由多种材质组合…",
+   "comp": "V、S、M（所创造物品的一小部分）",
+   "src": "PHB",
+   "anchor": "Creation"
+  },
+  {
+   "key": "destructiveWave",
+   "name": "湮灭波",
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "paladin"
+   ],
+   "time": "1 动作",
+   "range": "自身（半径30尺）",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你击打地面，并从身上爆发出一阵神圣能量。30 尺范围内每个你所指定的生物都必须进行一次体质豁免。豁免失败者将受到 5d6 点雷鸣伤害以及 5d6 点光耀或暗蚀伤害（由你选择）并应击倒地，豁免成功则伤害减半且不会应击倒地。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Destructive_Wave"
+  },
+  {
+   "key": "dispelEvilAndGood",
+   "name": "驱逐善恶",
+   "level": 5,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "paladin"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 发光的能量环绕着你，并保护你免受来自妖精、亡灵和源于主物质位面外异域生物的伤害。天族、元素、妖精、邪魔、亡灵生物对你发动攻击检定时具有劣势。 你可以通过以下方式提前终止此法术。",
+   "comp": "V、S、M（圣水或银铁粉末）",
+   "src": "PHB",
+   "anchor": "Dispel_Evil_and_Good"
+  },
+  {
+   "key": "dominatePerson",
+   "name": "支配类人",
+   "level": 5,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你试图安抚一个施法距离内你能看见的类人生物，目标生物必须必须成功通过一次感知豁免，否则将在法术持续时间内被你魅惑。若它正与你或你的友方生物战斗，则其进行该豁免时具有优势。 目标被魅惑时，只要你与其处于同一位面就可以与之保持心灵感应。你在有意识时，可以通过心灵感应命令该生物（不需要作动作），而它则会…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Dominate_Person"
+  },
+  {
+   "key": "dream",
+   "name": "托梦术",
+   "level": 5,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 分钟",
+   "range": "特殊",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "8 小时 此法术将塑造一个生物的梦境。指定一个你已认知且与你同处一个位面的生物。那些不睡眠的生物（比如精灵），则不会被该法术影响。你或一个被你触碰的自愿生物，将作为信使进入出神状态。该状态下，信使能够意识到自己周围的状况，但是不能执行动作或进行移动。 如果目标正睡着，则信使可以进入其梦中并在其沉睡期间与之交流。信使可以…",
+   "comp": "V、S、M（一把沙子，一点墨水，和一支从沉睡的鸟儿身上拔下的可书写羽毛）",
+   "src": "PHB",
+   "anchor": "Dream"
+  },
+  {
+   "key": "flameStrike",
+   "name": "焰击术",
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一支圣火立柱从天堂带着呼啸降落在你指定的一处地点。圣火以施法距离内指定点为源点形成一处半径 10 尺、高 40 尺柱状区域，其内的每个生物必须进行一次敏捷豁免。豁免失败者将受到 4d6 点火焰伤害和 4d6 点光耀伤害，豁免成功则伤害减半。",
+   "comp": "V、S、M（一小撮硫磺）",
+   "src": "PHB",
+   "anchor": "Flame_Strike"
+  },
+  {
+   "key": "geas",
+   "name": "指使术",
+   "level": 5,
+   "school": "惑控",
+   "classes": [
+    "cleric",
+    "paladin",
+    "druid",
+    "bard",
+    "wizard"
+   ],
+   "time": "1 分钟",
+   "range": "60 尺",
+   "duration": "30 日",
+   "conc": false,
+   "ritual": false,
+   "fx": "30 日 你对施法距离内你能看见的一个生物置入一条魔法命令，并强迫其执行相应的某种服务或克制某种行为，甚至遵照你的要求行动。如果该生物可以理解你的意思，则它必须成功通过一次感知豁免，否则将在法术持续时间内被你魅惑。被魅惑生物每次作出与你的命令相悖的行为时，即受到 5d10 点心灵伤害。该伤害一日至多生效一次。且不能理解…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Geas"
+  },
+  {
+   "key": "greaterRestoration",
+   "name": "高等复原术",
+   "level": 5,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "ranger",
+    "druid",
+    "bard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你为一个触碰到的生物灌注正能量来解除一项弱化效应。你可以使目标的力竭等级降低一级，或者选择终止目标身上的下列效应之一：",
+   "comp": "V、S、M（价值至少 100gp 的钻石粉，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Greater_Restoration"
+  },
+  {
+   "key": "hallow",
+   "name": "圣居",
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "cleric"
+   ],
+   "time": "24 小时",
+   "range": "触碰",
+   "duration": "直至解除",
+   "conc": false,
+   "ritual": false,
+   "fx": "直至解除 你触碰一点并将神圣（或邪秽）的力量注入该点周围。区域半径至多 60 尺，若此区域内包含了已被另一个圣居影响的区域，则此次施法失败。受法术影响的区域具有以下效应。 首先，天族、元素生物、妖精、邪魔和亡灵无法进入该区域，这些生物也不能对区域内的生物进行魅惑，恐慌或附身。任何被这些生物魅惑，恐慌或附身的生物只要进入…",
+   "comp": "V、S、M（价值至少 1000gp 的草药、油与熏香，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Hallow"
+  },
+  {
+   "key": "holdMonster",
+   "name": "定身怪物",
+   "level": 5,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "90 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 指定施法距离内一个你能看见的生物。该目标必须进行一次感知豁免，豁免失败则其在法术持续时间内陷入麻痹。该效应对亡灵无效。目标在其每回合结束时可以再进行一次感知豁免，豁免成功则终止其身上该法术的效应。",
+   "comp": "V、S、M（一片直的小铁片）",
+   "src": "PHB",
+   "anchor": "Hold_Monster"
+  },
+  {
+   "key": "insectPlague",
+   "name": "疫病虫群",
+   "level": 5,
+   "school": "咒法",
+   "classes": [
+    "cleric",
+    "druid",
+    "sorcerer"
+   ],
+   "time": "1 动作",
+   "range": "300 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你指定施法距离内一点，并以该点为中心使半径 20 尺的球状区域内堆满成群的噬人蝗虫。虫群会绕过拐角扩散并使整个区域成为困难地形，且处于轻度遮蔽。虫群在法术终止前都会持续存在。 当虫群显现时，其区域内的每个生物都必须进行一次体质豁免，豁免失败则受到 4d10 的穿刺伤害，豁免成功则伤害减半。生物在…",
+   "comp": "V、S、M（少许糖，一些脱壳的谷粒和一抹油脂）",
+   "src": "PHB",
+   "anchor": "Insect_Plague"
+  },
+  {
+   "key": "legendLore",
+   "name": "通晓传奇",
+   "level": 5,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "bard",
+    "wizard"
+   ],
+   "time": "10 分钟",
+   "range": "自身",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 点名或描述一个人物，或一处地点、一个物件。并用法术在你脑海中形成一段关于该事物重要传闻的简单概述。传闻可能是最近的流言，也可能是被遗忘的故事或不曾为人知晓的秘闻。如果该事物没有任何传奇事迹，则你不会获得任何信息。你掌握目标越多的信息，所得到的信息就越精确细致。 你由此得到的信息必定是准确的，但仍可能会以隐晦的话语…",
+   "comp": "V、S、M（价值至少 250gp 的熏香，作为该法术的耗材。以及每块价值至少 50gp 的四块象牙板）",
+   "src": "PHB",
+   "anchor": "Legend_Lore"
+  },
+  {
+   "key": "massCureWounds",
+   "name": "群体疗伤术",
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "druid",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一波治愈的能量从施法距离内你指定的一点奔涌而出。你在该点周边 30 尺半径的球状区域内指定至多六个生物，并使每个目标生物恢复一定的生命值，其数值等于 3d8+你的施法属性调整值。该法术对亡灵和构装生物无效。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Mass_Cure_Wounds"
+  },
+  {
+   "key": "mislead",
+   "name": "假象术",
+   "level": 5,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你变为隐形，同时在你站的地方出现一个和你一样的幻象分身。分身会持续存在至法术持续时间结束；但如果你发动攻击或施展法术，则终止该隐形效应。 你可以用你的动作将分身以至多两倍于你的速度移动，并且可以让他打手势、说话，以及以任何你指定的方式行事。 你可以通过分身的眼睛视物，用分身的耳朵聆听，如同你处于它…",
+   "comp": "S",
+   "src": "PHB",
+   "anchor": "Mislead"
+  },
+  {
+   "key": "modifyMemory",
+   "name": "篡改记忆",
+   "level": 5,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你尝试重塑另一个生物的记忆。迫使一个你能看见的生物进行一次感知豁免。如果你正与该生物战斗，则它进行该豁免时具有优势。豁免失败时，该生物会在法术持续时间内被你魅惑。被魅惑的目标陷入失能状态且无法感知周边的事物，但它仍然能听到你的声音。如果它受到任何伤害或者成为另一个法术的目标，则该法术终止且目标的记…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Modify_Memory"
+  },
+  {
+   "key": "passwall",
+   "name": "穿墙术",
+   "level": 5,
+   "school": "变化",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你指定施法距离内你能看见的表面上一点，并使该处在法术终止前持续显现一条通道。所选表面必须属于木质，灰质或石质（比如墙，屋顶或地面）。而开口的大小则由你指定：其尺寸至多 5 尺宽，8 尺高，20 尺深。另外，该通道并不会使其周围结构产生不稳定。 开口消失时，任何还留在该通道中的生物或物件都会被安全的弹至距受术表…",
+   "comp": "V、S、M（一撮芝麻）",
+   "src": "PHB",
+   "anchor": "Passwall"
+  },
+  {
+   "key": "planarBinding",
+   "name": "异界誓缚",
+   "level": 5,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "druid",
+    "bard",
+    "wizard"
+   ],
+   "time": "1 小时",
+   "range": "60 尺",
+   "duration": "24 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "24 小时 你尝试以该法术与一个生物建立誓约使其为你服务，该生物可以是天族、元素生物、妖精、邪魔等生物种类之一。该生物在整个施法过程中必须在法术的施法距离内。典型的情况下，在施展该法术前，生物会先被召唤到一个反向作用的防护法阵 magic circle中困住。施法完成后，目标必须进行一次魅力豁免。豁免失败则目标在法术持…",
+   "comp": "V、S、M（一枚价值至少 1000gp 的宝石，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Planar_Binding"
+  },
+  {
+   "key": "raiseDead",
+   "name": "死者复活",
+   "level": 5,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "paladin",
+    "bard"
+   ],
+   "time": "1 小时",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你触碰一个已死的生物，使其复活。该生物的死亡时间必须不超过 10 日。如果该生物的灵魂愿意并且能够回到其身体中，则它将以1点生命值重生。该法术同样会中和该生物生前体内的毒素以及罹患的非魔法疾病，但对于魔法造成的疾病、诅咒和类似的效应则无能为力；如果没有在复活前治愈这些效应，则它们在该生物重获生命的时候继续生效。该…",
+   "comp": "V、S、M（一颗至少价值 500gp 的钻石，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Raise_Dead"
+  },
+  {
+   "key": "rarySTelepathicBond",
+   "name": "拉瑞心灵联结",
+   "level": 5,
+   "school": "预言",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": true,
+   "fx": "1 小时 你与施法距离内至多八个自愿生物建立心灵连线。在法术持续时间内，连线的每个生物的心灵都和其他全部受术生物相连。智力值为 2 或更低的生物不受该法术影响。 在该法术终止前，所有受术生物都可以通过心灵连线与其他受术生物进行心灵交流，而不论他们是否语言相通。该交流方式可以跨越任意远近的距离但不能跨位面进行。",
+   "comp": "V、S、M（两种不同生物的蛋壳碎片）",
+   "src": "PHB",
+   "anchor": "Rary's_Telepathic_Bond"
+  },
+  {
+   "key": "reincarnate",
+   "name": "转生术",
+   "level": 5,
+   "school": "变化",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 小时",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你触碰一个类人生物的遗体或遗体的一部分，以此创造出一具新的成年身体，并呼唤该生物的灵魂进入此新身躯。该生物死亡时间必须不超过 10 日。此外，如果目标生物的灵魂此时不能或者不愿意完成该过程，则法术失败。 该法术要为目标生物创造出一具新的身体，因此很可能导致该生物的种族发生变动。DM 可以投一个 d100 来判定该…",
+   "comp": "V、S、M（价值至少 1000gp 的稀有油和软膏，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Reincarnate"
+  },
+  {
+   "key": "scrying",
+   "name": "探知术",
+   "level": 5,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "druid",
+    "bard",
+    "wizard",
+    "warlock"
+   ],
+   "time": "10 分钟",
+   "range": "自身",
+   "duration": "最多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，最多 10 分钟 你能看见和听见一个和你处于同一存在位面上的生物。目标生物必须进行一次感知豁免；该豁免的调整值与你对目标的了解程度有关，也与你和目标之间的物理联系程度有关。如果目标知道你在施展该法术，而它又愿意被你观察，则它可以自愿放弃该豁免。",
+   "comp": "V、S、M（一个至少价值 1000gp 的法器，例如水晶球、银镜、圣水盆）",
+   "src": "PHB",
+   "anchor": "Scrying"
+  },
+  {
+   "key": "seeming",
+   "name": "伪装术",
+   "level": 5,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "8 小时 该法术允许你修改施法距离内你能看见的任意数量生物的外观。你对指定的每个目标生物分别赋予一个虚假的新外貌。不愿意受该法术影响的目标可以进行一次魅力豁免，豁免成功则不受该法术影响。 该法术能改变生物的物理外观，也能伪装出服装、护甲、武器和装备。肉眼看来目标的身高可以有 1 尺的增减，体态可胖可瘦可匀称。但是你不能…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Seeming"
+  },
+  {
+   "key": "swiftQuiver",
+   "name": "迅捷箭袋",
+   "level": 5,
+   "school": "变化",
+   "classes": [
+    "ranger"
+   ],
+   "time": "1 附赠动作",
+   "range": "触碰",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你对箭袋施展该法术，使其可以凭空创造出无尽的非魔法弹药，而你只要把手伸进箭袋里就会有弹药自己跳到你的手中。 直至法术结束前，你的每一回合都可以用一个附赠动作发动两次攻击，但用以发动攻击的武器必须使用受术箭袋中的弹药。你每次完成这种攻击时，箭袋上的魔法便会自动创造出一发同样的非魔法弹药作为补充。法术…",
+   "comp": "V、S、M（一个箭袋，其内至少要有一发弹药）",
+   "src": "PHB",
+   "anchor": "Swift_Quiver"
+  },
+  {
+   "key": "telekinesis",
+   "name": "心灵遥控",
+   "level": 5,
+   "school": "变化",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你获得以意念移动操纵生物或物件的能力。施展该法术时，你可以对施法距离内一个你能看见的生物或物件以你的意念造成下列详述的效应。你也可以在随后法术持续时间内的自己的任一回合里以一个动作实现该行为。你可以一轮接一轮地影响同一个目标，也可以在任何时候选择一个新的目标。如果你改变了目标，则之前的目标将不再…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Telekinesis"
+  },
+  {
+   "key": "teleportationCircle",
+   "name": "传送法阵",
+   "level": 5,
+   "school": "咒法",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 分钟",
+   "range": "10 尺",
+   "duration": "1轮",
+   "conc": false,
+   "ritual": false,
+   "fx": "1轮 施展该法术时，你在地上画出一个直径十尺的圆圈，并在其周围画出符文。这个圆形法阵将你所处的位置与你选择的一个与你处在同个位面上的永久传送法阵相连（你必须知道该法阵的符文序列）。圆圈中将打开一个发光的传送门，并一直维持到你的下一回合结束。任何进入传送门的生物将立即出现在目标法阵附近 5 尺内（如果该空间已被占据，则出…",
+   "comp": "V、M（稀有粉笔和浸有价值 50gp 珍稀宝石的墨水，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Teleportation_Circle"
+  },
+  {
+   "key": "treeStride",
+   "name": "树跃术",
+   "level": 5,
+   "school": "咒法",
+   "classes": [
+    "ranger",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你能够进入树木中，并从树木内部移动到 500 尺内的一棵同类树木内。两棵树必须都是活的，而且至少要和你一样大。你进入一棵树时必须消耗 5 尺移动力。你将在进入树木后知道附近 500 尺内所有同类树木的位置。作为进入树木所用移动的一部分，你可以移动到这些同类树木的其中一棵，或走出你所在的树木。你会出…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Tree_Stride"
+  },
+  {
+   "key": "wallOfForce",
+   "name": "力场墙",
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 由力场构成的隐形力墙出现在施法距离内你指定的一点上。这面力墙的方向由你决定：你可以使力墙成为水平或垂直的结界，亦可以使它形成一定倾角。它可以浮在空中，也可以立于地上。你可以将它塑成半球状或球状（半径最长 10 尺），也可以塑成一个由十个 10 尺×10 尺的方板块构成的平面，而每块板块都必须要和…",
+   "comp": "V、S、M（由纯净的宝石原石碾成的一小撮粉末）",
+   "src": "PHB",
+   "anchor": "Wall_of_Force"
+  },
+  {
+   "key": "wallOfStone",
+   "name": "石墙术",
+   "level": 5,
+   "school": "塑能",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard",
+    "artificer"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 一面坚硬的非魔法石墙出现在施法距离内你指定的一点。该石墙厚达 6 寸，由十个 10×10 尺的方板块组成。每块板块都必须要和至少一块其他板块相连。另外你也可以选择以十个 10×20 尺的板块组成石墙，但厚度只有 3 寸。 如果石墙形成时穿过了某生物所占据的空间，则该生物会被推到石墙的一侧（由你决…",
+   "comp": "V、S、M（一小块花岗岩）",
+   "src": "PHB",
+   "anchor": "Wall_of_Stone"
+  },
+  {
+   "key": "arcaneGate",
+   "name": "秘法门",
+   "level": 6,
+   "school": "咒法",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "500 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你创造两个相连的传送门。指定地面上你能看见的两点，一点在你身边 10 尺内，另一点则在 500 尺内。随后，10 尺直径的圆形传送门将分别在两点打开。如果你选择的点被生物占据，则法术失败且被消耗。 传送门边缘为闪烁的二维环形，其内布满迷雾，且整个垂直的悬浮在离地几尺处。环形只有一面可见（由你选择…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Arcane_Gate"
+  },
+  {
+   "key": "bladeBarrier",
+   "name": "剑刃护壁",
+   "level": 6,
+   "school": "塑能",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "90 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你立起一道由旋转的魔法利刃组成的墙。墙壁出现在施法距离内一个你指定的位置，并维持到法术持续时间结束。你可以选择创造长不过 100 尺、高不过 20 尺、厚不过 5 尺的直墙；或是直径不过 60 尺、高不过 20 尺、厚不过 5 尺的环形墙。墙为位于其后方的生物提供四分之三掩护。而墙体所占据的空间…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Blade_Barrier"
+  },
+  {
+   "key": "chainLightning",
+   "name": "连锁闪电",
+   "level": 6,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "150 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你放出一道闪电，射向施法距离内某个你能看见的指定目标。经过首个目标后，闪电分成三束跳向该目标 30 尺内至多 3 个其他目标。闪电的目标可以是生物或物件，但每束闪电必须指定不同的目标。 每个目标必须进行一次敏捷豁免。豁免失败者将受到 10d8 点闪电伤害，豁免成功则伤害减半。",
+   "comp": "V、S、M（一些毛皮，一块琥珀，玻璃或一柄水晶权杖，以及三根银质别针。）",
+   "src": "PHB",
+   "anchor": "Chain_Lightning"
+  },
+  {
+   "key": "circleOfDeath",
+   "name": "死亡法阵",
+   "level": 6,
+   "school": "死灵",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "150 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一阵负能量波从施法距离内某点放出，冲击 60 尺半径的球状区域。区域内的生物必须进行一次体质豁免。豁免失败者将受到 8d6 点暗蚀伤害，豁免成功则伤害减半。",
+   "comp": "V、S、M（研磨过的黑珍珠粉末，价值至少 500gp）",
+   "src": "PHB",
+   "anchor": "Circle_of_Death"
+  },
+  {
+   "key": "conjureFey",
+   "name": "妖精咒唤术",
+   "level": 6,
+   "school": "咒法",
+   "classes": [
+    "druid",
+    "warlock"
+   ],
+   "time": "1 分钟",
+   "range": "90 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你召唤一个挑战等级 6 或更低的妖精，或者一个挑战等级 6 或更低的野兽形态精魄。被召唤生物显现在施法距离内一处你能看见且未占据空间。该妖精在生命值降至 0 时，或者法术终止时消失不见。 被召唤的妖精对你和你的伙伴保持友善关系。你为召唤出来的妖精骰先攻，它也依此获得其自己的行动回合。该妖精服从你发…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Conjure_Fey"
+  },
+  {
+   "key": "contingency",
+   "name": "触发术",
+   "level": 6,
+   "school": "塑能",
+   "classes": [
+    "wizard"
+   ],
+   "time": "10 分钟",
+   "range": "自身",
+   "duration": "10 日",
+   "conc": false,
+   "ritual": false,
+   "fx": "10 日 选择一个你可以施展的五环或更低环阶法术，该法术的施法时间必须为 1 动作，且必须能够以你自身为目标。你以“随因法术”的形式施展该法术，即将其作为所施展触发术的一部分，并且同时消耗该法术与触发术的法术位。该随因法术并不立即生效，而是在特定状况发生时才触发其效应。你在施展这两个法术时，必须描述该触发状况的细节。例…",
+   "comp": "V、S、M（一尊你自己的塑像，其材质为象牙并以宝石作装饰，其价值至少为 1500gp）",
+   "src": "PHB",
+   "anchor": "Contingency"
+  },
+  {
+   "key": "createUndead",
+   "name": "唤起亡灵",
+   "level": 6,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 分钟",
+   "range": "10 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 在施法距离内指定至多三具中型或小型类人遗体，并使每具受术尸体变成一只受你控制的 食尸鬼ghoul （这些生物的具体游戏资料由 DM 掌控）。该法术只能在夜晚施展。 在你的任一回合内，你可以使用一个附赠动作并以精神命令操纵 120 尺内任何你用此法术唤起的生物（如果你操纵多个生物，则你的命令可以同时传达给它们全部或…",
+   "comp": "V、S、M（一个装满坟土的陶壶和一个装满苦水的陶壶，并为每具尸体准备一枚 150gp 的黑玛瑙）",
+   "src": "PHB",
+   "anchor": "Create_Undead"
+  },
+  {
+   "key": "disintegrate",
+   "name": "解离术",
+   "level": 6,
+   "school": "变化",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一束纤细的绿射线从你的指尖射向施法距离内一个你能看见的目标。该目标可以是一个生物或一个物件，或者是一个以魔法力场制造的造物（例如由 力场墙 wall of force 创造的墙壁）。 目标生物必须进行一次敏捷豁免，豁免失败则受 10d6+40 点力场伤害，若目标生命值因此降至 0，则目标被解离。 除魔法物品外，被…",
+   "comp": "V、S、M（一块磁石和一撮灰尘）",
+   "src": "PHB",
+   "anchor": "Disintegrate"
+  },
+  {
+   "key": "drawmijSInstantSummons",
+   "name": "卓姆吉瞬间召唤",
+   "level": 6,
+   "school": "咒法",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 分钟",
+   "range": "触碰",
+   "duration": "直至被解除",
+   "conc": false,
+   "ritual": true,
+   "fx": "直至被解除 你触碰一个重量至多 10 磅，长度至多 6 尺的物件。该法术将在该物品表面留下一个隐形的印记，并在你用以施法的蓝宝石上留下该物件的名称。你每次施展该法术时都必须使用不同的蓝宝石作为其材料成分。 在随后的时间里，你可以使用动作唤出该物件的名称并粉碎这颗蓝宝石，该物件将无视任何距离和位面的限制立即出现在你的手上…",
+   "comp": "V、S、M（一枚价值 1000gp 的蓝宝石）",
+   "src": "PHB",
+   "anchor": "Drawmij's_Instant_Summons"
+  },
+  {
+   "key": "eyebite",
+   "name": "摄心目光",
+   "level": 6,
+   "school": "死灵",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 在法术持续时间内，你的眼睛变成充满恐怖力量的漆黑空洞。指定一个 60 尺内你能看见的生物，并迫使其进行一次感知豁免，豁免失败者将承受下列效应之一（由你选择）。在法术终止前的每个自己回合，你都可以使用动作来指定一个目标。不过不能指定那些已经成功通过该豁免的生物。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Eyebite"
+  },
+  {
+   "key": "findThePath",
+   "name": "寻路术",
+   "level": 6,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "druid",
+    "bard"
+   ],
+   "time": "1 分钟",
+   "range": "自身",
+   "duration": "至多 1 日",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 日 该法术可以搜寻同一位面的另一处你熟悉的特定地点，法术会找出通往该处最短、最直接的道路。如果你寻找的目的地在另一位面，或者其会不断移动（例如一座移动堡垒），或者描述不够具体（例如一个“绿龙的巢穴”），该法术失效。 你在法术持续时间内只要和目的地在同一位面，就知晓目的地的远近和所在方向。向目的地移动并遇…",
+   "comp": "V、S、M（一套占卜用具，比如骨头、象牙、卡片、牙齿、雕刻符文等，其价值至少为 100gp，此外还需要一个来自你所寻找地点的物件）",
+   "src": "PHB",
+   "anchor": "Find_the_Path"
+  },
+  {
+   "key": "fleshToStone",
+   "name": "石化术",
+   "level": 6,
+   "school": "变化",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你尝试将施法距离内一个你能看见的生物变为石头。如果该目标的身体由血肉组成，则其必须进行一次体质豁免。豁免失败者的肉体将变得生硬并因此而受到束缚。豁免成功者将不受该效应的影响。 因该法术受束缚的生物必须在其每回合结束时再进行一次体质豁免。在累计三次豁免成功后，该法术终止。在累计三次豁免失败后，该生物…",
+   "comp": "V、S、M（一小撮石灰、水和土壤）",
+   "src": "PHB",
+   "anchor": "Flesh_to_Stone"
+  },
+  {
+   "key": "forbiddance",
+   "name": "禁制术",
+   "level": 6,
+   "school": "防护",
+   "classes": [
+    "cleric"
+   ],
+   "time": "10 分钟",
+   "range": "触碰",
+   "duration": "1 日",
+   "conc": false,
+   "ritual": true,
+   "fx": "1 日 你创造一个对抗魔法旅行的结界，该结界区域至多覆盖 40000 平方尺地面及其上 30 尺高空。在法术持续时间内，生物无法传送进区域内或使用传送门（诸如法术异界之门 gate的作用）进入其内。该法术使该区域无法进行位面旅行，因此生物无法通过星光位面，以太位面，妖精荒野，堕影冥界，或是通过法术位面转移 plane …",
+   "comp": "V、S、M（少量圣水，稀有焚香，以及至少价值 1000gp 的红宝石粉末）",
+   "src": "PHB",
+   "anchor": "Forbiddance"
+  },
+  {
+   "key": "globeOfInvulnerability",
+   "name": "法术无效结界",
+   "level": 6,
+   "school": "防护",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身（10 尺半径）",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 一个固定的微光屏障从你周围半径 10 尺区域内涌现并在法术持续时间内维持存在。 任何在屏障外施放的五环或更低环阶的法术无法影响其内的生物或物件，这些法术即使以",
+   "comp": "V、S、M（一个玻璃质或水晶质的珠子，其将在法术终止时破碎）",
+   "src": "PHB",
+   "anchor": "Globe_of_Invulnerability"
+  },
+  {
+   "key": "guardsAndWards",
+   "name": "铜墙铁壁",
+   "level": 6,
+   "school": "防护",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "10 分钟",
+   "range": "触碰",
+   "duration": "24 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "24 小时 你制造一个保护区域覆盖至多 2500 平方尺地面面积（一个 50 尺的方形区域，或一百个 5 尺的方状区域，或二十五个 10 尺的方形区域）。保护区域至高可达 20 尺，并随你的意愿塑形。只要你施法时可以走进每一个连续区域，你就可以分割区域来护卫一座要塞的几个楼层。 施展该法术时，你可以指明特定个体以让其不…",
+   "comp": "V、S、M（燃烧的熏香，少许硫磺和油，一条打结的绳子，少量掘土巨怪的血和一把至少价值 10gp 的小型银权杖）",
+   "src": "PHB",
+   "anchor": "Guards_and_Wards"
+  },
+  {
+   "key": "harm",
+   "name": "重伤术",
+   "level": 6,
+   "school": "死灵",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你将致命的病害释放到施法距离内一个你能看见的生物身上。目标必须进行一次体质豁免，豁免失败则受到 14d6 的暗蚀伤害，豁免成功则伤害减半。该伤害不能将目标的生命值降至 1 以下。若目标体质豁免失败，则其生命值上限减损与该暗蚀伤害相等数值。减损效果维持一小时，且任何可移除疾病的效应均可在时限到达前将目标生命值上限恢…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Harm"
+  },
+  {
+   "key": "heal",
+   "name": "医疗术",
+   "level": 6,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 指定施法距离内一个你能看见的生物。汹涌澎湃的正能量将充盈该生物，使其恢复 70 点生命值。该法术也会终止正在影响目标的目盲、耳聋以及任何疾病效应。该法术对构装生物与亡灵无效。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Heal"
+  },
+  {
+   "key": "heroesFeast",
+   "name": "英雄宴",
+   "level": 6,
+   "school": "咒法",
+   "classes": [
+    "cleric",
+    "druid",
+    "bard"
+   ],
+   "time": "10 分钟",
+   "range": "30 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你创造出一席盛宴，其中包括了上等的食物和饮品。宴席需要 1 小时来享用，并会在这段时间结束后消失不见，而且下述增益效应在该小时结束前不会生效。你可以让至多十二个生物一同分享该大餐。 所有享用了大餐的生物都会获得几种增益。这些生物的所有疾病和中毒状态都会被治愈，并且免疫毒素和恐慌状态，其进行感知豁免时具有优势，生命…",
+   "comp": "V、S、M（一个价值至少 1000gp 的镶饰宝石的碗，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Heroes'_Feast"
+  },
+  {
+   "key": "magicJar",
+   "name": "魔魂壶",
+   "level": 6,
+   "school": "死灵",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 分钟",
+   "range": "自身",
+   "duration": "直至被解除",
+   "conc": false,
+   "ritual": false,
+   "fx": "直至被解除 你的灵魂离开身体进入作为法术材料成分的容器中，而你的身体则陷入失神的状况。灵魂处于容器中时，你可以如同身处容器所在位置一样察觉周边。你不能移动，也不能使用反应，而此时你唯一能做的动作就是将你的灵魂投射出容器至多 100 尺的距离，或者回到你仍活着的身体中去（并终止该法术），或者尝试占据另一个类人生物的身体。…",
+   "comp": "V、S、M（一块宝石或水晶，或者一个圣物匣，又或者他带装饰的容器，其价值不能低于 500gp）",
+   "src": "PHB",
+   "anchor": "Magic_Jar"
+  },
+  {
+   "key": "massSuggestion",
+   "name": "群体暗示术",
+   "level": 6,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "24 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "24 小时 你以魔法影响施法距离内至多十二个你能看见的生物，并对其施以某种行动暗示（至多以一两句话的形式）。由你指定的受术目标必须能听到并理解你的话语。而不能被魅惑的生物也将免疫此效应。你的暗示言辞必须能让其行为听起来合乎情理。要求生物刺伤它自己，自己撞向矛尖上，让它自我牺牲，或是让它做任何明显有害的行为都会直接取消该…",
+   "comp": "V、M（一条蛇的舌头外加一小块蜂窝或一滴橄榄油）",
+   "src": "PHB",
+   "anchor": "Mass_Suggestion"
+  },
+  {
+   "key": "moveEarth",
+   "name": "地动术",
+   "level": 6,
+   "school": "变化",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多2小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多2小时 指定施法距离内边长不大于 40 尺的方状地形区域，并以任意的方式重塑区域内的泥土，沙土或黏土。你可以升高或降低区域内的地面高度，制造或填平一道沟渠，升起或夷平一座山丘，或者塑造一根立柱。被改变的地形范围在最长不得超过整个区域最长边长的一半。因此，如果你影响了 40 尺方状区域，则你可以创造一根至多20…",
+   "comp": "V、S、M（一把铁刃以及一个小袋子，袋内装着黏土、壤土、砂土等混成的泥土）",
+   "src": "PHB",
+   "anchor": "Move_Earth"
+  },
+  {
+   "key": "otilukeSFreezingSphere",
+   "name": "欧提路克冰封法球",
+   "level": 6,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "300 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一个冷冻能量形成的冰球从你的指尖射向施法距离内一处指定点，并在该处迸裂为一个半径 60 尺的球状区域。区域内的每个生物必须进行一次体质豁免。豁免失败者将受到 10d6 点寒冷伤害。豁免成功则伤害减半。 如果冰球击中某处水体或者某处以水分为主的液态表面（不包括由水组成的生物），其触及的水面将凝结出 6 寸厚、30 …",
+   "comp": "V、S、M（一个小水晶球）",
+   "src": "PHB",
+   "anchor": "Otiluke's_Freezing_Sphere"
+  },
+  {
+   "key": "ottoSIrresistibleDance",
+   "name": "奥图迷舞",
+   "level": 6,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 指定施法距离内一个你能看见的生物，并使目标生物会在原地跳起滑稽的舞蹈：它将在持续时间内不住的曳步、踏脚和蹦跳。不会被魅惑的生物将免疫该法术。 正在跳舞的生物必须用掉它全部的移动力在原地跳舞，其进行敏捷豁免和攻击检定时具有劣势。目标受该法术影响时，其他生物对其进行的攻击检定具有优势。正在跳舞的生物可…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Otto's_Irresistible_Dance"
+  },
+  {
+   "key": "planarAlly",
+   "name": "异界誓盟",
+   "level": 6,
+   "school": "咒法",
+   "classes": [
+    "cleric",
+    "warlock"
+   ],
+   "time": "10 分钟",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你祈求一个异界个体的援助。你必须对该存在个体有所了解，它可以是一个神，一位原祖，一名恶魔主君，或是其他界域级力量的存在。该存在将派遣一个效忠它的天族，元素生物或邪魔来援助你，并使该个生物显现在施法距离内一个未占据空间。如果你知道他们中某个特定生物的名字，则你可以在施展法术时说出其名字来请求指派该生物来援，但是你仍…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Planar_Ally"
+  },
+  {
+   "key": "programmedIllusion",
+   "name": "预置幻象",
+   "level": 6,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "直至被驱散",
+   "conc": false,
+   "ritual": false,
+   "fx": "直至被驱散 你在施法距离内创造一个幻象，其外观为一个物件，一个生物或其他可视的现象，并使其在特定情况下激活。该幻象在被激活前无法被察觉。它必须不大于 30 尺立方区域，而你将在施放该法术时决定幻象该如何行动和发出什么声音。而这种按脚本执行的表演可以持续至多 5 分钟。 你所指定的情况发生时，幻象会迅速成型并按设定的方式…",
+   "comp": "V、S，材料（一点羊毛和价值至少 25gp 的玉粉）",
+   "src": "PHB",
+   "anchor": "Programmed_Illusion"
+  },
+  {
+   "key": "sunbeam",
+   "name": "阳炎射线",
+   "level": 6,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身（60 尺直线）",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 一道耀眼的光芒从你手中射出并形成一条 5 尺宽、60 尺长的线状区域。所有区域内的生物必须进行一次体质豁免。豁免失败者将受到 6d8 点光耀伤害，并且在你的下一回合前陷入目盲。豁免成功则伤害减半，且不会陷入目盲。亡灵和泥怪在进行该豁免时具有劣势。 你可以在法术终止前的任一回合内以一个动作重新创造一…",
+   "comp": "V、S、M（一面放大镜）",
+   "src": "PHB",
+   "anchor": "Sunbeam"
+  },
+  {
+   "key": "transportViaPlants",
+   "name": "木遁术",
+   "level": 6,
+   "school": "咒法",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "10 尺",
+   "duration": "1轮",
+   "conc": false,
+   "ritual": false,
+   "fx": "1轮 该法术将施法距离内一棵大型或更大的静态植物用魔法与同位面上任意距离外的另一棵植物相连接。施法时，你必须见过或触碰过出口植物至少一次。此后，任何生物都可以在法术持续时间内花费 5 尺移动力进入目标植物内，然后从出口植物处出来。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Transport_via_Plants"
+  },
+  {
+   "key": "trueSeeing",
+   "name": "真知术",
+   "level": 6,
+   "school": "预言",
+   "classes": [
+    "cleric",
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你触碰一个自愿的生物，让该法术赋予其看到事物真实面目的能力。受术者在法术持续时间内拥有 120 尺的真实视觉，其能发现被魔法隐藏的暗门，也能看到以太位面。",
+   "comp": "V、S、M（由蘑菇粉、藏红花和油脂制成得眼药膏，价值为 25gp，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "True_Seeing"
+  },
+  {
+   "key": "wallOfIce",
+   "name": "冰墙术",
+   "level": 6,
+   "school": "塑能",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你在施法距离内一块坚实的地面上创造出一面冰墙。你可以将它塑成半球状或球状（半径最长 10 尺），也可以塑成一个由十个 10 尺×10 尺的方板块构成的平面。每块板块都必须要和至少一块其他板块相连。不管形状如何，冰墙总是厚 1 尺并持续存在至法术终止。 如果冰墙形成时穿过了某生物所占据的空间，则该…",
+   "comp": "V、S、M（一小块石英）",
+   "src": "PHB",
+   "anchor": "Wall_of_Ice"
+  },
+  {
+   "key": "wallOfThorns",
+   "name": "棘墙术",
+   "level": 6,
+   "school": "咒法",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "120 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你创造出一面坚韧、纠缠、长满锐利棘刺的灌木之墙。棘墙出现在施法距离内一处坚实的地面上并且持续存在至法术终止。你可以选择创造长不过 60 尺、高不过 10 尺、厚不过 5 尺的直墙；或是直径不过 20 尺、高不过 20 尺、厚不过 5 尺的环形墙。此外，棘墙还会阻挡视线。 棘墙出现时所有位于其内的…",
+   "comp": "V、S、M（一把荆棘）",
+   "src": "PHB",
+   "anchor": "Wall_of_Thorns"
+  },
+  {
+   "key": "windWalk",
+   "name": "御风而行",
+   "level": 6,
+   "school": "变化",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 分钟",
+   "range": "30 尺",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "8 小时 你和施法距离内你能看见的至多十个自愿生物在法术持续时间内变为气化形态，其外观有如一团云雾。处于该云雾形态的生物具有 300 尺的飞行速度，并且对非魔法武器造成的伤害具有抗性。该形态下的生物除疾走和变回原形以外不能执行其他动作。变回原形需要花一分钟的时间，在这段时间内该生物处于失能状态且不能移动。在法术终止前，…",
+   "comp": "V、S、M（明火和圣水）",
+   "src": "PHB",
+   "anchor": "Wind_Walk"
+  },
+  {
+   "key": "wordOfRecall",
+   "name": "回返真言",
+   "level": 6,
+   "school": "咒法",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "5尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你和你身边 5 尺内的至多五个自愿生物一起瞬间传送到一个你事先设置好的圣坛。你和与你一起传送的生物将出现在你准备圣坛时指定的地点（见下）旁边最近的未被占据位置。如果你在施放法术前没有事先准备好圣坛，则该法术将不产生任何效应。 设置圣坛时，你必须身处一个你所信仰神的神庙或与该神密切相关的地点，然后在该处施展此法术。…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Word_of_Recall"
+  },
+  {
+   "key": "conjureCelestial",
+   "name": "天界咒唤术",
+   "level": 7,
+   "school": "咒法",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 分钟",
+   "range": "90 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你召唤一个挑战等级 4 或更低的天族，并使其显现在施法范围内一处你能看见且未占据空间。该天族在生命值降至 0 时，或者法术终止时消失不见。 被召唤的天族对你和你的伙伴保持友善关系。你为召唤出来的天族骰先攻，它也依此获得其自己的行动回合。该天族服从你发出的所有语言命令（不需要你作动作），前提是该命令…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Conjure_Celestial"
+  },
+  {
+   "key": "delayedBlastFireball",
+   "name": "延迟爆裂火球",
+   "level": 7,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "150 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 一束黄光从你的指尖射向施法距离内你指定的一点，并在法术持续时间内在该点凝结成一颗赤红的珠子。当因专注被打断或自主决定导致法术终止时，珠子将伴着低吼炸裂成四窜的烈焰并绕过拐角扩散。此时，目标点周边半径 20 尺内的每个生物都必须进行一次敏捷豁免。豁免失败者将承受全部累积的火焰伤害，豁免成功则伤害减半…",
+   "comp": "V、S、M（一颗蝙蝠粪和硫磺混合的小球）",
+   "src": "PHB",
+   "anchor": "Delayed_Blast_Fireball"
+  },
+  {
+   "key": "divineWord",
+   "name": "圣言术",
+   "level": 7,
+   "school": "塑能",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 附赠动作",
+   "range": "30 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你吟诵一句神圣的箴言，其中充盈了创世黎明的力量。在施法距离内指定任意数量的你能看见的生物，并迫使每个能够听到圣言的生物进行一次魅力豁免。豁免失败者基于其当前生命值承受以下效应：",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Divine_Word"
+  },
+  {
+   "key": "etherealness",
+   "name": "以太化",
+   "level": 7,
+   "school": "变化",
+   "classes": [
+    "cleric",
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "最长 8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "最长 8 小时 你进入当前所处位面与以太位面边缘的重叠空间。你可以在法术持续时间内一直呆在该以太边缘，也可以使用动作解除法术。此时你可以向任意方向移动。如果向上或向下移动，则你移动的每尺距离需要额外消耗一尺的移动力。你可以看见并听见你原来的位面，但是所有事物都以灰度显示，而你也看不到 60 尺外的东西。 在以太位面时，…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Etherealness"
+  },
+  {
+   "key": "fingerOfDeath",
+   "name": "死亡一指",
+   "level": 7,
+   "school": "死灵",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你发出负能量并贯穿施法距离内你能看见的一个生物使其承受苦痛。该生物必须进行以此体质豁免。豁免失败则受到 7d8+30 点暗蚀伤害，豁免成功则伤害减半。 被该法术杀死的类人生物将在你下一回合开始时唤起为一只受你操控的丧尸，并在随后尽力遵循你的语言指令。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Finger_of_Death"
+  },
+  {
+   "key": "fireStorm",
+   "name": "火焰风暴",
+   "level": 7,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "druid",
+    "sorcerer"
+   ],
+   "time": "1 动作",
+   "range": "150 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一片由烈焰形成的风暴扫过施法距离内一处你指定的区域。该区域由至多十个 10 尺立方区域组成。你可以自行安排各立方区域的组合方式，而每个立方区域必须至少有一面与其他立方区域相连。区域内每个生物必须进行一次敏捷豁免。豁免失败者将受到 7d10 点火焰伤害，豁免成功则伤害减半。 风暴的烈焰将对区域内的物件造成伤害，并点…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Fire_Storm"
+  },
+  {
+   "key": "forcecage",
+   "name": "力场监牢",
+   "level": 7,
+   "school": "塑能",
+   "classes": [
+    "bard",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "100 尺",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你围绕施法距离内一处指定地点力场构筑出一个固定的立方状隐形监牢。你可以选择监牢的形式为笼状或密封体。 笼状监牢为各边长至多 20 尺的立方体，其墙体由 1/2 寸粗的力场栅栏杆组成，每杆指间相距 1/2 寸。 密封监牢为各边长至多 10 尺的立方体，其墙体为由力场墙密封，并阻隔一切物质和法术从牢笼里进出。 施…",
+   "comp": "V、S、M（价值 1500gp 的红宝石尘）",
+   "src": "PHB",
+   "anchor": "Forcecage"
+  },
+  {
+   "key": "mirageArcane",
+   "name": "海市蜃楼",
+   "level": 7,
+   "school": "幻术",
+   "classes": [
+    "druid",
+    "bard",
+    "wizard"
+   ],
+   "time": "10 分钟",
+   "range": "视野",
+   "duration": "10 日",
+   "conc": false,
+   "ritual": false,
+   "fx": "10 日 你使至多 1 里方形区域内的地形在视觉、听觉、嗅觉、甚至触觉上都像是某种其他的地形，不过其地形的大致形状仍保持不变。你可以让开阔的平原或者一条路可能变得像一片湿地，一座小山，一个裂谷或是其他困难或无法通行的地形。你还可以让一个池塘变得像一片茂盛的草地，一个悬崖变得像一个缓坡，或者让一个乱石沟变得像一条宽阔平坦…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Mirage_Arcane"
+  },
+  {
+   "key": "mordenkainenSMagnificentMansion",
+   "name": "魔邓肯豪宅术",
+   "level": 7,
+   "school": "咒法",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "1 分钟",
+   "range": "300 尺",
+   "duration": "24 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "24 小时 你在施法距离内创造出一个异次元的居所，并维持至法术持续时间结束。居所唯一的入口宽 5 尺，高 10 尺而微微发光，其具体位置由你指定。只要该入口保持开启，你和你施展该法术时指定的任意生物都可以进入该异次元居所中。你可以在距入口不超过 30 尺处开启或关闭入口。而入口关闭时即其处于隐形状态。 入口内是一个连接…",
+   "comp": "V、S、M（一个象牙雕琢的拱门小模型、一块打磨过的大理石和一把微型银汤匙，每件物品至少价值 5gp）",
+   "src": "PHB",
+   "anchor": "Mordenkainen's_Magnificent_Mansion"
+  },
+  {
+   "key": "mordenkainenSSword",
+   "name": "魔邓肯之剑",
+   "level": 7,
+   "school": "塑能",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在施法距离内创造出一个闪闪发光的剑形力场，并使其在法术持续时间内维持存在。 秘法剑出现时，你可以对该剑 5 尺内的一个自选目标发动一次近战法术攻击。命中时，目标受到 3d10 点力场伤害。在法术持续时间内，你可以在自己回合使用一个附赠动作将剑移动至多 20 尺。移动的目的地你必须能够看见，而移动…",
+   "comp": "V、S、M（一把剑柄和柄端由铜与锌打造的微缩铂金剑，价值 250gp）",
+   "src": "PHB",
+   "anchor": "Mordenkainen's_Sword"
+  },
+  {
+   "key": "planeShift",
+   "name": "位面转移",
+   "level": 7,
+   "school": "咒法",
+   "classes": [
+    "cleric",
+    "druid",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你和至多八个自愿生物手拉手站成一圈，然后被传送到一个不同的存在位面中。你可以概括地指名一个目的地（比如火元素位面的黄铜城，或者九层地狱第二层迪斯帕特的宫殿），然后你将出现在目的地里或其附近。假设你想到达黄铜城，按照 DM 的判断，你可能会传送到达它的钢铁大道上，或它的灰烬之门前，又或者与城市隔着火焰之海相望之处。…",
+   "comp": "V、S、M（一根与某个位面完成同调，价值至少 250gp 的分叉金属短棒）",
+   "src": "PHB",
+   "anchor": "Plane_Shift"
+  },
+  {
+   "key": "prismaticSpray",
+   "name": "虹光喷射",
+   "level": 7,
+   "school": "塑能",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身（60 尺锥状）",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 八条多彩射线从你的手上闪出。每条射线颜色不同且具有不同的威力和作用。在 60 尺锥状区域内的每个生物必须进行一次敏捷豁免同时掷一次 d8 决定生效哪种颜色的射线。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Prismatic_Spray"
+  },
+  {
+   "key": "projectImage",
+   "name": "投影术",
+   "level": 7,
+   "school": "幻术",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "500 里",
+   "duration": "至多 1 日",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 日 你创造一个自己的幻象分身，并使其在法术持续时间内维持存在。该分身可以出现在施法距离内你曾见过的任何地点，而不论中间是否存在障碍物。该幻象外观和声音与你一样，只是没有现实形体。幻象受到伤害时会立即消失并终止法术。 你可以用你的动作移动该分身至多两倍于你速度的尺数，而其姿态、言语和行为均按照你的指定作表…",
+   "comp": "V、S、M（价值至少 5gp 的材料制成的一个你自身的微缩模型）",
+   "src": "PHB",
+   "anchor": "Project_Image"
+  },
+  {
+   "key": "regenerate",
+   "name": "再生术",
+   "level": 7,
+   "school": "变化",
+   "classes": [
+    "cleric",
+    "druid",
+    "bard"
+   ],
+   "time": "1 分钟",
+   "range": "触碰",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你触碰一个生物并加快其自愈速度。目标恢复 4d8+15 点生命值。在法术持续时间内，目标在它的每回合开始时恢复 1 点生命值（每分钟 10 点）。 如果目标失去了某些身体部位（手指、腿、尾巴等等），则这些部位将在 2 分钟后会重新长出。如果你持有失去的身体部位并且将其手动固定到创口上，则该法术会使该身体部位和…",
+   "comp": "V、S、M（一个转经筒和圣水）",
+   "src": "PHB",
+   "anchor": "Regenerate"
+  },
+  {
+   "key": "resurrection",
+   "name": "复生术",
+   "level": 7,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "bard"
+   ],
+   "time": "1 小时",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你触碰一个已死的生物，并使之复活。该目标的死亡时间必须没有超过一百年，其死因不能是老死，且不能是亡灵。此时，如果该生物的灵魂愿意并且能够回来，则受术生物以生命值全满的状态复活。 该法术同样会中和该生物生前体内的毒素以及罹患的普通疾病，但对于魔法造成的疾病、诅咒和类似的效应则无能为力；如果没有在复活前治愈这些效应，…",
+   "comp": "V、S、M（一颗至少价值 1000gp 的钻石，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Resurrection"
+  },
+  {
+   "key": "reverseGravity",
+   "name": "反转重力",
+   "level": 7,
+   "school": "变化",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "100 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 该法术以施法距离内一点为中心，创造一个半径 50 尺、高 100 尺柱状的重力反转区域。施展该法术时，区域内一切没有被固定在地面上的生物和物件都会向上落去，直到碰到该区域顶端为止。受术生物可以进行一次敏捷豁免以抓住一件他能触及的固定物件，从而避免向上坠落。 如果在坠落过程中遇到任何固体（比如天花板…",
+   "comp": "V、S、M（一块磁石和一些铁屑）",
+   "src": "PHB",
+   "anchor": "Reverse_Gravity"
+  },
+  {
+   "key": "sequester",
+   "name": "隔离术",
+   "level": 7,
+   "school": "变化",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "直至被解除",
+   "conc": false,
+   "ritual": false,
+   "fx": "直至被解除 该法术能够将一个自愿的生物或物体藏匿起来，使其在法术结束前都无法被侦测。施展该法术并且触碰目标时，目标变为隐形且不能被作为预言系法术的目标，也无法被预言系法术创造出的传感器所感知。 如果法术的目标是一个生物，则目标将进入假死状态。时间在受术者的世界中停止了流动，因此它不会衰老。 你可以设置一个让该法术提前终…",
+   "comp": "V、S、M（钻石、绿宝石、红宝石、蓝宝石得粉尘混合而成的粉末，其价值至少 5000gp，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Sequester"
+  },
+  {
+   "key": "simulacrum",
+   "name": "拟像术",
+   "level": 7,
+   "school": "幻术",
+   "classes": [
+    "wizard"
+   ],
+   "time": "12小时",
+   "range": "触碰",
+   "duration": "直至被解除",
+   "conc": false,
+   "ritual": false,
+   "fx": "直至被解除 你花费整段施法时间为施法距离内一个野兽或类人生物塑造出一个幻象分身。该分身是一个由冰雪构成的半真实生物，它可以执行动作，也能在其他方面如同正常生物一样受到各种影响。它与其本体生物看起来一样，但是其生命值上限只有本体一半，而且在成型时不带任何装备。除此之外，幻象分身的属性数据都与本体相同，不过生物类型是构装生…",
+   "comp": "V、S、M（一些雪或冰，用来给模拟对象制作一个真人大小的模型；放置在模型上的模拟对象身体的一部分，比如毛发或指甲；以及撒在分身上至少价值 1500gp 的红宝石粉，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Simulacrum"
+  },
+  {
+   "key": "symbol",
+   "name": "徽记术",
+   "level": 7,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "druid",
+    "bard",
+    "wizard"
+   ],
+   "time": "1 分钟",
+   "range": "触碰",
+   "duration": "直至被解除或被触发",
+   "conc": false,
+   "ritual": false,
+   "fx": "直至被解除或被触发 施展该法术时，你在某个表面（诸如桌面、地板、墙等）或某个能被关闭以隐藏符纹的物件里（诸如书本、卷轴、宝箱等）刻画一个伤害其他生物的符纹。如果你指定某个表面，则此符纹可以覆盖周边不超过 10 尺直径的区域。如果你指定某个物件，则该物件必须待在其所在位置；如果该物件从被施法位置被移动超过 10 尺，则其…",
+   "comp": "V、S、M（水银和磷，以及总计价值至少 1000gp 的钻石和蛋白石粉末，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Symbol"
+  },
+  {
+   "key": "teleport",
+   "name": "传送术",
+   "level": 7,
+   "school": "咒法",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "10 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 该法术将你以及施法距离内你能看见的至多八个自愿生物，或者施法距离内你能看见的一个物件传送到你指定的某处地点。如果你指定一个物件作为法术目标，则该物件必须能被整个放进一个边长 10 尺的立方体中，且必须没有被一个非自愿生物所着装或携带。 你只能指定你知道的地点作为传送目的地，而目的地必须与你位于同一个存在位面中。你…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Teleport"
+  },
+  {
+   "key": "animalShapes",
+   "name": "动物形态",
+   "level": 8,
+   "school": "变化",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 24 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 24 小时 你施法把其他生物变成野兽。指定施法距离内任意数量的自愿生物，并使每个目标变形为一只挑战等级不超过 4，体型不大于大型的野兽。你可以在法术持续时间内以一个动作将受术生物变成其他野兽形态。 每个受术生物的变形效应持续至法术终止，其生命值降至 0 或是死亡时，法术效应也将随之终止。你可以分别为每个目标…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Animal_Shapes"
+  },
+  {
+   "key": "antimagicField",
+   "name": "反魔法场",
+   "level": 8,
+   "school": "防护",
+   "classes": [
+    "cleric",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身（10 尺半径球状）",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 半径 10 尺的隐形球状反魔法能量环绕着你，将该区域与弥漫在多元宇宙间的魔法能量隔离开来。在反魔法场内：法术无法施放；召唤生物消失无踪；魔法物品也失去其效应。反魔法场将以你为中心移动，直至法术终止。 除非其来自神器或神本身，否则任何法术和魔法效应都将在场内受压制而无法波及力场内部。在场内施放的法术…",
+   "comp": "V、S、M（一撮铁粉或铁屑）",
+   "src": "PHB",
+   "anchor": "Antimagic_Field"
+  },
+  {
+   "key": "antipathySympathy",
+   "name": "嫌恶术/关怀术",
+   "level": 8,
+   "school": "惑控",
+   "classes": [
+    "druid",
+    "bard",
+    "wizard"
+   ],
+   "time": "1 小时",
+   "range": "60 尺",
+   "duration": "10天",
+   "conc": false,
+   "ritual": false,
+   "fx": "10天 此法术吸引或驱赶你指定的生物。在施法距离内指定一个巨型或更小体型的物件或生物，或是一处不超过 200 尺的立方区域。你指定一类智慧生物（例如红龙、地精、吸血鬼等），并为目标注入能吸引或是驱赶所选类型生物的灵光。你可以选择嫌恶或是关怀作为法术的效应。",
+   "comp": "V、S、M（嫌恶效应时用一小块醋浸湿的明矾；关怀效应则为一滴蜂蜜）",
+   "src": "PHB",
+   "anchor": "AntipathySympathy"
+  },
+  {
+   "key": "clone",
+   "name": "克隆术",
+   "level": 8,
+   "school": "死灵",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 小时",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 此法术用以培养一个活体生物的无意识复制体作为其死亡时的保险措施。该克隆体在作为法术成分的密封容器中成长，并在 120 日后成熟；你还可以为同一个生物制作较年轻版本的肉体。在容器未被外界影响时，其中的躯体会一直保持无意识的静止状态。 克隆体成长成熟后，如果本体生物死亡，则其灵魂转移到克隆体中，前提是该灵魂必须保持自…",
+   "comp": "V、S、M（一枚至少价值 1000gp 的钻石以及被克隆生物 1 立方寸的肉，作为该法术的耗材。外加一副至少价值 2000gp 的带密封功能的大容器，其尺寸必须足以存放一个要被克隆的生物，例如一个巨大的瓮或灵柩，或是立在地上充满浆状物质的卵囊，又或者充满盐水的水晶棺）",
+   "src": "PHB",
+   "anchor": "Clone"
+  },
+  {
+   "key": "controlWeather",
+   "name": "操控天气",
+   "level": 8,
+   "school": "变化",
+   "classes": [
+    "cleric",
+    "druid",
+    "wizard"
+   ],
+   "time": "10 分钟",
+   "range": "自身（半径 5 里）",
+   "duration": "至多 8 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 8 小时 你在法术持续时间内控制自身 5 里范围内的天气状况。施展该法术时你必须身处户外，而一旦移动到无法直接看到天空的地点时，法术也会随即终止。 本来由 DM 基于季节和气候所决定的天气状况，在你施展此法术时可以由你随意操控。你可以改变降水、气温以及风势等状况。新的天气状况生效需要经过1d4×10分钟的时…",
+   "comp": "V、S、M（点燃的焚香和一点混有泥土和木屑的水）",
+   "src": "PHB",
+   "anchor": "Control_Weather"
+  },
+  {
+   "key": "demiplane",
+   "name": "半位面",
+   "level": 8,
+   "school": "咒法",
+   "classes": [
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 你在施法距离内一处能看见的平面上创造一扇形状模糊的门。门的大小足以让中型生物在其间通行无阻。门开启时，其通向一个边长 30 尺，由木质或石质组成的空房间半位面。法术终止时，门消失不见，而半位面中的门也消失不见，并把任何还在半位面的生物或物件困在其内。 你每次施展此法术时都可以创造一个新的半位面，也可以连向用此…",
+   "comp": "S",
+   "src": "PHB",
+   "anchor": "Demiplane"
+  },
+  {
+   "key": "dominateMonster",
+   "name": "支配怪物",
+   "level": 8,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你试图安抚一个施法距离内你能看见的生物，必须成功通过一次感知豁免，否则将在法术持续时间内被你魅惑。若它正与你或你的友方生物战斗，则其进行该豁免时具有优势。 该生物被魅惑时，只要你与其处于同一位面就可以与之保持心灵感应。你在有意识时，可以通过心灵感应命令该生物（不需要作动作），而它则会尽量服从。你可…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Dominate_Monster"
+  },
+  {
+   "key": "earthquake",
+   "name": "地震术",
+   "level": 8,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "druid",
+    "sorcerer"
+   ],
+   "time": "1 动作",
+   "range": "500 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你在施法距离内一处能看见的地面上指定一点，并在其上制造地震扰动。在法术持续时间内，一阵强烈的震颤在震源周边半径 100 尺的圆形范围内传递，并使区域内地上的生物和建筑都受到震动影响。 受影响区域内的地面变为困难地形。而区域地面上的每个正在进行专注的生物都必须进行一次体质豁免，豁免失败则其专注被打断…",
+   "comp": "V、S、M（一撮泥土、一块岩石和一坨粘土）",
+   "src": "PHB",
+   "anchor": "Earthquake"
+  },
+  {
+   "key": "feeblemind",
+   "name": "弱智术",
+   "level": 8,
+   "school": "惑控",
+   "classes": [
+    "druid",
+    "bard",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "150 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 指定施法距离内一个你能看见的生物，并尝试摧毁其理智与人格。目标受 4d6 点心灵伤害且须进行一次智力豁免。 豁免失败时，该生物的智力和魅力变为 1。受术生物将不能施法，也不能启动魔法物品，甚至不能听懂语言或以智慧方式沟通。但该生物仍可以辨识、跟随伙伴，甚至保护他们。 受术生物每过 30 日即可在当日结束时重新进行…",
+   "comp": "V、S、M（一把粘土，水晶，玻璃或矿物球）",
+   "src": "PHB",
+   "anchor": "Feeblemind"
+  },
+  {
+   "key": "glibness",
+   "name": "花言巧语",
+   "level": 8,
+   "school": "变化",
+   "classes": [
+    "bard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "1 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "1 小时 直至法术终止前，你每次进行魅力检定时可以用 15 代替你掷出的数值。此外，无论你说什么，判断你是否说谎的魔法都会将你的话视为真实。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Glibness"
+  },
+  {
+   "key": "holyAura",
+   "name": "圣洁灵光",
+   "level": 8,
+   "school": "防护",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 神圣的光芒从你身体中奔涌而出，在你身边汇聚成半径 30 尺的柔光。施展该法术时，你指定处于柔光范围内的若干生物。被指定生物散发出半径 5 尺的微光光照，且其进行的所有豁免均具有优势，而其他生物对它们进行的攻击检定具有劣势。该效应将持续至法术终止。另外，当一个邪魔或亡灵以近战攻击命中受术生物时，其灵…",
+   "comp": "V、S、M（一个价值至少 1000gp 的小圣物箱，内含一件圣遗物，例如某位圣者长袍上的一片碎布，或者某本宗教典籍中的一张羊皮纸）",
+   "src": "PHB",
+   "anchor": "Holy_Aura"
+  },
+  {
+   "key": "incendiaryCloud",
+   "name": "焚云术",
+   "level": 8,
+   "school": "咒法",
+   "classes": [
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "150 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 一片充满了炽热灰烬的旋转烟云显现，并以施法距离内一点为中心的蔓延至半径 20 尺的球状区域。烟云会绕过拐角扩散并使整个区域处于重度遮蔽，并在法术终止前持续存在。此外烟云还可以被和风或强度等级更高的风势（风速至少每小时 10 里）所吹散。 烟云出现时，每个处在其内的生物都必须进行一次敏捷豁免，豁免失…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Incendiary_Cloud"
+  },
+  {
+   "key": "maze",
+   "name": "迷宫术",
+   "level": 8,
+   "school": "咒法",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 10 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 10 分钟 你将施法距离内一个你能看见的生物放逐到一个迷宫般错综复杂的半位面。目标将一直留在该处直至法术持续时间结束，或者直到它逃出该迷宫。 目标可以使用其动作尝试逃出迷宫。此时它可以进行一次 DC20 的智力检定，检定成功者将逃出迷宫，而该法术随之终止。牛头人和巨牛魔进行该检定时直接成功。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Maze"
+  },
+  {
+   "key": "mindBlank",
+   "name": "心灵屏障",
+   "level": 8,
+   "school": "防护",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "24 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "24 小时 直至法术终止前，你所触碰的一个自愿生物对下列项目具有免疫：心灵伤害；任何可以感知到其情绪或阅读其思想的效应；预言法术；魅惑状态。当目标受 祈愿术wish 或者其他威力相当的法术或效应影响心智或窃获信息时，该法术也能为其阻挡那些法术或效应。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Mind_Blank"
+  },
+  {
+   "key": "powerWordStun",
+   "name": "律令震慑",
+   "level": 8,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你说出一蕴含威力的单词，其足以使施法距离内一个你能看见的生物意志受压迫而震惊。如果你所指定的生物现有生命值为 150 或更少，则其被震慑。否则该法术不产生任何效应。 被震慑目标必须在其每回合结束时进行一次体质豁免。豁免成功，则此震慑效果终止。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Power_Word_Stun"
+  },
+  {
+   "key": "sunburst",
+   "name": "阳炎爆",
+   "level": 8,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "druid",
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "150 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 灿烂的阳光照耀施法距离内指定的一点为中心周围 60 尺半径的区域。所有位于该光芒中的生物必须进行一次体质豁免。豁免失败者将受到 12d6 点光耀伤害，并陷入 1 分钟的目盲状态。豁免成功则伤害减半，且不会陷入目盲。亡灵和泥怪进行该豁免时具有劣势。 因该法术陷入目盲的生物在其每回合结束时都可以再进行一次体质豁免。豁…",
+   "comp": "V、S、M（一块猫眼石和一团明火）",
+   "src": "PHB",
+   "anchor": "Sunburst"
+  },
+  {
+   "key": "telepathy",
+   "name": "心灵感应",
+   "level": 8,
+   "school": "塑能",
+   "classes": [
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "无限",
+   "duration": "24 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "24 小时 你与一个你熟识的自愿生物建起心灵连接。该生物可以身处你所在的位面的任意位置。一旦你与目标生物不再位于同一位面则该法术随即终止。 直至法术终止前，你可以和目标生物通过心灵连接即时共享任何言语、图像、声音以及其他形式的感官信息，而目标也能够辨认出与之交流的对象正是你本人。该法术可以让智力值至少为 1 的目标生物…",
+   "comp": "V、S、M（一对相连的银戒指）",
+   "src": "PHB",
+   "anchor": "Telepathy"
+  },
+  {
+   "key": "tsunami",
+   "name": "海啸术",
+   "level": 8,
+   "school": "咒法",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 分钟",
+   "range": "视野内",
+   "duration": "至多 6 轮",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 6 轮 你指定施法距离内一点并从中升起一面水墙。水墙长不过 300 尺，高不过 300 尺，厚不过 50 尺，且持续存在至法术终止。 水墙出现时，所有位于水墙内的生物都要进行一次力量豁免。豁免失败者将受到 6d10 点钝击伤害，豁免成功则伤害减半。 水墙出现后，将在你每一回合开始时带着其内的所有生物一起向远…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Tsunami"
+  },
+  {
+   "key": "astralProjection",
+   "name": "星界投影",
+   "level": 9,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 小时",
+   "range": "10 尺",
+   "duration": "特殊",
+   "conc": false,
+   "ritual": false,
+   "fx": "特殊 你和施法距离内至多八名自愿的生物将躯体投影到星界（如果你已经在星界，则法术失败且被消耗）。你原本的躯体昏迷并进入静止状态，即其不需要空气和食物也不会衰老。 你的星界躯体几乎完美的保持了原本的形态，并保留你本体的游戏资料和随身物。星界躯体和你本体的主要区别是从你肩胛骨间向后伸出的一条银线。这条可见长度仅有一尺的银线…",
+   "comp": "V、S、M（你必须为此法术影响的每个生物准备一枚至少价值 1000gp 的红锆石jacinth，以及一根做工精细，至少价值 100gp 的银棒，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "Astral_Projection"
+  },
+  {
+   "key": "foresight",
+   "name": "预见术",
+   "level": 9,
+   "school": "预言",
+   "classes": [
+    "druid",
+    "bard",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 分钟",
+   "range": "触碰",
+   "duration": "8 小时",
+   "conc": false,
+   "ritual": false,
+   "fx": "8 小时 你触碰一个自愿生物，并授予其预示最近未来事件的有限能力。该目标在法术持续时间内无法被突袭，并且其进行的攻击检定、属性检定和豁免检定均具有优势。而其他生物对其进行攻击检定时具有劣势。 如果你在法术持续时间结束前再施展该法术，则原法术效应即时终止。",
+   "comp": "V、S、M（一根蜂鸟的羽毛）",
+   "src": "PHB",
+   "anchor": "Foresight"
+  },
+  {
+   "key": "gate",
+   "name": "异界之门",
+   "level": 9,
+   "school": "咒法",
+   "classes": [
+    "cleric",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你召唤一扇传送门将施法距离内你能看到的一处未占据空间与一个不同位面的特定地点连接在一起。传送门是你打开的一个直径 5 到 20 尺的圆形开口。其开口朝向你指定的任意方向，并持续至法术终止。 传送门在某个位面显现时有着明确的正反面。只有从正面穿过传送门的事物才能实现其传送功能，从而传送至另一位面，并…",
+   "comp": "V、S、M（一枚价值至少 5000gp 的钻石）",
+   "src": "PHB",
+   "anchor": "Gate"
+  },
+  {
+   "key": "imprisonment",
+   "name": "禁锢术",
+   "level": 9,
+   "school": "防护",
+   "classes": [
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 分钟",
+   "range": "30 尺",
+   "duration": "直至被解除",
+   "conc": false,
+   "ritual": false,
+   "fx": "直至被解除 你创造一个魔法监牢，将施法距离内一个你能看见的生物监禁于其内。目标必须进行一次感知豁免，豁免失败则被该法术禁锢；对于成功通过豁免的生物，若你再次对其施展该法术，则它对该法术免疫。被该法术禁锢时，目标生物不需要呼吸，不需要吃喝，也不会变老。预言法术也无法定位或感知到该目标。你在施展该法术时从下列选项中选择一种…",
+   "comp": "V、S、M（一张写有对目标详细描述的牛皮纸或者一个与目标相似的小雕像，以及对应所选择法术版本的特殊材料，其价值为对应目标每粒生命骰至少花费 500gp）",
+   "src": "PHB",
+   "anchor": "Imprisonment"
+  },
+  {
+   "key": "massHeal",
+   "name": "群体医疗术",
+   "level": 9,
+   "school": "塑能",
+   "classes": [
+    "cleric"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 泉涌般的治愈能量从你流向你周围受伤的生物。你为施法距离内任意数量你能看见的生物恢复总计至多 700 点生命值，而具体治疗量则由你随意分配。受该法术所治疗的生物其所有疾病以及导致它们目盲或耳聋的效应也一并被治愈。该法术对亡灵和构装生物无效。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Mass_Heal"
+  },
+  {
+   "key": "meteorSwarm",
+   "name": "流星爆",
+   "level": 9,
+   "school": "塑能",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "1里",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 指定施法距离内四个你能看见的不同地点，并使熊熊燃烧的流星垂直坠落其地面。爆破的流星影响以指定点为中心，周边 40 尺半径的球状区域，区域影响会绕过拐角扩散。区域内的每个生物必须进行一次敏捷豁免。豁免失败者将受到 20d6 的火焰伤害和 20d6 的钝击伤害，豁免成功则伤害减半。另外，同时处于多个爆炸范围内的生物仍…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Meteor_Swarm"
+  },
+  {
+   "key": "powerWordHeal",
+   "name": "律令医疗",
+   "level": 9,
+   "school": "塑能",
+   "classes": [
+    "cleric",
+    "bard"
+   ],
+   "time": "1 动作",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 一波治疗能量覆盖你所触碰的生物，并使目标恢复其所有的生命值。如果该生物正处于魅惑、恐慌、麻痹、震慑状态，此类状态将立刻终止。如果该生物正处于倒地状态，则他可以执行其反应站起。该法术无法对亡灵和构装生物生效。",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Power_Word_Heal"
+  },
+  {
+   "key": "powerWordKill",
+   "name": "律令死亡",
+   "level": 9,
+   "school": "惑控",
+   "classes": [
+    "bard",
+    "sorcerer",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你读出一威力满溢的单词，其足以使施法距离内一个你能看见的生物立即死亡。如果你所指定的生物现有生命值不超过 100 点，则其立即死亡。否则该法术不产生任何效应。",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Power_Word_Kill"
+  },
+  {
+   "key": "prismaticWall",
+   "name": "虹光法墙",
+   "level": 9,
+   "school": "防护",
+   "classes": [
+    "bard",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "60 尺",
+   "duration": "10 分钟",
+   "conc": false,
+   "ritual": false,
+   "fx": "10 分钟 由光构成的闪光多彩平面形成一幅不透光的墙壁。墙壁垂直于地面，其至多长 90 尺，高 30 尺，厚 1 寸，并以施法距离内你能看见的一点为源点。你也可以将此墙塑造成一个直径至多 30 尺的球体，并以施法距离内你能看到的一点为中心。法墙在法术持续时间内维持在原地。如果定位法墙位置时可能使其穿过有生物占据的空间，…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Prismatic_Wall"
+  },
+  {
+   "key": "shapechange",
+   "name": "形体变化",
+   "level": 9,
+   "school": "变化",
+   "classes": [
+    "druid",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你在法术持续时间内变形为另一个生物。你的新形态可以是任何挑战等级小于等于你等级的生物。该类生物不能是构装生物或亡灵，而且你必须见过该类生物至少一次。你变形成该类生物中一个普通的个体，没有任何职业等级，也不具有施法特性。 你的游戏资料以目标生物的数据代替，但你的阵营，以及智力、感知和魅力值不变。你同…",
+   "comp": "V、S、M（至少价值 1500gp 的玉环，施法时将环戴在头上）",
+   "src": "PHB",
+   "anchor": "Shapechange"
+  },
+  {
+   "key": "stormOfVengeance",
+   "name": "复仇风暴",
+   "level": 9,
+   "school": "咒法",
+   "classes": [
+    "druid"
+   ],
+   "time": "1 动作",
+   "range": "视野",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 一团翻腾搅动的乌云并以你能看见的一点为中心一直扩散至半径 360 尺的区域，并使该区域内充斥着电闪雷鸣与狂风呼啸。所有位于云团下的生物（处于云团下方 5000 尺内）必须进行一次体质豁免。豁免失败者将受到 2d6 点雷鸣伤害，并陷入持续 5 分钟的耳聋状态。 你每维持一轮该法术的专注，风暴就会在你…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Storm_of_Vengeance"
+  },
+  {
+   "key": "timeStop",
+   "name": "时间停止",
+   "level": 9,
+   "school": "变化",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你使时间在除你之外所有生物的世界中暂时停止流动。你一次性进行 1d4+1 个回合，在这段过程内时间对于其他生物来说是静止的，但你可以像正常一样移动和使用动作。 在法术持续时间内，如果你的一个动作或任何你创造出来的效应影响到除你之外的任何生物，或影响到其他生物着装或携带的物件时，该法术将立即终止。此外，如果你在施法…",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Time_Stop"
+  },
+  {
+   "key": "truePolymorph",
+   "name": "完全变形术",
+   "level": 9,
+   "school": "变化",
+   "classes": [
+    "bard",
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "30 尺",
+   "duration": "至多 1 小时",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 小时 你指定施法距离内一个你能看见的生物或物件并使其变形。该法术无法对 0 生命值目标生效。你可以将目标生物变成另一个不同的生物，或将目标生物变成一个非魔法物件，又或者将目标物件变成一个生物（该物件必须没有被任何生物着装或携带）。变形效应持续到法术持续时间结束，或直至目标生命值降至 0 或目标死亡。如果…",
+   "comp": "V、S、M（一滴水银，一团阿拉伯胶以及一缕烟）",
+   "src": "PHB",
+   "anchor": "True_Polymorph"
+  },
+  {
+   "key": "trueResurrection",
+   "name": "完全复生术",
+   "level": 9,
+   "school": "死灵",
+   "classes": [
+    "cleric",
+    "druid"
+   ],
+   "time": "1 小时",
+   "range": "触碰",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 你触碰一个已死的生物使其复活。该生物的死亡时间必须不超过 200 年，且死因不能是老死。如果该生物的灵魂愿意并且能够回到其身体中，则它将以生命值全满的状态复活。 该法术能治愈所有致命伤，中和一切毒素与疾病，并解除其生前所受的一切诅咒。该法术甚至能恢复其损伤或失去的器官和肢体。若生物曾经是亡灵，则它恢复至其非亡灵形…",
+   "comp": "V、S、M（少量圣水和至少价值 25000gp 的钻石，作为该法术的耗材）",
+   "src": "PHB",
+   "anchor": "True_Resurrection"
+  },
+  {
+   "key": "weird",
+   "name": "怪影杀手",
+   "level": 9,
+   "school": "幻术",
+   "classes": [
+    "wizard",
+    "warlock"
+   ],
+   "time": "1 动作",
+   "range": "120尺",
+   "duration": "至多 1 分钟",
+   "conc": true,
+   "ritual": false,
+   "fx": "专注，至多 1 分钟 你利用一群生物最恐惧的事物，在它们的心中创造出一个只有它们自己能看见的虚幻生物。指定施法距离内一点为中心，其周边半径 30 尺球状区域内的所有生物必须进行一次感知豁免。豁免失败者将在法术终止前陷入恐慌。该法术造出的幻象能唤起受术者心中最深的恐惧，使它最恐怖的噩梦显现为一个永远无法摆脱的威胁。如果生…",
+   "comp": "V、S",
+   "src": "PHB",
+   "anchor": "Weird"
+  },
+  {
+   "key": "wish",
+   "name": "祈愿术",
+   "level": 9,
+   "school": "咒法",
+   "classes": [
+    "sorcerer",
+    "wizard"
+   ],
+   "time": "1 动作",
+   "range": "自身",
+   "duration": "立即",
+   "conc": false,
+   "ritual": false,
+   "fx": "立即 祈愿术是凡间生物所能施展的最强大法术。你只需要大声说出自己的愿望就能将现实世界的根基操弄于手中。 此法术最基础的用法是用来模仿任意一个八环或更低环阶的法术。你不需要满足目标法术所需的任何前提条件（包括昂贵的材料成分）就可以让该法术生效。 除此之外，你也可以选择创造下列效应其中之一：",
+   "comp": "V",
+   "src": "PHB",
+   "anchor": "Wish"
+  }
+ ]
+}

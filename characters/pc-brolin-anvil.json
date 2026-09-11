@@ -1,0 +1,172 @@
+{
+  "schema": "dnd5e.character.v1",
+  "id": "pc-brolin-anvil",
+  "name": "布洛林·铁砧",
+  "player": "示例玩家",
+  "level": 1,
+  "xp": 84,
+  "alignment": "守序善良",
+  "race": "dwarf/mountain",
+  "classes": [
+    {
+      "class": "fighter",
+      "level": 1
+    }
+  ],
+  "background": "soldier",
+  "abilityMethod": "standard-array",
+  "abilities": {
+    "str": 17,
+    "dex": 13,
+    "con": 16,
+    "int": 10,
+    "wis": 12,
+    "cha": 8
+  },
+  "savingThrowProfs": [
+    "str",
+    "con"
+  ],
+  "skillProfs": [
+    "athletics",
+    "intimidation",
+    "perception",
+    "insight"
+  ],
+  "skillExpertise": [],
+  "armor": {
+    "key": "chainMail",
+    "shield": true
+  },
+  "weapons": [
+    "longsword",
+    "handaxe"
+  ],
+  "otherProfs": [
+    "vehicles(land)",
+    "gamingSet(dice)"
+  ],
+  "features": {
+    "race": [
+      "darkvision60",
+      "dwarvenResilience",
+      "dwarvenCombatTraining",
+      "stonecunning",
+      "armorTraining"
+    ],
+    "class": [
+      "fightingStyle",
+      "secondWind"
+    ],
+    "background": [
+      "militaryRank"
+    ]
+  },
+  "spellcasting": null,
+  "hp": {
+    "current": 7,
+    "max": 13,
+    "temp": 0,
+    "hitDiceTotal": "1d10",
+    "hitDiceUsed": 0
+  },
+  "resources": {
+    "secondWind": {
+      "used": false
+    }
+  },
+  "inventory": [
+    {
+      "key": "chainMail",
+      "name": "链甲",
+      "qty": 1,
+      "cat": "armor",
+      "kind": "armor"
+    },
+    {
+      "key": "shield",
+      "name": "盾牌",
+      "qty": 1,
+      "cat": "shield",
+      "kind": "shield",
+      "acBonus": 2
+    },
+    {
+      "key": "longsword",
+      "name": "长剑",
+      "qty": 1,
+      "cat": "weapon",
+      "kind": "weapon",
+      "damage": "1d8",
+      "dmgType": "slashing",
+      "props": [
+        "versatile(1d10)"
+      ]
+    },
+    {
+      "key": "handaxe",
+      "name": "手斧",
+      "qty": 1,
+      "cat": "weapon",
+      "kind": "weapon",
+      "damage": "1d6",
+      "dmgType": "slashing",
+      "props": [
+        "light",
+        "thrown(20/60)"
+      ]
+    }
+  ],
+  "currency": {
+    "gp": 0,
+    "sp": 0,
+    "cp": 0
+  },
+  "conditions": [],
+  "inspiration": false,
+  "notes": "Phase-1 垂直切片示例：山丘矮人战士·军人背景，链甲+盾。",
+  "meta": {
+    "schemaVersion": "dnd5e.character.v1",
+    "campaign": null,
+    "createdAt": "2025-01-01T00:00:00Z",
+    "updatedAt": "2026-09-11T10:28:18.831Z"
+  },
+  "equipment": {
+    "armor": {
+      "key": "chainMail",
+      "name": "链甲",
+      "base": 16,
+      "dexCap": 0,
+      "category": "heavy",
+      "magicBonus": 0
+    },
+    "shield": {
+      "key": "shield",
+      "name": "盾牌",
+      "acBonus": 2,
+      "magicBonus": 0
+    },
+    "mainHand": {
+      "key": "longsword",
+      "name": "长剑",
+      "damage": "1d8",
+      "dmgType": "slashing",
+      "props": [
+        "versatile(1d10)"
+      ],
+      "magicBonus": 0
+    },
+    "offHand": {
+      "key": "handaxe",
+      "name": "手斧",
+      "damage": "1d6",
+      "dmgType": "slashing",
+      "props": [
+        "light",
+        "thrown(20/60)"
+      ],
+      "magicBonus": 0
+    },
+    "worn": []
+  }
+}

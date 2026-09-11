@@ -1,0 +1,29 @@
+# 构建与运行产物（exe 由 tools/build-exe.mjs 生成，勿入库）
+build/
+dist/
+node_modules/
+*.exe
+server.out.log
+server.err.log
+server.log
+
+# 本地凭据与 AI 对话（不可提交）
+data/ai.json
+data/ai.*.json
+!data/ai.example.json
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# 本机运行记录、编辑器缓存与临时文件
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+# 本地参考语料，运行引擎不依赖这些 HTML
+engine/_src-phb/

@@ -1,0 +1,69 @@
+{
+  "id": "demo-village",
+  "name": "示例：溪边营地（瓦片展示）",
+  "campaign": "瓦片示例",
+  "w": 18,
+  "h": 12,
+  "cell": 5,
+  "terrain": [
+    "######g~ggggggggbg",
+    "######g~gTgggggggb",
+    "ggggxg,~gsgggggggg",
+    "gggTggg~sgbbb+bbgg",
+    "ggggggg~,gwwwwwwgg",
+    "gggggTs=ggwffwwwTg",
+    "ggggTsg=ggwwfwwwgg",
+    "ggggsgg~ggwwww!wgg",
+    "ggTsgxg~g,wwwwwwgg",
+    "ggsggg,~ggggggggcg",
+    "gsggggg~gggTgxgTgc",
+    "ggvvvgg~gggggggggg"
+  ],
+  "tokens": [
+    {
+      "id": "d1",
+      "name": "向导",
+      "kind": "ally",
+      "x": 3,
+      "y": 9,
+      "hp": 11,
+      "max": 11,
+      "speed": 30,
+      "note": "半精灵游侠｜AC14"
+    },
+    {
+      "id": "d2",
+      "name": "冒险者",
+      "kind": "pc",
+      "x": 2,
+      "y": 9,
+      "hp": 16,
+      "max": 16,
+      "speed": 30,
+      "note": "示例玩家角色"
+    },
+    {
+      "id": "d3",
+      "name": "狼A",
+      "kind": "enemy",
+      "x": 9,
+      "y": 3,
+      "hp": 11,
+      "max": 11,
+      "speed": 40,
+      "note": "AC13｜啃咬+4 1d6+2"
+    },
+    {
+      "id": "d4",
+      "name": "狼B",
+      "kind": "enemy",
+      "x": 10,
+      "y": 8,
+      "hp": 11,
+      "max": 11,
+      "speed": 40,
+      "note": "AC13｜啃咬+4 1d6+2"
+    }
+  ],
+  "updatedAt": "2026-09-11T09:23:36.095Z"
+}

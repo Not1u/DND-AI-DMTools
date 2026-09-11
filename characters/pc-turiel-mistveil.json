@@ -1,0 +1,171 @@
+{
+  "schema": "dnd5e.character.v1",
+  "id": "pc-turiel-mistveil",
+  "name": "图里尔·雾纱",
+  "player": "示例玩家二",
+  "level": 2,
+  "xp": 300,
+  "alignment": "中立善良",
+  "race": "elf/high",
+  "classes": [
+    {
+      "class": "wizard",
+      "level": 2
+    }
+  ],
+  "background": "sage",
+  "abilityMethod": "standard-array",
+  "abilities": {
+    "str": 8,
+    "dex": 15,
+    "con": 13,
+    "int": 16,
+    "wis": 12,
+    "cha": 10
+  },
+  "savingThrowProfs": [
+    "int",
+    "wis"
+  ],
+  "skillProfs": [
+    "arcana",
+    "history",
+    "investigation",
+    "insight"
+  ],
+  "skillExpertise": [],
+  "armor": null,
+  "weapons": [
+    "dagger",
+    "quarterstaff"
+  ],
+  "otherProfs": [
+    "language(2): 精灵语/通用语已含",
+    "spellbook"
+  ],
+  "features": {
+    "race": [
+      "darkvision60",
+      "keenSenses",
+      "feyAncestry",
+      "trance",
+      "cantrip"
+    ],
+    "class": [
+      "spellcasting",
+      "arcaneRecovery"
+    ],
+    "background": [
+      "researcher"
+    ],
+    "custom": []
+  },
+  "spellcasting": {
+    "ability": "int",
+    "dc": 13,
+    "attackBonus": 5,
+    "cantrips": [
+      "fireBolt",
+      "mageHand",
+      "minorIllusion"
+    ],
+    "spells": [
+      "detectMagic",
+      "magicMissile",
+      "shield",
+      "mageArmor",
+      "burningHands",
+      "chromaticOrb"
+    ],
+    "spellbookCount": 6,
+    "preparedFormulaNote": "int修正+等级",
+    "note": "法术名录(spells.json)待接入；本轮先验证施法派生值"
+  },
+  "hp": {
+    "current": 8,
+    "max": 12,
+    "temp": 0,
+    "hitDiceTotal": "1d6",
+    "hitDiceUsed": 0
+  },
+  "resources": {
+    "arcaneRecovery": {
+      "used": false
+    }
+  },
+  "inventory": [
+    {
+      "key": "dagger",
+      "name": "匕首",
+      "qty": 1,
+      "cat": "weapon",
+      "kind": "weapon",
+      "damage": "1d4",
+      "dmgType": "piercing",
+      "props": [
+        "finesse",
+        "light",
+        "thrown(20/60)"
+      ]
+    },
+    {
+      "key": "quarterstaff",
+      "name": "长棍",
+      "qty": 1,
+      "cat": "weapon",
+      "kind": "weapon",
+      "damage": "1d6",
+      "dmgType": "bludgeoning",
+      "props": [
+        "versatile(1d8)"
+      ]
+    }
+  ],
+  "currency": {
+    "gp": 0,
+    "sp": 0,
+    "cp": 0
+  },
+  "conditions": [],
+  "inspiration": false,
+  "notes": "Phase-2 示例：高等精灵法师·学者背景，验证 full-caster 派生路径。\n升至 法师 Lv2（测试）",
+  "meta": {
+    "schemaVersion": "dnd5e.character.v1",
+    "campaign": null,
+    "createdAt": "2025-01-02T00:00:00Z",
+    "updatedAt": "2026-09-11T11:24:52.628Z"
+  },
+  "equipment": {
+    "armor": null,
+    "shield": null,
+    "mainHand": {
+      "key": "dagger",
+      "name": "匕首",
+      "damage": "1d4",
+      "dmgType": "piercing",
+      "props": [
+        "finesse",
+        "light",
+        "thrown(20/60)"
+      ],
+      "magicBonus": 0
+    },
+    "offHand": {
+      "key": "quarterstaff",
+      "name": "长棍",
+      "damage": "1d6",
+      "dmgType": "bludgeoning",
+      "props": [
+        "versatile(1d8)"
+      ],
+      "magicBonus": 0
+    },
+    "worn": []
+  },
+  "choices": {},
+  "subclass": {
+    "key": "evocation",
+    "name": "塑能学派",
+    "picks": {}
+  }
+}

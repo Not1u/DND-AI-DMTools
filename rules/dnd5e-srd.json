@@ -1,0 +1,146 @@
+{
+  "schema": "dnd5e.srd.rules.v2",
+  "note": "SRD 5.1 seed. Only options present here may be used; anything unlisted is refused (fail-closed). Spell-name catalog & subclass/domain data are added in a later pass; numeric tables (slots, hit dice, saves, AC) are complete for levels 1-20.",
+  "core": {
+    "abilityOrder": ["str", "dex", "con", "int", "wis", "cha"],
+    "proficiencyBonusByLevel": [2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6],
+    "xpByLevel": [0, 300, 900, 2700, 6500, 14000, 23000, 34000, 48000, 64000, 85000, 100000, 120000, 140000, 165000, 195000, 225000, 265000, 305000, 355000],
+    "skillsByAbility": {
+      "acrobatics": "dex", "animalHandling": "wis", "arcana": "int", "athletics": "str",
+      "deception": "cha", "history": "int", "insight": "wis", "intimidation": "cha",
+      "investigation": "int", "medicine": "wis", "nature": "int", "perception": "wis",
+      "performance": "cha", "persuasion": "cha", "religion": "int", "sleightOfHand": "dex",
+      "stealth": "dex", "survival": "wis"
+    },
+    "spellSlots": {
+      "full": [
+        [2], [3], [4, 2], [4, 3], [4, 3, 2], [4, 3, 3], [4, 3, 3, 1], [4, 3, 3, 2], [4, 3, 3, 3, 1], [4, 3, 3, 3, 2],
+        [4, 3, 3, 3, 2, 1], [4, 3, 3, 3, 2, 1, 1], [4, 3, 3, 3, 2, 1, 1], [4, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 2, 1, 1, 1],
+        [4, 3, 3, 3, 2, 1, 1, 1, 1], [4, 3, 3, 3, 3, 1, 1, 1, 1], [4, 3, 3, 3, 3, 1, 1, 1, 1], [4, 3, 3, 3, 3, 2, 1, 1, 1], [4, 3, 3, 3, 3, 2, 2, 1, 1]
+      ],
+      "half": [
+        [], [2], [3], [3], [4, 2], [4, 2], [4, 3], [4, 3], [4, 3, 2], [4, 3, 2],
+        [4, 3, 3], [4, 3, 3], [4, 3, 3, 1], [4, 3, 3, 1], [4, 3, 3, 2], [4, 3, 3, 2], [4, 3, 3, 3, 1], [4, 3, 3, 3, 1], [4, 3, 3, 3, 2], [4, 3, 3, 3, 2]
+      ],
+      "warlock": [
+        { "slots": 1, "maxLevel": 1 }, { "slots": 2, "maxLevel": 1 }, { "slots": 2, "maxLevel": 2 }, { "slots": 2, "maxLevel": 2 }, { "slots": 2, "maxLevel": 3 },
+        { "slots": 2, "maxLevel": 3 }, { "slots": 2, "maxLevel": 4 }, { "slots": 2, "maxLevel": 4 }, { "slots": 2, "maxLevel": 5 }, { "slots": 2, "maxLevel": 5 },
+        { "slots": 3, "maxLevel": 5 }, { "slots": 3, "maxLevel": 5 }, { "slots": 3, "maxLevel": 5 }, { "slots": 3, "maxLevel": 5 }, { "slots": 3, "maxLevel": 5 },
+        { "slots": 3, "maxLevel": 5 }, { "slots": 4, "maxLevel": 5 }, { "slots": 4, "maxLevel": 5 }, { "slots": 4, "maxLevel": 5 }, { "slots": 4, "maxLevel": 5 }
+      ]
+    }
+  },
+  "armor": {
+    "unarmored": { "category": "none", "base": 10, "dexCap": null, "minStr": null, "stealthDisadv": false },
+    "padded": { "category": "light", "base": 11, "dexCap": null, "minStr": null, "stealthDisadv": true },
+    "leather": { "category": "light", "base": 11, "dexCap": null, "minStr": null, "stealthDisadv": false },
+    "studdedLeather": { "category": "light", "base": 12, "dexCap": null, "minStr": null, "stealthDisadv": false },
+    "hide": { "category": "medium", "base": 12, "dexCap": 2, "minStr": null, "stealthDisadv": false },
+    "chainShirt": { "category": "medium", "base": 13, "dexCap": 2, "minStr": null, "stealthDisadv": false },
+    "scaleMail": { "category": "medium", "base": 14, "dexCap": 2, "minStr": null, "stealthDisadv": true },
+    "breastplate": { "category": "medium", "base": 14, "dexCap": 2, "minStr": null, "stealthDisadv": false },
+    "halfPlate": { "category": "medium", "base": 15, "dexCap": 2, "minStr": null, "stealthDisadv": true },
+    "ringMail": { "category": "heavy", "base": 14, "dexCap": 0, "minStr": null, "stealthDisadv": true },
+    "chainMail": { "category": "heavy", "base": 16, "dexCap": 0, "minStr": 13, "stealthDisadv": true },
+    "splint": { "category": "heavy", "base": 17, "dexCap": 0, "minStr": 15, "stealthDisadv": true },
+    "plate": { "category": "heavy", "base": 18, "dexCap": 0, "minStr": 15, "stealthDisadv": true },
+    "shieldBonus": 2
+  },
+  "races": [
+    { "key": "dwarf/mountain", "name": "矮人·山丘", "size": "Medium", "speed": 25, "asi": [["str", 2], ["con", 2]], "darkvision": 60, "languages": ["Common", "Dwarvish"], "features": [["darkvision60", "黑暗视觉 60 尺"], ["dwarvenResilience", "矮人韧性"], ["dwarvenCombatTraining", "矮人战斗训练"], ["stonecunning", "石之机敏"], ["armorTraining", "山丘矮人护甲训练"]] },
+    { "key": "dwarf/hill", "name": "矮人·丘陵", "size": "Medium", "speed": 25, "asi": [["con", 2], ["wis", 1]], "darkvision": 60, "languages": ["Common", "Dwarvish"], "features": [["darkvision60", "黑暗视觉 60 尺"], ["dwarvenResilience", "矮人韧性"], ["dwarvenToughness", "矮人坚韧"], ["stonecunning", "石之机敏"]] },
+    { "key": "elf/high", "name": "精灵·高等", "size": "Medium", "speed": 30, "asi": [["dex", 2], ["int", 1]], "darkvision": 60, "languages": ["Common", "Elvish"], "features": [["darkvision60", "黑暗视觉 60 尺"], ["keenSenses", "敏锐感官"], ["feyAncestry", "妖精血统"], ["trance", "精灵冥想"], ["cantrip", "高等精灵戏法"]] },
+    { "key": "elf/wood", "name": "精灵·木", "size": "Medium", "speed": 35, "asi": [["dex", 2], ["wis", 1]], "darkvision": 60, "languages": ["Common", "Elvish"], "features": [["darkvision60", "黑暗视觉 60 尺"], ["keenSenses", "敏锐感官"], ["feyAncestry", "妖精血统"], ["trance", "精灵冥想"], ["maskOfWild", "野性面具"]] },
+    { "key": "elf/drow", "name": "卓尔精灵", "size": "Medium", "speed": 30, "asi": [["dex", 2], ["cha", 1]], "darkvision": 120, "languages": ["Common", "Elvish", "Undercommon"], "features": [["darkvision120", "黑暗视觉 120 尺"], ["keenSenses", "敏锐感官"], ["feyAncestry", "妖精血统"], ["trance", "精灵冥想"], ["sunlightSensitivity", "阳光敏感"]] },
+    { "key": "halfling/lightfoot", "name": "半身人·轻足", "size": "Small", "speed": 25, "asi": [["dex", 2], ["cha", 1]], "languages": ["Common", "Halfling"], "features": [["lucky", "幸运"], ["brave", "勇敢"], ["halflingNimbleness", "半身人灵巧"], ["naturallyStealthy", "天生隐匿"]] },
+    { "key": "halfling/stout", "name": "半身人·壮心", "size": "Small", "speed": 25, "asi": [["dex", 2], ["con", 1]], "languages": ["Common", "Halfling"], "features": [["lucky", "幸运"], ["brave", "勇敢"], ["halflingNimbleness", "半身人灵巧"], ["stoutResilience", "壮心韧抗"]] },
+    { "key": "human", "name": "人类", "size": "Medium", "speed": 30, "asi": [["str", 1], ["dex", 1], ["con", 1], ["int", 1], ["wis", 1], ["cha", 1]], "languages": ["Common"], "features": [] },
+    { "key": "dragonborn", "name": "龙裔", "size": "Medium", "speed": 30, "asi": [["str", 2], ["cha", 1]], "languages": ["Common", "Draconic"], "features": [["draconicAncestry", "龙族血统"], ["breathWeapon", "吐息武器"], ["damageResistance", "伤害抗性"]] },
+    { "key": "gnome/forest", "name": "侏儒·森林", "size": "Small", "speed": 25, "asi": [["int", 2], ["dex", 1]], "darkvision": 60, "languages": ["Common", "Gnomish"], "features": [["darkvision60", "黑暗视觉 60 尺"], ["gnomeCunning", "侏儒机敏"], ["speakWithSmallBeasts", "与小动物交谈"]] },
+    { "key": "gnome/rock", "name": "侏儒·岩石", "size": "Small", "speed": 25, "asi": [["int", 2], ["con", 1]], "darkvision": 60, "languages": ["Common", "Gnomish"], "features": [["darkvision60", "黑暗视觉 60 尺"], ["gnomeCunning", "侏儒机敏"], ["artificersLore", "工匠学识"], ["tinker", "工匠造物"]] },
+    { "key": "half-elf", "name": "半精灵", "size": "Medium", "speed": 30, "asi": [["cha", 2], ["choose", 2]], "darkvision": 60, "languages": ["Common", "Elvish"], "features": [["darkvision60", "黑暗视觉 60 尺"], ["feyAncestry", "妖精血统"], ["skillVersatility", "技能多样"]] },
+    { "key": "half-orc", "name": "半兽人", "size": "Medium", "speed": 30, "asi": [["str", 2], ["con", 1]], "darkvision": 60, "languages": ["Common", "Orc"], "features": [["darkvision60", "黑暗视觉 60 尺"], ["menacing", "威慑"], ["relentlessEndurance", "不屈坚韧"], ["savageAttacks", "凶蛮攻击"]] },
+    { "key": "tiefling", "name": "提夫林", "size": "Medium", "speed": 30, "asi": [["cha", 2], ["int", 1]], "darkvision": 60, "languages": ["Common", "Infernal"], "features": [["darkvision60", "黑暗视觉 60 尺"], ["hellishResistance", "地狱抗性"], ["infernalLegacy", "地狱遗泽"]] }
+  ],
+  "classes": {
+    "available": ["barbarian", "bard", "cleric", "druid", "fighter", "monk", "paladin", "ranger", "rogue", "sorcerer", "warlock", "wizard"],
+    "barbarian": { "name": "野蛮人", "hitDie": "d12", "hitDieBase": 12, "levelUpHitDieAverage": 7, "primaryAbility": "str", "saveProfs": ["str", "con"], "armorProfs": ["light", "medium", "shields"], "weaponProfs": ["simple", "martial"], "tools": [], "skillCount": 2, "skillOptions": ["animalHandling", "athletics", "intimidation", "nature", "perception", "survival"], "casting": null, "level1Features": [["rage", "狂暴"], ["unarmoredDefense", "无甲防御"]] },
+    "bard": { "name": "吟游诗人", "hitDie": "d8", "hitDieBase": 8, "levelUpHitDieAverage": 5, "primaryAbility": "cha", "saveProfs": ["dex", "cha"], "armorProfs": ["light"], "weaponProfs": ["simple", "handCrossbow", "longsword", "rapier", "shortsword"], "tools": ["musicalInstrument(3)"], "skillCount": 3, "skillOptions": ["acrobatics", "animalHandling", "arcana", "athletics", "deception", "history", "insight", "intimidation", "investigation", "medicine", "nature", "perception", "performance", "persuasion", "religion", "sleightOfHand", "stealth", "survival"], "casting": { "ability": "cha", "kind": "full", "ritual": true, "focus": true, "cantripsKnown": [2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4] }, "level1Features": [["spellcasting", "施法"], ["bardicInspiration", "吟游激励"]] },
+    "cleric": { "name": "牧师", "hitDie": "d8", "hitDieBase": 8, "levelUpHitDieAverage": 5, "primaryAbility": "wis", "saveProfs": ["wis", "cha"], "armorProfs": ["light", "medium", "shields"], "weaponProfs": ["simple"], "tools": [], "skillCount": 2, "skillOptions": ["history", "insight", "medicine", "persuasion", "religion"], "casting": { "ability": "wis", "kind": "full", "ritual": true, "focus": true, "preparedFormula": "ability+level", "cantripsKnown": [3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5] }, "level1Features": [["spellcasting", "施法"], ["divineDomain", "神域(待子类数据)"]] },
+    "druid": { "name": "德鲁伊", "hitDie": "d8", "hitDieBase": 8, "levelUpHitDieAverage": 5, "primaryAbility": "wis", "saveProfs": ["int", "wis"], "armorProfs": ["light", "medium", "shields"], "weaponProfs": ["club", "dagger", "dart", "javelin", "mace", "quarterstaff", "scimitar", "sickle", "sling", "spear"], "tools": ["herbalismKit"], "skillCount": 2, "skillOptions": ["arcana", "animalHandling", "insight", "medicine", "nature", "perception", "religion", "survival"], "casting": { "ability": "wis", "kind": "full", "ritual": true, "focus": true, "preparedFormula": "ability+level", "cantripsKnown": [2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4] }, "level1Features": [["spellcasting", "施法"], ["druidic", "德鲁伊语"]] },
+    "fighter": { "name": "战士", "hitDie": "d10", "hitDieBase": 10, "levelUpHitDieAverage": 6, "primaryAbility": "str", "saveProfs": ["str", "con"], "armorProfs": ["all", "shields"], "weaponProfs": ["simple", "martial"], "tools": [], "skillCount": 2, "skillOptions": ["acrobatics", "animalHandling", "athletics", "history", "insight", "intimidation", "perception", "survival"], "casting": null, "level1Features": [["fightingStyle", "战斗风格"], ["secondWind", "回气"]] },
+    "monk": { "name": "武僧", "hitDie": "d8", "hitDieBase": 8, "levelUpHitDieAverage": 5, "primaryAbility": "dex", "saveProfs": ["str", "dex"], "armorProfs": [], "weaponProfs": ["simple", "shortsword"], "tools": ["artisansTools(1)"], "skillCount": 2, "skillOptions": ["acrobatics", "athletics", "history", "insight", "religion", "stealth"], "casting": null, "level1Features": [["unarmoredDefense", "无甲防御"], ["martialArts", "徒手格斗"]] },
+    "paladin": { "name": "圣武士", "hitDie": "d10", "hitDieBase": 10, "levelUpHitDieAverage": 6, "primaryAbility": "str", "saveProfs": ["wis", "cha"], "armorProfs": ["all", "shields"], "weaponProfs": ["simple", "martial"], "tools": [], "skillCount": 2, "skillOptions": ["athletics", "insight", "intimidation", "medicine", "persuasion", "religion"], "casting": { "ability": "cha", "kind": "half", "ritual": false, "focus": true, "preparedFormula": "ability+level", "cantripsKnown": [], "castsFromLevel": 2 }, "level1Features": [["divineSense", "神感"], ["layOnHands", "圣疗"]] },
+    "ranger": { "name": "游侠", "hitDie": "d10", "hitDieBase": 10, "levelUpHitDieAverage": 6, "primaryAbility": "wis", "saveProfs": ["str", "dex"], "armorProfs": ["light", "medium", "shields"], "weaponProfs": ["simple", "martial"], "tools": [], "skillCount": 3, "skillOptions": ["animalHandling", "athletics", "insight", "investigation", "nature", "perception", "stealth", "survival"], "casting": { "ability": "wis", "kind": "half", "ritual": false, "focus": false, "preparedFormula": "ability+level", "cantripsKnown": [], "castsFromLevel": 2 }, "level1Features": [["favoredEnemy", "宿敌"], ["naturalExplorer", "自然探索者"]] },
+    "rogue": { "name": "游荡者", "hitDie": "d8", "hitDieBase": 8, "levelUpHitDieAverage": 5, "primaryAbility": "dex", "saveProfs": ["dex", "int"], "armorProfs": ["light"], "weaponProfs": ["simple", "handCrossbow", "longsword", "rapier", "shortsword"], "tools": ["thievesTools"], "skillCount": 4, "skillOptions": ["acrobatics", "athletics", "deception", "insight", "intimidation", "investigation", "perception", "performance", "persuasion", "sleightOfHand", "stealth", "survival"], "casting": null, "level1Features": [["expertise", "精通(2)"], ["sneakAttack", "偷袭"], ["thievesCant", "盗贼黑话"]] },
+    "sorcerer": { "name": "术士", "hitDie": "d6", "hitDieBase": 6, "levelUpHitDieAverage": 4, "primaryAbility": "cha", "saveProfs": ["con", "cha"], "armorProfs": [], "weaponProfs": ["dagger", "dart", "sling", "quarterstaff", "lightCrossbow"], "tools": [], "skillCount": 2, "skillOptions": ["arcana", "deception", "insight", "intimidation", "persuasion", "religion"], "casting": { "ability": "cha", "kind": "full", "ritual": false, "focus": true, "cantripsKnown": [4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6] }, "level1Features": [["spellcasting", "施法"], ["sorcerousOrigin", "术法源流(待子类数据)"]] },
+    "warlock": { "name": "邪术师", "hitDie": "d8", "hitDieBase": 8, "levelUpHitDieAverage": 5, "primaryAbility": "cha", "saveProfs": ["wis", "cha"], "armorProfs": ["light"], "weaponProfs": ["simple"], "tools": [], "skillCount": 2, "skillOptions": ["arcana", "deception", "history", "intimidation", "investigation", "nature", "religion"], "casting": { "ability": "cha", "kind": "pact", "ritual": false, "focus": true, "cantripsKnown": [2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4] }, "level1Features": [["otherworldlyPatron", "异界宗主(待子类数据)"], ["pactMagic", "契约魔法"]] },
+    "wizard": { "name": "法师", "hitDie": "d6", "hitDieBase": 6, "levelUpHitDieAverage": 4, "primaryAbility": "int", "saveProfs": ["int", "wis"], "armorProfs": [], "weaponProfs": ["dagger", "dart", "sling", "quarterstaff", "lightCrossbow"], "tools": [], "skillCount": 2, "skillOptions": ["arcana", "history", "insight", "investigation", "medicine", "religion"], "casting": { "ability": "int", "kind": "full", "ritual": true, "focus": true, "preparedFormula": "ability+level", "spellbookFirstLevel": 6, "cantripsKnown": [3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5] }, "level1Features": [["spellcasting", "施法"], ["arcaneRecovery", "奥术回响"]] }
+  },
+  "backgrounds": {
+    "acolyte": { "name": "侍僧", "skillProfs": ["insight", "religion"], "extraProfs": ["language(2)"], "feature": ["shelterOfTheFaithful", "虔信庇护"], "featureDesc": "你和冒险同伴可在信仰神殿得到免费治疗与照料。" },
+    "charlatan": { "name": "骗子", "skillProfs": ["deception", "sleightOfHand"], "extraProfs": ["disguiseKit", "forgeryKit"], "feature": ["falseIdentity", "假身份"], "featureDesc": "你有一个精心伪造的第二身份与相应文件。" },
+    "criminal": { "name": "罪犯", "skillProfs": ["deception", "stealth"], "extraProfs": ["thievesTools", "gamingSet(choose)"], "feature": ["criminalContact", "犯罪线人"], "featureDesc": "你有一个可靠的线人，可获取所在城市黑市信息。" },
+    "entertainer": { "name": "艺人", "skillProfs": ["acrobatics", "performance"], "extraProfs": ["disguiseKit", "musicalInstrument(choose)"], "feature": ["byPopularDemand", "广受欢迎"], "featureDesc": "你总能找到免费食宿与表演机会，人们会为你掩护。" },
+    "folkHero": { "name": "民间英雄", "skillProfs": ["animalHandling", "survival"], "extraProfs": ["artisansTools(1)", "vehicles(land)"], "feature": ["rusticHospitality", "乡野款待"], "featureDesc": "平民会掩护你并为你提供食宿。" },
+    "guildArtisan": { "name": "行会工匠", "skillProfs": ["insight", "persuasion"], "extraProfs": ["artisansTools(1)", "language(1)"], "feature": ["guildMembership", "行会身份"], "featureDesc": "行会为你提供住所、工坊与同行援助。" },
+    "hermit": { "name": "隐士", "skillProfs": ["medicine", "religion"], "extraProfs": ["herbalismKit", "language(1)"], "feature": ["discovery", "隐居发现"], "featureDesc": "你掌握一段只有你知晓的秘密（由 DM 设计）。" },
+    "noble": { "name": "贵族", "skillProfs": ["history", "persuasion"], "extraProfs": ["gamingSet(1)", "language(1)"], "feature": ["positionOfPrivilege", "特权地位"], "featureDesc": "你的身份让你在上流社会通行无阻。" },
+    "outlander": { "name": "荒野人", "skillProfs": ["athletics", "survival"], "extraProfs": ["musicalInstrument(1)", "language(1)"], "feature": ["wanderer", "流浪者"], "featureDesc": "你有出色的方向感，总能记住走过的地形。" },
+    "sage": { "name": "学者", "skillProfs": ["arcana", "history"], "extraProfs": ["language(2)"], "feature": ["researcher", "研究员"], "featureDesc": "当你不确定一条信息时，常知道该从哪里查证。" },
+    "sailor": { "name": "水手", "skillProfs": ["athletics", "perception"], "extraProfs": ["navigatorsTools", "vehicles(water)"], "feature": ["shipsPassage", "船票"], "featureDesc": "你可以凭工作换取顺路搭船。" },
+    "soldier": { "name": "军人", "skillProfs": ["athletics", "intimidation"], "extraProfs": ["vehicles(land)", "gamingSet(choose)"], "feature": ["militaryRank", "军衔"], "featureDesc": "你凭借军衔在部队中被视为同伴并获得协助。" },
+    "urchin": { "name": "孤儿", "skillProfs": ["sleightOfHand", "stealth"], "extraProfs": ["disguiseKit", "thievesTools"], "feature": ["citySecrets", "城市秘密"], "featureDesc": "你能在城市里穿梭捷径并找到藏身点。" }
+  },
+  "weapons": {
+    "club": { "name": "木棍", "category": "simple", "damage": "1d4", "dmgType": "bludgeoning", "props": ["light"] },
+    "dagger": { "name": "匕首", "category": "simple", "damage": "1d4", "dmgType": "piercing", "props": ["finesse", "light", "thrown(20/60)"] },
+    "greatclub": { "name": "巨棒", "category": "simple", "damage": "1d8", "dmgType": "bludgeoning", "props": ["twoHanded"] },
+    "handaxe": { "name": "手斧", "category": "simple", "damage": "1d6", "dmgType": "slashing", "props": ["light", "thrown(20/60)"] },
+    "javelin": { "name": "标枪", "category": "simple", "damage": "1d6", "dmgType": "piercing", "props": ["thrown(30/120)"] },
+    "lightHammer": { "name": "轻锤", "category": "simple", "damage": "1d4", "dmgType": "bludgeoning", "props": ["light", "thrown(20/60)"] },
+    "mace": { "name": "硬头锤", "category": "simple", "damage": "1d6", "dmgType": "bludgeoning", "props": [] },
+    "quarterstaff": { "name": "长棍", "category": "simple", "damage": "1d6", "dmgType": "bludgeoning", "props": ["versatile(1d8)"] },
+    "sickle": { "name": "镰刀", "category": "simple", "damage": "1d4", "dmgType": "slashing", "props": ["light"] },
+    "spear": { "name": "矛", "category": "simple", "damage": "1d6", "dmgType": "piercing", "props": ["thrown(20/60)", "versatile(1d8)"] },
+    "lightCrossbow": { "name": "轻弩", "category": "simple", "damage": "1d8", "dmgType": "piercing", "props": ["ammunition", "loading", "twoHanded"] },
+    "dart": { "name": "飞镖", "category": "simple", "damage": "1d4", "dmgType": "piercing", "props": ["finesse", "thrown(20/60)"] },
+    "shortbow": { "name": "短弓", "category": "simple", "damage": "1d6", "dmgType": "piercing", "props": ["ammunition", "twoHanded"] },
+    "sling": { "name": "投石索", "category": "simple", "damage": "1d4", "dmgType": "bludgeoning", "props": ["ammunition"] },
+    "battleaxe": { "name": "战斧", "category": "martial", "damage": "1d8", "dmgType": "slashing", "props": ["versatile(1d10)"] },
+    "flail": { "name": "链枷", "category": "martial", "damage": "1d8", "dmgType": "bludgeoning", "props": [] },
+    "glaive": { "name": "大刀", "category": "martial", "damage": "1d10", "dmgType": "slashing", "props": ["heavy", "reach", "twoHanded"] },
+    "greataxe": { "name": "巨斧", "category": "martial", "damage": "1d12", "dmgType": "slashing", "props": ["heavy", "twoHanded"] },
+    "greatsword": { "name": "巨剑", "category": "martial", "damage": "2d6", "dmgType": "slashing", "props": ["heavy", "twoHanded"] },
+    "halberd": { "name": "戟", "category": "martial", "damage": "1d10", "dmgType": "slashing", "props": ["heavy", "reach", "twoHanded"] },
+    "lance": { "name": "骑枪", "category": "martial", "damage": "1d12", "dmgType": "piercing", "props": ["reach", "special"] },
+    "longsword": { "name": "长剑", "category": "martial", "damage": "1d8", "dmgType": "slashing", "props": ["versatile(1d10)"] },
+    "maul": { "name": "巨锤", "category": "martial", "damage": "2d6", "dmgType": "bludgeoning", "props": ["heavy", "twoHanded"] },
+    "morningstar": { "name": "晨星", "category": "martial", "damage": "1d8", "dmgType": "piercing", "props": [] },
+    "pike": { "name": "长枪", "category": "martial", "damage": "1d10", "dmgType": "piercing", "props": ["heavy", "reach", "twoHanded"] },
+    "rapier": { "name": "细剑", "category": "martial", "damage": "1d8", "dmgType": "piercing", "props": ["finesse"] },
+    "scimitar": { "name": "弯刀", "category": "martial", "damage": "1d6", "dmgType": "slashing", "props": ["finesse", "light"] },
+    "shortsword": { "name": "短剑", "category": "martial", "damage": "1d6", "dmgType": "piercing", "props": ["finesse", "light"] },
+    "trident": { "name": "三叉戟", "category": "martial", "damage": "1d6", "dmgType": "piercing", "props": ["thrown(20/60)", "versatile(1d8)"] },
+    "warPick": { "name": "战镐", "category": "martial", "damage": "1d8", "dmgType": "piercing", "props": [] },
+    "warhammer": { "name": "战锤", "category": "martial", "damage": "1d8", "dmgType": "bludgeoning", "props": ["versatile(1d10)"] },
+    "whip": { "name": "长鞭", "category": "martial", "damage": "1d4", "dmgType": "slashing", "props": ["finesse", "reach"] },
+    "blowgun": { "name": "吹箭筒", "category": "martial", "damage": "1", "dmgType": "piercing", "props": ["ammunition", "loading"] },
+    "handCrossbow": { "name": "手弩", "category": "martial", "damage": "1d6", "dmgType": "piercing", "props": ["ammunition", "light", "loading"] },
+    "heavyCrossbow": { "name": "重弩", "category": "martial", "damage": "1d10", "dmgType": "piercing", "props": ["ammunition", "heavy", "loading", "twoHanded"] },
+    "longbow": { "name": "长弓", "category": "martial", "damage": "1d8", "dmgType": "piercing", "props": ["ammunition", "heavy", "twoHanded"] },
+    "net": { "name": "捕网", "category": "martial", "damage": "0", "dmgType": "special", "props": ["special", "thrown(5/15)"] }
+  },
+  "gear": {
+    "packs": {
+      "burglarsPack": "窃贼套装", "diplomatsPack": "外交官套装", "dungeoneersPack": "地城探索套装", "entertainersPack": "艺人套装",
+      "explorersPack": "探险家套装", "monksPack": "武僧套装", "priestsPack": "祭司套装", "scholarsPack": "学者套装",
+      "sagesPack": "贤者套装", "clothesFine": "华服", "clothesTravelers": "旅行者衣物", "backpack": "背包",
+      "ropeHempen": "麻绳(50尺)", "waterskin": "水袋", "rations": "干粮(10天)", "tinderbox": "打火匣", "torch": "火把(10)", "pouch": "皮袋"
+    },
+    "tools": {
+      "artisansTools": "工匠工具", "disguiseKit": "易容工具", "forgeryKit": "伪造工具", "gamingSet": "赌具", "herbalismKit": "草药工具",
+      "musicalInstrument": "乐器", "navigatorsTools": "航海工具", "thievesTools": "盗贼工具", "vehicles": "载具", "language": "语言"
+    }
+  }
+}

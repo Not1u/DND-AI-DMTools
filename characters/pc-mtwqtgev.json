@@ -1,0 +1,187 @@
+{
+  "schema": "dnd5e.character.v1",
+  "id": "pc-mtwqtgev",
+  "name": "123",
+  "player": "",
+  "level": 5,
+  "xp": 0,
+  "alignment": null,
+  "race": "dwarf/mountain",
+  "classes": [
+    {
+      "class": "sorcerer",
+      "level": 4
+    },
+    {
+      "class": "bard",
+      "level": 1
+    }
+  ],
+  "abilityMethod": "point-buy",
+  "abilities": {
+    "str": 12,
+    "dex": 8,
+    "con": 10,
+    "int": 15,
+    "wis": 15,
+    "cha": 15
+  },
+  "savingThrowProfs": [
+    "con",
+    "cha"
+  ],
+  "skillProfs": [
+    "arcana",
+    "insight"
+  ],
+  "skillExpertise": [],
+  "armor": null,
+  "weapons": [
+    "dagger",
+    "sling"
+  ],
+  "otherProfs": [
+    "thievesTools",
+    "gamingSet(choose)"
+  ],
+  "features": {
+    "race": [
+      "darkvision60",
+      "dwarvenResilience",
+      "dwarvenCombatTraining",
+      "stonecunning",
+      "armorTraining"
+    ],
+    "class": [
+      "spellcasting",
+      "sorcerousOrigin",
+      "bardicInspiration"
+    ],
+    "background": [
+      "criminalContact"
+    ]
+  },
+  "subclass": {
+    "key": "draconic",
+    "name": "龙裔血脉",
+    "picks": {
+      "dragon": "white"
+    }
+  },
+  "choices": {},
+  "spellcasting": {
+    "ability": "cha",
+    "dc": 12,
+    "attackBonus": 4,
+    "cantrips": [
+      "acidSplash",
+      "bladeWard",
+      "fireBolt",
+      "light"
+    ],
+    "spells": [
+      "mageArmor",
+      "shield"
+    ],
+    "note": "built by wizard"
+  },
+  "hp": {
+    "current": 21,
+    "max": 21,
+    "temp": 0,
+    "hitDiceTotal": "1d6",
+    "hitDiceUsed": 0
+  },
+  "resources": {},
+  "inventory": [
+    {
+      "key": "explorersPack",
+      "name": "探险家套装",
+      "qty": 1,
+      "cat": "pack",
+      "kind": "pack",
+      "contents": [
+        {
+          "key": "背包",
+          "name": "背包",
+          "qty": 1
+        },
+        {
+          "key": "铺盖",
+          "name": "铺盖",
+          "qty": 1
+        },
+        {
+          "key": "燃油",
+          "name": "燃油",
+          "qty": 2
+        },
+        {
+          "key": "口粮",
+          "name": "口粮",
+          "qty": 10
+        },
+        {
+          "key": "绳索",
+          "name": "绳索",
+          "qty": 1
+        },
+        {
+          "key": "火绒盒",
+          "name": "火绒盒",
+          "qty": 1
+        },
+        {
+          "key": "火把",
+          "name": "火把",
+          "qty": 10
+        },
+        {
+          "key": "水袋",
+          "name": "水袋",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "key": "dagger",
+      "name": "匕首",
+      "qty": 1,
+      "cat": "weapon",
+      "kind": "weapon",
+      "damage": "1d4",
+      "dmgType": "piercing",
+      "props": [
+        "finesse",
+        "light",
+        "thrown(20/60)"
+      ]
+    },
+    {
+      "key": "sling",
+      "name": "投石索",
+      "qty": 1,
+      "cat": "weapon",
+      "kind": "weapon",
+      "damage": "1d4",
+      "dmgType": "bludgeoning",
+      "props": [
+        "ammunition"
+      ]
+    }
+  ],
+  "currency": {
+    "gp": 0,
+    "sp": 0,
+    "cp": 0
+  },
+  "conditions": [],
+  "inspiration": false,
+  "notes": "",
+  "meta": {
+    "schemaVersion": "dnd5e.character.v1",
+    "campaign": null,
+    "createdAt": "2026-09-11T09:17:39.799Z",
+    "updatedAt": "2026-09-11T11:01:51.053Z"
+  }
+}
