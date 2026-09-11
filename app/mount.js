@@ -67,6 +67,7 @@
 
   function App() {
     const [cur, setCur] = React.useState(preferredId())
+    React.useEffect(() => { if (window.SoloMotion) window.SoloMotion.updateTabs() }, [cur])
     activeId = cur
     const tab = tabs.find((t) => t.id === cur) || tabs[0]
     return h('div', { className: 'solo-shell' },
@@ -100,6 +101,7 @@
     try {
       plugin.apply(ctx)
       tabs.push({ id: 'modules', title: '模组库 / 上传', component: () => h(window.SoloModuleLibrary, { call: host.call }) })
+      tabs.push({ id: 'appearance', title: '外观', component: () => h(window.SoloAppearance, {}) })
     } catch (e) { boot.textContent = 'UI 挂载失败：' + e.message; return }
     if (!tabs.length) { boot.textContent = 'UI 没有注册任何页签'; return }
     boot.style.display = 'none'

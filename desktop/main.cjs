@@ -32,6 +32,7 @@ else {
     await window.loadURL(runtime.url);
     if (smoke) {
       await new Promise(r => setTimeout(r, 3500));
+      if (process.argv.includes('--ui-smoke')) await require('./ui-smoke.cjs')(window, runtime, home);
       const moduleFile = process.argv.find(a => a.startsWith('--module-smoke='))?.slice(15);
       let moduleCheck;
       if (moduleFile) {

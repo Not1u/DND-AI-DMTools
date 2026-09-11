@@ -1,6 +1,6 @@
 # SoloTRPG
 
-> **Windows 桌面版 0.3.0**：支持 PDF 模组上传与即时检索。`npm ci` 后运行 `npm run build:exe`，产物在 `dist/`；独立窗口、免安装 EXE、用户存档与程序分离。使用与更新见 [桌面版说明](docs/DESKTOP.md)。
+> **Windows 桌面版 0.4.0**：全新动态界面、自由主题配色、清晰详情浮层，支持 PDF 模组上传与即时检索。`npm ci` 后运行 `npm run build:exe`，产物在 `dist/`；独立窗口、免安装 EXE、用户存档与程序分离。使用与更新见 [桌面版说明](docs/DESKTOP.md)。
 
 项目仓库：[Not1u/DND-AI-DMTools](https://github.com/Not1u/DND-AI-DMTools)。从 2026-09-11 起，本目录直接作为开发源，后续更新统一提交到该仓库。
 

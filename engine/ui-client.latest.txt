@@ -357,22 +357,23 @@ const skName = s => SK[s] || s
 const LVNAME = ['戏法', '1 环', '2 环', '3 环', '4 环', '5 环', '6 环', '7 环', '8 环', '9 环']
 const KINDN = { armor: '护甲', shield: '盾牌', weapon: '武器', gear: '杂物', pack: '套装' }
 const spellItems = (s) => [{ name: '学派', desc: s.school }, { name: '施法时间', desc: s.time }, { name: '距离', desc: s.range }, { name: '持续', desc: s.duration }, { name: '标记', desc: [s.conc ? '专注' : '', s.ritual ? '仪式' : ''].filter(Boolean).join(' ') || '—' }, { name: '效果', desc: s.fx }]
-let __tip = null
-function tipNode() { if (!__tip) { const d = document.createElement('div'); d.className = 'dndp-tipf'; d.style.display = 'none'; document.body.appendChild(d); __tip = d } return __tip }
+let __tip = null, __tipTimer = null
+function tipNode() { if (!__tip) { const d = document.createElement('div'); d.className = 'dndp-tipf'; d.id = 'solo-detail-tip'; d.setAttribute('role', 'tooltip'); d.style.display = 'none'; d.onmouseenter = () => clearTimeout(__tipTimer); d.onmouseleave = tipHide; document.body.appendChild(d); __tip = d } return __tip }
 function tipShow(ev, title, items) {
   const el = tipNode(); el.textContent = ''
+  clearTimeout(__tipTimer)
   const t = document.createElement('div'); t.className = 'tp-title'; t.textContent = title; el.appendChild(t)
   const list = items || []
   if (!list.length) { const d = document.createElement('div'); d.className = 'tp-desc'; d.textContent = '（暂无详细介绍）'; el.appendChild(d) }
   else list.forEach(it => { const row = document.createElement('div'); row.className = 'tp-item'; const b = document.createElement('b'); b.textContent = (it.name || '') + '：'; row.appendChild(b); const s = document.createElement('span'); s.className = 'tp-desc'; s.textContent = it.desc || ''; row.appendChild(s); el.appendChild(row) })
   el.style.display = 'block'; tipMove(ev)
 }
-function tipMove(ev) { const el = tipNode(); if (el.style.display === 'none') return; const w = 340, hgt = el.offsetHeight || 120; let x = ev.clientX + 16, y = ev.clientY + 16; if (x + w > window.innerWidth - 10) x = Math.max(8, window.innerWidth - w - 10); if (y + hgt > window.innerHeight - 10) y = Math.max(8, window.innerHeight - hgt - 10); el.style.left = x + 'px'; el.style.top = y + 'px' }
-function tipHide() { if (__tip) __tip.style.display = 'none' }
+function tipMove(ev) { const el = tipNode(); if (el.style.display === 'none') return; const w = el.offsetWidth || 380, hgt = el.offsetHeight || 120; const rect = ev.currentTarget && ev.currentTarget.getBoundingClientRect ? ev.currentTarget.getBoundingClientRect() : null; let x = Number.isFinite(ev.clientX) ? ev.clientX + 14 : (rect ? rect.left : 16), y = Number.isFinite(ev.clientY) ? ev.clientY + 18 : (rect ? rect.bottom + 8 : 16); x = Math.max(10, Math.min(x, window.innerWidth - w - 10)); y = Math.max(10, Math.min(y, window.innerHeight - hgt - 10)); el.style.left = x + 'px'; el.style.top = y + 'px' }
+function tipHide() { clearTimeout(__tipTimer); __tipTimer = setTimeout(() => { if (__tip) __tip.style.display = 'none' }, 160) }
 function Card(props) {
   const inner = [props.title]
   if (props.sub) inner.push(h('small', { key: 's' }, props.sub))
-  return h('span', { className: 'dndp-cardwrap', onMouseEnter: e => tipShow(e, props.tipTitle || props.title, props.items), onMouseMove: tipMove, onMouseLeave: tipHide }, h('button', { className: 'dndp-opt' + (props.on ? ' sel' : ''), disabled: props.disabled, onClick: props.onClick }, inner))
+  return h('span', { className: 'dndp-cardwrap', onMouseEnter: e => tipShow(e, props.tipTitle || props.title, props.items), onMouseLeave: tipHide, onFocus: e => tipShow(e, props.tipTitle || props.title, props.items), onBlur: tipHide, onKeyDown: e => { if (e.key === 'Escape' && __tip) __tip.style.display = 'none' } }, h('button', { className: 'dndp-opt' + (props.on ? ' sel' : ''), 'aria-describedby': 'solo-detail-tip', disabled: props.disabled, onClick: props.onClick }, inner))
 }
 function Pips(props) { const pips = []; for (let i = 0; i < props.max; i++) pips.push(h('span', { key: i, className: 'dndp-pip' })); return h('div', { className: 'dndp-slotrow' }, h('span', { className: 'dndp-slotlv' }, props.lv === 0 ? '戏法' : props.lv + '环'), pips, h('span', { className: 'dndp-slotnum' }, '×' + props.max)) }
 function XpWidget(props) {
@@ -1974,6 +1975,8 @@ function normThemeLocal(t) {
   if (!THEME_LIST.some(x => x[0] === o.name)) o.name = 'azure'
   if (o.mode !== 'light') o.mode = 'dark'
   if (!/^#[0-9a-fA-F]{6}$/.test(String(o.accent || ''))) o.accent = '#5aa0ff'
+  for (const key of ['background', 'surface', 'text', 'muted', 'onAccent']) o[key] = /^#[0-9a-fA-F]{6}$/.test(String(o[key] || '')) ? o[key] : null
+  o.motion = o.motion === 'reduced' ? 'reduced' : 'full'
   return o
 }
 // 强调色上的文字用黑还是白：按相对亮度自动选
@@ -1983,18 +1986,36 @@ function onAccentOf(hex) {
   const r = parseInt(h.slice(0, 2), 16) / 255, g = parseInt(h.slice(2, 4), 16) / 255, b = parseInt(h.slice(4, 6), 16) / 255
   const lin = (c) => (c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4))
   const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
-  return L > 0.45 ? '#0d1015' : '#ffffff'
+  return L > 0.179 ? '#0d1015' : '#ffffff'
 }
 function themeClassOf(t) { const th = normThemeLocal(t); return 'dndp-theme-' + th.name + (th.mode === 'light' ? ' dndp-light' : '') }
-function themeStyleOf(t) { const th = normThemeLocal(t); return { '--dsw-alias-brand-primary': th.accent, '--dndp-on-accent': onAccentOf(th.accent) } }
+function themeStyleOf(t) {
+  const th = normThemeLocal(t)
+  const bg = th.background || (th.mode === 'light' ? '#eef2f8' : '#101521')
+  const fg = th.text || (onAccentOf(bg) === '#ffffff' ? '#edf2fc' : '#1d2638')
+  const surface = th.surface || 'color-mix(in srgb, ' + bg + ' 93%, ' + fg + ')'
+  const raised = 'color-mix(in srgb, ' + bg + ' 86%, ' + fg + ')'
+  const muted = th.muted || 'color-mix(in srgb, ' + fg + ' 72%, ' + bg + ')'
+  const border = 'color-mix(in srgb, ' + fg + ' 16%, ' + bg + ')'
+  const on = th.onAccent || onAccentOf(th.accent)
+  const darkTip = onAccentOf(th.surface || bg) === '#ffffff'
+  return { '--solo-bg': bg, '--solo-surface': surface, '--solo-raised': raised, '--solo-text': fg, '--solo-muted': muted, '--solo-border': border, '--solo-accent': th.accent, '--solo-on-accent': on,
+    '--solo-tip-bg': darkTip ? '#1b2333' : '#ffffff', '--solo-tip-text': darkTip ? '#f4f7fc' : '#182235',
+    '--dsw-alias-bg-base': bg, '--dsw-alias-bg-layer-1': surface, '--dsw-alias-bg-layer-2': raised, '--dsw-alias-bg-overlay': surface,
+    '--dsw-alias-label-primary': fg, '--dsw-alias-label-secondary': muted, '--dsw-alias-label-tertiary': muted,
+    '--dsw-alias-border-l1': border, '--dsw-alias-border-l2': border, '--dsw-alias-brand-primary': th.accent,
+    '--dndp-line': border, '--dndp-line-soft': border, '--dndp-on-accent': on }
+}
 function applyThemeGlobally(t) {
   const th = normThemeLocal(t)
   THEME_CACHE = th
   try {
     if (typeof document !== "undefined" && document.documentElement) {
       const de = document.documentElement
+      for (const [key, value] of Object.entries(themeStyleOf(th))) de.style.setProperty(key, value)
+      de.dataset.motion = th.motion
       de.style.setProperty('--solo-accent', th.accent)
-      de.style.setProperty('--solo-on-accent', onAccentOf(th.accent))
+      de.style.setProperty('--solo-on-accent', th.onAccent || onAccentOf(th.accent))
       de.style.setProperty('--solo-mode', th.mode)
     }
     if (typeof window !== 'undefined' && window.dispatchEvent) window.dispatchEvent(new CustomEvent('solotrpg-theme', { detail: th }))
@@ -2003,6 +2024,11 @@ function applyThemeGlobally(t) {
 function useTheme() {
   const [th, setTh] = React.useState(THEME_CACHE || normThemeLocal(DEFAULT_THEME))
   const [presets, setPresets] = React.useState(null)
+  React.useEffect(() => {
+    const sync = event => setTh(normThemeLocal(event.detail))
+    if (typeof window !== 'undefined') window.addEventListener('solotrpg-theme', sync)
+    return () => { if (typeof window !== 'undefined') window.removeEventListener('solotrpg-theme', sync) }
+  }, [])
   React.useEffect(() => {
     if (THEME_CACHE) return
     call('theme.get', {}).then(r => {
@@ -2013,6 +2039,7 @@ function useTheme() {
   const set = (t) => { const nt = normThemeLocal(t); setTh(nt); applyThemeGlobally(nt); return nt }
   return [th, set, presets]
 }
+if (typeof window !== 'undefined') window.SoloTheme = { normalize: normThemeLocal, style: themeStyleOf, apply: applyThemeGlobally, presets: THEME_LIST.map((item, i) => ({ name: item[0], label: item[1], accent: ACCENT_SWATCH[i] })) }
 function SettingsPanel(props) {
   const [st, setSt] = React.useState(null)
   const [f, setF] = React.useState({ baseUrl: '', model: '', temperature: '0.7', maxSteps: '6', extraPrompt: '', toolset: 'core' })
@@ -2060,7 +2087,7 @@ function SettingsPanel(props) {
   if (!st) return h('div', { className: 'dndp-empty' }, msg || '读取设置…')
   const row = (label, hint, node) => h('div', { key: label, className: 'dndp-setrow' }, h('label', null, label), node, hint ? h('div', { className: 'hint' }, hint) : null)
   return h('div', { style: { padding: '10px 12px' } },
-    appearance,
+    typeof window !== 'undefined' && window.SoloAppearance ? h(window.SoloAppearance, { embedded: true }) : appearance,
     h('div', { key: 'w', className: 'dndp-warn' }, '密钥以明文保存在 ' + st.path + '（本机文件）。也可以用环境变量 DND5E_AI_KEY 覆盖' + (st.keyFromEnv ? '（当前正由环境变量提供）' : '') + '。不要把该文件提交到公开仓库。'),
     row('API Base URL', '兼容 OpenAI 的 /chat/completions；末尾不用带 /。快捷：' + Object.keys(st.presets).join(' / '),
       h('div', { key: 'u' }, h('input', { className: 'dndp-input', value: f.baseUrl, onChange: e => setF(Object.assign({}, f, { baseUrl: e.target.value })) }),

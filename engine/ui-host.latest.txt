@@ -2483,6 +2483,8 @@ return {
       if (o.mode !== 'light') o.mode = 'dark'
       if (!/^#[0-9a-fA-F]{6}$/.test(String(o.accent || ''))) o.accent = THEME_PRESETS[o.name].accent
       o.lineBoost = o.lineBoost !== false
+      for (const key of ['background', 'surface', 'text', 'muted', 'onAccent']) o[key] = /^#[0-9a-fA-F]{6}$/.test(String(o[key] || '')) ? o[key] : null
+      o.motion = o.motion === 'reduced' ? 'reduced' : 'full'
       return o
     }
     unreg.push(harness.handle('theme.get', async () => {
