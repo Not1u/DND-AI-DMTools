@@ -877,7 +877,7 @@ function ManualEdit(props) {
   return h('div', { className: 'dndp-panel' }, kids)
 }function Detail(props) {
   const s = props.s
-  const cells = [['HP', s.hp.cur + '/' + s.hp.max], ['临时生命',s.hp.temp||0], ['AC', s.ac], ['熟练', '+' + s.pb]].map(x => h('div', { key: x[0], className: 'dndp-stat' }, h('b', null, x[1]), h('span', null, x[0])))
+  const cells = [['AC', s.ac], ['熟练', '+' + s.pb]].map(x => h('div', { key: x[0], className: 'dndp-stat' }, h('b', null, x[1]), h('span', null, x[0])));cells.unshift(h('div',{key:'hp',className:'dndp-stat integrated-health'},typeof window!=='undefined'&&window.SoloHealthBlock?h(window.SoloHealthBlock,{s}):h('b',null,'HP '+s.hp.cur+'/'+s.hp.max+' · 临时生命 '+(s.hp.temp||0))));
   if (s.dc) { cells.push(h('div', { key: 'dc', className: 'dndp-stat' }, h('b', null, s.dc), h('span', null, '法术DC'))); cells.push(h('div', { key: 'at', className: 'dndp-stat' }, h('b', null, '+' + s.attack), h('span', null, '法术攻击'))) }
   cells.push(h('div', { key: 'hd', className: 'dndp-stat' }, h('b', null, s.hitDice || '—'), h('span', null, '生命骰')))
   const attrs = AB.map(a => h('div', { key: a, className: 'dndp-ab' }, h('span', { className: 'ab' }, ABF[a]), h('span', { className: 'val' }, fmt(s.mods[a]))))
@@ -911,7 +911,6 @@ function ManualEdit(props) {
     children.push(h('div', { key: 'chl', className: 'dndp-label' }, '契约与专长'))
     children.push(h('div', { key: 'ch', className: 'dndp-tags' }, tags))
   }
-  if(typeof window!=='undefined'&&window.SoloTempHP)children.push(h(window.SoloTempHP,{key:'temp-hp',call,s}))
   children.push(h('div', { key: 'ftl', className: 'dndp-label' }, '种族 / 职业 / 背景特性'))
   const ft = []
   ;((s.features && s.features.race) || []).forEach((f, i) => ft.push(featCard(f, 'r' + i)))
@@ -1703,7 +1702,7 @@ function SheetHost(props) {
     call('party.sheet', { id }).then(r => { if (r && r.ok) { setSheet(r.sheet); setErr('') } else setErr((r && r.error) || '读取角色卡失败') }).catch(e => setErr(String(e && e.message || e)))
   }
   React.useEffect(() => { load() }, [id, props.rev])
-  React.useEffect(()=>{const timer=setInterval(load,1500);return()=>clearInterval(timer)},[id])
+  React.useEffect(()=>{const timer=setInterval(load,1500);if(typeof window!=='undefined')window.addEventListener('solo-state',load);return()=>{clearInterval(timer);if(typeof window!=='undefined')window.removeEventListener('solo-state',load)}},[id])
   if (!id) return h('div', { className: 'dndp-empty' }, '在左侧「角色」面板里点一个角色')
   if (err) return h('div', { className: 'dndp-err' }, err)
   if (!sheet) return h('div', { className: 'dndp-empty' }, '加载中…')
@@ -2647,6 +2646,7 @@ function PartyView() {
   const [loading, setLoading] = React.useState(false)
   const [mapFull, setMapFull] = React.useState(false)
   function refresh() { setBusy(true); setErr(''); call('party.list', {}).then(r => { if (r && r.ok) setList(r.items); else setErr((r && r.error) || 'list failed') }).catch(e => setErr(String(e && e.message || e))).then(() => setBusy(false)) }
+  React.useEffect(()=>{if(typeof window==='undefined')return;const refresh=()=>{if(sel?.id)call('party.sheet',{id:sel.id}).then(r=>{if(r.ok)setSel(r.sheet)}).catch(()=>{});refreshList()};const refreshList=()=>call('party.list',{}).then(r=>{if(r.ok)setList(r.items)});window.addEventListener('solo-state',refresh);return()=>window.removeEventListener('solo-state',refresh)},[sel?.id]);
   function open(id) { setLoading(true); setErr(''); call('party.sheet', { id }).then(r => { if (r && r.ok) setSel(r.sheet); else setErr((r && r.error) || 'sheet failed') }).catch(e => setErr(String(e && e.message || e))).then(() => setLoading(false)) }
   React.useEffect(() => { refresh() }, [])
   React.useEffect(() => {

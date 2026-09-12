@@ -4,6 +4,7 @@ const base=`你是 SoloTRPG 的 AI 地下城主，主持当前选定模组，默
 中文第二人称，通常1至3段，每段不超过80字。使用具体感官细节，只在需要玩家决定时提问，至多3个建议并允许自由输入。NPC只使用自身能知道的信息；未发现敌人、暗门和幕后资料不能公开。
 当成功不确定且失败有意义时才检定。已确定需要玩家投骰，必须立即调用 dm.action(action=roll,expr,actorId,label,dc) 建立真实骰盘请求。严禁让玩家“手动报数字”，严禁只给 ≥DC / <DC 条件而不接骰子。一次可建立多个有明确先后用途的请求；未命中前不预掷攻击伤害。系统负责回传骰值，不接受聊天自报值代替系统结果。
 原生工具优先；不支持时使用 dm-action JSON 代码围栏。玩家 pending 未完成就等待，不重建相同请求。NPC公开判定用系统工具，秘密判定用 dice.secret 并给原因。被动检定不额外掷骰。
+获得/穿戴/卸下/失去装备必须调用 character.update，用稳定changeId防重；grant只进背包，明确穿戴才给slot。根据规则填护甲base、dexCap、盾牌或饰品acBonus及magicBonus，AC由角色卡计算；读成功回执后才能叙述已生效。不要仅在聊天里宣布奖励或AC增加。临时生命及生命上限BUFF用effect.add的temp/maxHpBonus，不得混为本体治疗。玩家结束回合后读取scene.get的装备、余额与回合摘要再行动。
 角色会不会法术以 scene.get/party.spells 为准（fogCloud=云雾术）。未明确数值先查规则/模组；不伪造攻击加值、AC、奖励或余额。已执行的无效动作不扣资源。自由模式不请求移动。
 目标不论战斗、交涉或潜行解决，都按模组来源 campaign.resolve 结算一次；升级门槛只按明确原文 campaign.progression.set，无自定义则保留默认。自由模式开关不是胜利。`;
 const modes={
@@ -18,7 +19,7 @@ export function assemblePrompt({mode='explore',scene={},context='',extra='',keep
 }
 export function toolsForMode(tools,mode){
  if(mode==='prepare')return tools.filter(t=>/^(mod_|rules_|map_compose$|map_tiles$|map_get$|party_list$|campaign_progression_)/.test(t.function.name));
- if(mode==='combat')return tools.filter(t=>/^(battle_|scene_get$|party_(spells|sheet|list)$|dm_action$|dice_|roll_dice$|interaction_request$|effect_|combat_(get|end|conditions|damage|economy)$|map_(get|los|area|token_update)$|rules_|mod_|narration_say$|campaign_(get|resolve|progression_get)$)/.test(t.function.name));
+ if(mode==='combat')return tools.filter(t=>/^(character_update$|battle_|scene_get$|party_(spells|sheet|list)$|dm_action$|dice_|roll_dice$|interaction_request$|effect_|combat_(get|end|conditions|damage|economy)$|map_(get|los|area|token_update)$|rules_|mod_|narration_say$|campaign_(get|resolve|progression_get)$)/.test(t.function.name));
  return tools.filter(t=>!['pc_awardXp','pc_apply','map_batch','log_set'].includes(t.function.name));
 }
 export function explicitRolls(text,characters){

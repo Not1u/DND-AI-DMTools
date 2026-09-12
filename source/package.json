@@ -1,6 +1,6 @@
 {
   "name": "solo-trpg",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "private": true,
   "type": "module",
   "description": "SoloTRPG — 单人跑团独立运行器（内置规则书/模组/角色卡/战术地图/战斗记录，AI 作为 DM）",

@@ -17,3 +17,32 @@ test('a fighter can make extra attacks but cannot spend the same action on anoth
 
 
 test('unknown enemy AC is rejected before consuming resources',async()=>{const f=await fixture();try{await f.ok('map.token.add',{token:{id:'unknown-ac',name:'ZZQX987未定义单位',kind:'enemy',x:2,y:3,hp:12,max:12,ac:null}});const r=await f.api('battle.preview',{actorId:'hero',abilityId:'weapon',targetIds:['unknown-ac']});assert.equal(r.ok,false);assert.match(r.error,/AC/);assert.equal((await f.ok('combat.get')).order.find(e=>e.pcId==='hero').econ.action,undefined);}finally{await f.close()}});
+
+test('story equipment updates once and projects AC to character, combat, map and DM scene',async()=>{const f=await fixture();try{
+ const grant={actorId:'hero',changeId:'story-leather',reason:'卫兵赠送皮甲',item:{key:'leather',name:'皮甲'}};
+ await f.ok('character.update',grant);assert.equal((await f.ok('party.sheet',{id:'hero'})).sheet.ac,12);
+ await f.ok('dm.action',{action:'character',actorId:'hero',changeId:'wear-leather',reason:'玩家确认穿戴皮甲',slot:'armor',key:'leather'});
+ await f.ok('character.update',{actorId:'hero',changeId:'story-shield',reason:'玩家确认持盾',item:{key:'shield',name:'盾牌'},slot:'shield'});
+ assert.equal((await f.ok('party.sheet',{id:'hero'})).sheet.ac,15);assert.equal((await f.ok('map.get')).tokens.find(t=>t.id==='hero').ac,15);assert.equal((await f.ok('combat.get')).order.find(e=>e.pcId==='hero').ac,15);
+ await f.restart();assert.equal((await f.ok('character.update',Object.fromEntries(Object.entries(grant).reverse()))).duplicate,true);const sheet=(await f.ok('party.sheet',{id:'hero'})).sheet;assert.equal(sheet.inventory.find(i=>i.key==='leather').qty,1);assert.equal((await f.api('character.update',{...grant,reason:'different'})).ok,false);
+ const scene=await f.ok('scene.get');assert.ok(JSON.stringify(scene).includes('皮甲'));assert.ok(JSON.stringify(scene).includes('"ac":15'));
+ await f.ok('character.update',{actorId:'hero',changeId:'remove-shield',reason:'交还盾牌',removeKey:'shield'});assert.equal((await f.ok('map.get')).tokens.find(t=>t.id==='hero').ac,13);
+}finally{await f.close()}});
+
+test('temporary HP, maximum HP and AC buffs share the character state and expire without permanent equipment changes',async()=>{const f=await fixture();try{
+ await f.ok('effect.add',{actorId:'hero',targetId:'hero',name:'测试生命增益',maxHpBonus:5,durationSeconds:60});
+ await f.ok('effect.add',{actorId:'hero',targetId:'hero',name:'测试临时生命',temp:7,durationSeconds:60});
+ const shield=await f.ok('effect.add',{actorId:'hero',targetId:'hero',name:'护盾术',acBonus:5,durationSeconds:6});
+ let s=(await f.ok('party.sheet',{id:'hero'})).sheet;assert.equal(s.hp.max,55);assert.equal(s.hp.temp,7);assert.equal(s.hp.effects.length,2);assert.equal(s.ac,17);assert.equal((await f.ok('map.get')).tokens.find(t=>t.id==='hero').max,55);
+ await f.ok('combat.damage',{id:'hero',amount:-9});s=(await f.ok('party.sheet',{id:'hero'})).sheet;assert.equal(s.hp.temp,0);assert.equal(s.hp.cur,53);
+ await f.ok('combat.mode',{mode:'free'});await f.ok('session.advance',{seconds:60});s=(await f.ok('party.sheet',{id:'hero'})).sheet;assert.equal(s.hp.max,50);assert.equal(s.hp.cur,48);assert.equal(s.ac,12);assert.equal(s.hp.effects.length,0);
+}finally{await f.close()}});
+
+test('local actions wait for end turn; duplicate end-turn clicks do not skip a unit',async()=>{const f=await fixture();try{
+ await perform(f,{actorId:'hero',abilityId:'move',x:2,y:3},'one-move');assert.equal((await f.ok('session.pending')).ready,false);
+ const before=await f.ok('battle.get');await f.ok('battle.endTurn',{turnKey:before.turnKey});assert.equal((await f.ok('battle.endTurn',{turnKey:before.turnKey})).duplicate,true);const after=await f.ok('battle.get');assert.equal(after.actorId,'g1');assert.equal(after.playerId,'hero');assert.equal(after.player.sheet.hp.cur,50);assert.equal((await f.ok('session.pending')).ready,true);
+}finally{await f.close()}});
+
+test('DM text-tool compatibility writes story gear and end-turn sends authoritative state',async()=>{const f=await fixture();let mode='gear',received=[];const provider=http.createServer(async(req,res)=>{let text='';for await(const p of req)text+=p;const body=JSON.parse(text);received.push(body);res.setHeader('content-type','application/json');const content=mode==='gear'?'```dm-action\n'+JSON.stringify({action:'character',actorId:'hero',changeId:'dm-leather',reason:'剧情奖励并确认穿戴皮甲',item:{key:'leather',name:'皮甲'},slot:'armor'})+'\n```':'回合已接收。';mode='reply';res.end(JSON.stringify({choices:[{message:{role:'assistant',content}}]}))});await new Promise(r=>provider.listen(0,'127.0.0.1',r));try{await f.ok('settings.set',{baseUrl:'http://127.0.0.1:'+provider.address().port,model:'test'});await f.ok('ai.chat',{message:'穿上刚获得的皮甲'});assert.equal((await f.ok('party.sheet',{id:'hero'})).sheet.ac,13);assert.ok(received[0].tools.some(t=>t.function.name==='character_update'));await perform(f,{actorId:'hero',abilityId:'move',x:2,y:3},'dm-move');await f.ok('battle.endTurn');await f.ok('session.resume');const context=received.at(-1).messages[0].content;assert.ok(context.includes('皮甲'));assert.match(context,/"ac":13/);assert.match(context,/"x":2,"y":3/);}finally{await f.close();await new Promise(r=>provider.close(r))}});
+
+test('character projection retains timed combat conditions until their correct turn expires',async()=>{const f=await fixture();try{await f.ok('combat.conditions',{id:'hero',add:[{key:'poisoned',rounds:2}]});await f.ok('character.update',{actorId:'hero',changeId:'timed-gear',reason:'测试期间装备皮甲',item:{key:'leather',name:'皮甲'},slot:'armor'});assert.equal((await f.ok('combat.get')).order.find(e=>e.pcId==='hero').conditions[0].rounds,2);await f.ok('battle.endTurn');await f.ok('battle.endTurn');assert.equal((await f.ok('combat.get')).order.find(e=>e.pcId==='hero').conditions[0].rounds,1);await f.ok('battle.endTurn');await f.ok('battle.endTurn');assert.equal((await f.ok('party.sheet',{id:'hero'})).sheet.conditions.length,0);}finally{await f.close()}});

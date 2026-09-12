@@ -233,6 +233,7 @@ return {
         if (shieldEq) { const sb = Number(shieldEq.acBonus) || 2; const tb = sb + (Number(shieldEq.magicBonus) || 0); ac += tb; acParts.push(shieldEq.name + ' +' + tb) }
         for (const w of worn) { const b = Number(w.acBonus) || 0; if (b) { ac += b; acParts.push(w.name + ' +' + b) } }
         if (pc.acOverride) { ac = Number(pc.acOverride); acParts.push('手动覆盖 ' + pc.acOverride) }
+        for(const buff of pc.acBuffs||[]){ac+=Number(buff.bonus)||0;acParts.push(buff.name+' +'+buff.bonus)}
         const abilFor = (it) => { const pr = (it && it.props) || []; const fin = pr.includes('finesse'); const rng = pr.includes('ammunition') || pr.includes('ranged'); const ab = (it && it.ability) || (fin ? (dexMod > mods.str ? 'dex' : 'str') : (rng ? 'dex' : 'str')); return { ab: ab, mod: mods[ab] || 0 } }
         const weaponStat = (it) => { if (!it || !it.damage) return null; const a = abilFor(it); const mg = Number(it.magicBonus) || 0; return { key: it.key, name: it.name, damage: it.damage, dmgType: it.dmgType || '', ability: a.ab, attack: pb + a.mod + mg, dmgBonus: a.mod + mg } }
         const codeMap = {}; CONDITIONS.forEach(c => { codeMap[c.key] = c })
@@ -484,7 +485,7 @@ return {
           if (slot === 'armor') { const ad = srd.armor[it.key] || null; entry.base = Number(it.base != null ? it.base : (ad ? ad.base : 10)); entry.dexCap = (it.dexCap !== undefined ? it.dexCap : (ad ? ad.dexCap : null)); entry.category = (ad && ad.category) || it.cat || 'light'; pc.equipment.armor = entry }
           else if (slot === 'shield') { entry.acBonus = Number(it.acBonus != null ? it.acBonus : (Number(srd.armor.shieldBonus) || 2)); pc.equipment.shield = entry }
           else if (slot === 'mainHand' || slot === 'offHand') { entry.damage = it.damage || '1d4'; entry.dmgType = it.dmgType || '钝击'; entry.props = it.props || []; entry.ability = it.ability || null; pc.equipment[slot] = entry }
-          else { entry.acBonus = Number(it.acBonus) || 0; pc.equipment.worn = (pc.equipment.worn || []).concat([entry]) }
+          else { entry.acBonus = Number(it.acBonus) || 0; pc.equipment.worn = (pc.equipment.worn || []).filter(w=>w.key!==entry.key).concat([entry]) }
           label = it.name
         }
         pc.meta = pc.meta || {}
@@ -2321,7 +2322,7 @@ return {
       const cur = (st.order || [])[st.turnIndex] || null
       return jclean({
         ok: true, active: !!st.active, round: st.round || 0, turnIndex: st.turnIndex || 0,
-        order: (st.order || []).map((e, i) => ({ i: i, id: e.id, name: e.name, kind: e.kind, init: e.init, roll: e.roll ?? null, hp: e.hp, max: e.max,
+        order: (st.order || []).map((e, i) => ({ i: i, id: e.id, name: e.name, kind: e.kind, init: e.init, roll: e.roll ?? null, hp: e.hp, max: e.max, temp: e.temp || 0, ac: e.ac ?? null, saves: e.saves || {},
           active: st.active && i === (st.turnIndex || 0), conditions: e.conditions || [], econ: e.econ || {},
           tokenId: e.tokenId || null, pcId: e.pcId || null, note: e.note || "", dex: e.dex == null ? null : e.dex })),
         current: cur ? cur.name : null,
@@ -2332,7 +2333,7 @@ return {
       if (!entry || !entry.pcId) return
       try {
         const pc = JSON.parse(await fsRead(CHAR_DIR + "/" + String(entry.pcId).replace(/[^A-Za-z0-9._-]/g, "") + ".json"))
-        pc.conditions = (entry.conditions || []).map(c => ({ key: c.key, name: c.name, level: (c.level == null ? null : c.level), desc: c.desc || "", note: (c.rounds ? ("剩 " + c.rounds + " 回合") : (c.note || "")) }))
+        pc.conditions = (entry.conditions || []).map(c => ({ key: c.key, name: c.name, level: (c.level == null ? null : c.level), desc: c.desc || "", rounds: c.rounds == null ? null : c.rounds, note: (c.rounds ? ("剩 " + c.rounds + " 回合") : (c.note || "")) }))
         pc.meta = pc.meta || {}; pc.meta.updatedAt = nowIso()
         await persist(pc)
       } catch (e) { }
@@ -2671,7 +2672,7 @@ return {
       map.background.terrainReady=!!a.confirmed;const wr=await writeMap(map);return {...mapView(map),ok:!!wr.ok,summary:map.background.terrainReady?'地形已确认，掩体计算已启用。':'已恢复待标注状态。'}
     }))
 
-    DND5E_GAMEPLAY({ops:OPS,register:(n,f)=>unreg.push(harness.handle(n,f)),root:DND5E_SESSION_ROOT,readMap,writeMap,readCombat,writeCombat,combatView,readDice,writeDice,readPc,persist,readLog,writeLog,pushLog,rollExpr,readAi,writeAi})
+    DND5E_GAMEPLAY({ops:OPS,register:(n,f)=>unreg.push(harness.handle(n,f)),root:DND5E_SESSION_ROOT,loadSrd,readMap,writeMap,readCombat,writeCombat,combatView,readDice,writeDice,readPc,persist,readLog,writeLog,pushLog,rollExpr,readAi,writeAi})
     DND5E_CAMPAIGN.installCampaign({ops:OPS,register:(n,f)=>unreg.push(harness.handle(n,f)),root:DND5E_SESSION_ROOT,readPc,persist,modules:DND5E_MODULES,defaultThresholds:async()=>(await loadSrd()).core.xpByLevel})
     return () => { unreg.forEach(f => f()) }
   }
