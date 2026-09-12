@@ -170,7 +170,7 @@ function captureScope(code) {
   const names = ['Card', 'Pips', 'XpWidget', 'Sect', 'ChoiceBox', 'LevelSet', 'ManualEdit', 'StatusPanel', 'EquipPanel',
     'Bag', 'RulesPanel', 'Wizard', 'Detail', 'MapPanel', 'LogView', 'LogRow', 'DiceBar', 'PartyView',
     'Workspace', 'Roster', 'SheetHost', 'StatsPanel', 'PanelFrame', 'AIPanel', 'SettingsPanel', 'CombatPanel', 'DicePanel', 'LevelUpBox', 'MulticlassBox', 'ManualLevelBox', 'mcPrereqInfo', 'MCLS_ABILITY', 'FeatureBox', 'XpMini', 'buildExpr', 'onAccentOf', 'normThemeLocal', 'themeClassOf', 'themeStyleOf', 'THEME_LIST', 'cellVariation', 'PANEL_DEFS', 'DEFAULT_LAYOUT', 'normLayout',
-    'slotOf', 'inLayout', 'cellDist', 'cloneLayout', 'reorderPanels', 'TERRAIN', 'WS_SLOTS']
+    'slotOf', 'inLayout', 'cellDist', 'terrainWithCells', 'mapBrushCells', 'mapRectCells', 'mapFloodCells', 'cloneLayout', 'reorderPanels', 'TERRAIN', 'WS_SLOTS']
   return code.replace(marker, 'globalThis.__UI_SCOPE__ = { ' + names.join(', ') + ' }\n' + marker)
 }
 
@@ -414,6 +414,18 @@ function pureChecks() {
     const a1 = cv(3, 5), b1 = cv(3, 5), c1 = cv(4, 5)
     if (JSON.stringify(a1) !== JSON.stringify(b1)) problems.push('同格微差应当稳定（可复现）')
     if (JSON.stringify(a1) === JSON.stringify(c1)) problems.push('相邻格微差应当不同')
+  }
+  const twc=scope.terrainWithCells,mb=scope.mapBrushCells,mr=scope.mapRectCells,mf=scope.mapFloodCells
+  if(typeof twc!=='function'||typeof mb!=='function'||typeof mr!=='function'||typeof mf!=='function')problems.push('地图编辑纯函数未完整导出到测试作用域')
+  else{
+    const em={w:4,h:3,terrain:['....','.##.','....']}
+    const painted=twc(em.terrain,4,3,mb(em,{x:0,y:0},3,'g'))
+    if(painted[0]!=='gg..'||painted[1]!=='gg#.'){problems.push('边缘 3×3 笔刷裁切不对：'+JSON.stringify(painted))}
+    const rect=mr(em,{x:3,y:2},{x:2,y:1},'w')
+    if(rect.length!==4)problems.push('反向矩形应覆盖 4 格，实际 '+rect.length)
+    const flood=mf(em,{x:0,y:0},'v')
+    if(flood.length!==10)problems.push('油漆桶应只覆盖连通地面 10 格，实际 '+flood.length)
+    notes.push('地图编辑：边缘笔刷裁切 / 反向矩形 / 连通区域填充断言通过')
   }
   // 范围模板：覆盖格渲染 + 图例
   const TM2 = scope.TERRAIN

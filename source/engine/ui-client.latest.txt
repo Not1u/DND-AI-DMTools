@@ -159,6 +159,9 @@ const css = `
 .dndp-filters{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px 2px}
 .dndp-mapwrap{position:relative;overflow:auto;border:1px solid var(--dsw-alias-border-l2);border-radius:10px;background:var(--dsw-alias-bg-layer-1)}
 .dndp-mapgrid{display:grid;position:relative;width:max-content}
+.dndp-mapgrid.painting{touch-action:none;user-select:none}
+.dndp-mapgrid.painting .dndp-cell{cursor:cell}
+.map-tile-select{width:164px;flex:none}
 .dndp-cell{width:var(--dndp-tile);height:var(--dndp-tile);box-sizing:border-box;border-right:1px solid rgba(128,128,128,.18);border-bottom:1px solid rgba(128,128,128,.18);position:relative;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(160,160,160,.55);cursor:crosshair}
 .dndp-cell.g-floor,
 .dndp-legend .sw.g-floor{background:radial-gradient(circle at 32% 30%, rgba(255,255,255,.05), transparent 58%),repeating-linear-gradient(118deg, rgba(0,0,0,.11) 0 1px, transparent 1px 8px),linear-gradient(158deg,#45494f,#3a3e45)}
@@ -1257,6 +1260,42 @@ function cellDist(a, b) {
   const mx = Math.max(dx, dy), mn = Math.min(dx, dy)
   return { cells: mx, feetSimple: mx * 5, feetStandard: (mx + Math.floor(mn / 2)) * 5 }
 }
+function terrainWithCells(rows, w, h, cells) {
+  const out = Array.from({ length: h }, (_, y) => String((rows || [])[y] || '').padEnd(w, '.').slice(0, w).split(''))
+  for (const c of (cells || [])) {
+    const x = Math.floor(Number(c.x)), y = Math.floor(Number(c.y))
+    if (x >= 0 && y >= 0 && x < w && y < h && Object.prototype.hasOwnProperty.call(TERRAIN, c.t)) out[y][x] = c.t
+  }
+  return out.map(r => r.join(''))
+}
+function mapBrushCells(map, at, size, t) {
+  const n = Math.max(1, Math.min(5, Math.floor(Number(size) || 1)))
+  const before = Math.floor((n - 1) / 2), after = n - before - 1, out = []
+  for (let y = at.y - before; y <= at.y + after; y++) for (let x = at.x - before; x <= at.x + after; x++) {
+    if (x >= 0 && y >= 0 && x < map.w && y < map.h) out.push({ x, y, t })
+  }
+  return out
+}
+function mapRectCells(map, a, b, t) {
+  const out = [], x0 = Math.max(0, Math.min(a.x, b.x)), x1 = Math.min(map.w - 1, Math.max(a.x, b.x))
+  const y0 = Math.max(0, Math.min(a.y, b.y)), y1 = Math.min(map.h - 1, Math.max(a.y, b.y))
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) out.push({ x, y, t })
+  return out
+}
+function mapFloodCells(map, at, t) {
+  const rows = map.terrain || [], from = String(rows[at.y] || '')[at.x] || '.'
+  if (from === t) return []
+  const out = [], seen = new Set(), queue = [at]
+  for (let i = 0; i < queue.length && seen.size < map.w * map.h; i++) {
+    const c = queue[i], key = c.x + ',' + c.y
+    if (seen.has(key) || c.x < 0 || c.y < 0 || c.x >= map.w || c.y >= map.h) continue
+    seen.add(key)
+    if ((String(rows[c.y] || '')[c.x] || '.') !== from) continue
+    out.push({ x: c.x, y: c.y, t })
+    queue.push({ x: c.x - 1, y: c.y }, { x: c.x + 1, y: c.y }, { x: c.x, y: c.y - 1 }, { x: c.x, y: c.y + 1 })
+  }
+  return out
+}
 function MapPanel(props) {
   const [map, setMap] = React.useState(null)
   const [err, setErr] = React.useState('')
@@ -1283,12 +1322,21 @@ function MapPanel(props) {
   React.useEffect(()=>{setChoice(null);setTargets([]);setTpl(null)},[req?.id])
   const [pdfOpen,setPdfOpen]=React.useState(false)
   const [paintTile,setPaintTile]=React.useState('#')
+  const [brushSize,setBrushSize]=React.useState(1)
+  const [shapeStart,setShapeStart]=React.useState(null)
+  const [newSize,setNewSize]=React.useState('32x24')
+  const historyRef=React.useRef({mapId:null,undo:[],redo:[]})
+  const paintRef=React.useRef(null)
   const [showGrid,setShowGrid]=React.useState(true)
   const [enemyQuery,setEnemyQuery]=React.useState('')
   const [enemyResult,setEnemyResult]=React.useState(null)
   const loadMaps = () => call('map.list', {}).then(r => { if (r && r.ok) setMaps(r) }).catch(() => { })
   const load = () => call('map.get', {}).then(r => { if (r && r.ok) { setMap(r); setErr('') } else setErr((r && r.error) || '读取地图失败') }).catch(e => setErr(String(e && e.message || e)))
   React.useEffect(() => { load(); loadMaps() }, [])
+  React.useEffect(() => {
+    const id=map&&map.id
+    if(id&&historyRef.current.mapId!==id) historyRef.current={mapId:id,undo:[],redo:[]}
+  }, [map&&map.id])
   React.useEffect(() => {
     const t = (typeof setInterval === 'function') ? setInterval(() => { if (!drag) load() }, 4000) : null
     return () => { if (t) clearInterval(t) }
@@ -1333,9 +1381,62 @@ function MapPanel(props) {
     const r = await call('map.los', { from: { x: tk.x, y: tk.y }, to: c })
     if (r && r.ok) { setLosRes(r); setMsg(r.summary) } else setMsg('视线判定失败：' + ((r && r.error) || ''))
   }
+  const rememberTerrain = (rows) => {
+    const hist=historyRef.current
+    hist.undo.push((rows||[]).slice())
+    if(hist.undo.length>40)hist.undo.shift()
+    hist.redo=[]
+  }
+  const saveTerrainCells = async (cells,label,before) => {
+    if(!cells.length)return
+    const old=(before||map.terrain).slice(), next=terrainWithCells(old,map.w,map.h,cells)
+    rememberTerrain(old);setMap(m=>Object.assign({},m,{terrain:next}));setMsg((label||'绘制')+'：'+cells.length+' 格')
+    try{const r=await call('map.terrain.set',{cells});if(!r.ok){setMap(m=>Object.assign({},m,{terrain:old}));setErr(r.error||'保存地形失败')}}catch(e){setMap(m=>Object.assign({},m,{terrain:old}));setErr(e.message)}
+  }
+  const restoreTerrain = async (dir) => {
+    const hist=historyRef.current,from=dir==='undo'?hist.undo:hist.redo,to=dir==='undo'?hist.redo:hist.undo
+    if(!from.length){setMsg(dir==='undo'?'没有可撤销的绘制':'没有可重做的绘制');return}
+    const rows=from.pop();to.push(map.terrain.slice());setMap(m=>Object.assign({},m,{terrain:rows}));setShapeStart(null)
+    const r=await call('map.terrain.set',{terrain:rows});if(!r.ok){setErr(r.error||'保存地形失败');load()}else setMsg(dir==='undo'?'已撤销':'已重做')
+  }
+  const paintStart = (ev,c) => {
+    if(tool!=='paint')return
+    ev.preventDefault();setShapeStart(null)
+    const cells=mapBrushCells(map,c,brushSize,paintTile), bag=new Map()
+    cells.forEach(v=>bag.set(v.x+','+v.y,v));paintRef.current={before:map.terrain.slice(),cells:bag,pointerId:ev.pointerId}
+    if(gridRef.current&&gridRef.current.setPointerCapture)try{gridRef.current.setPointerCapture(ev.pointerId)}catch(e){}
+    setMap(m=>Object.assign({},m,{terrain:terrainWithCells(m.terrain,m.w,m.h,cells)}))
+  }
+  const paintMove = (ev) => {
+    const stroke=paintRef.current;if(!stroke||tool!=='paint')return
+    const c=cellFromEvent(ev);if(!c)return
+    const cells=mapBrushCells(map,c,brushSize,paintTile),fresh=[]
+    for(const v of cells){const k=v.x+','+v.y;if(!stroke.cells.has(k)){stroke.cells.set(k,v);fresh.push(v)}}
+    if(fresh.length)setMap(m=>Object.assign({},m,{terrain:terrainWithCells(m.terrain,m.w,m.h,fresh)}))
+  }
+  const paintEnd = async () => {
+    const stroke=paintRef.current;if(!stroke)return
+    paintRef.current=null;const cells=Array.from(stroke.cells.values());rememberTerrain(stroke.before);setMsg('笔刷绘制：'+cells.length+' 格')
+    try{const r=await call('map.terrain.set',{cells});if(!r.ok){setMap(m=>Object.assign({},m,{terrain:stroke.before}));setErr(r.error||'保存地形失败')}}catch(e){setMap(m=>Object.assign({},m,{terrain:stroke.before}));setErr(e.message)}
+  }
+  React.useEffect(()=>{
+    if(typeof window==='undefined')return undefined
+    const end=()=>paintEnd();window.addEventListener('pointerup',end);window.addEventListener('mouseup',end)
+    return()=>{window.removeEventListener('pointerup',end);window.removeEventListener('mouseup',end)}
+  },[tool,map&&map.id])
+  React.useEffect(()=>{
+    if(typeof window==='undefined'||!map)return undefined
+    const onKey=e=>{const tag=String(e.target&&e.target.tagName||'').toLowerCase();if(tag==='input'||tag==='textarea'||tag==='select')return;if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.key.toLowerCase()==='z'){e.preventDefault();restoreTerrain('undo')}else if((e.ctrlKey||e.metaKey)&&((e.shiftKey&&e.key.toLowerCase()==='z')||e.key.toLowerCase()==='y')){e.preventDefault();restoreTerrain('redo')}}
+    window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey)
+  },[map&&map.terrain])
   const onCellClick = (c) => {
     if(req?.kind==='area'||req?.kind==='move'){chooseCell(c);return}
-    if(tool==='paint'){call('map.terrain.set',{cells:[{...c,t:paintTile}]}).then(r=>{if(r.ok)setMap(r);else setErr(r.error)}).catch(e=>setErr(e.message));return}
+    if(tool==='paint')return
+    if(tool==='fill'){saveTerrainCells(mapFloodCells(map,c,paintTile),'区域填充');return}
+    if(tool==='rect'){
+      if(!shapeStart){setShapeStart(c);setMsg('矩形起点 '+cellName(c.x,c.y)+'；再点终点');return}
+      saveTerrainCells(mapRectCells(map,shapeStart,c,paintTile),'矩形绘制');setShapeStart(null);return
+    }
     if (tool === 'measure') {
       if (!meas.a || (meas.a && meas.b)) setMeas({ a: c, b: null })
       else setMeas({ a: meas.a, b: c })
@@ -1380,12 +1481,12 @@ function MapPanel(props) {
     for (let x = 0; x < map.w; x++) {
       const ch = row[x] || '.'
       const td = TERRAIN[ch] || TERRAIN['.']
-      cells.push(h('div', { key: x + '-' + y, className: 'dndp-cell g-' + td.k + (map.background ? ' pdf-cell' + (ch==='.'?' clear':' annotated') : ''), style: map.background ? undefined : cellVariation(x, y), onClick: () => onCellClick({ x, y }), title: cellName(x, y) + ' · ' + td.n + (td.solid ? '（不可通行）' : '') + (td.difficult ? '（困难地形）' : '') + (td.cover ? '（半掩体 AC+2）' : '') }))
+      cells.push(h('div', { key: x + '-' + y, className: 'dndp-cell g-' + td.k + (shapeStart&&shapeStart.x===x&&shapeStart.y===y?' msel':'') + (map.background ? ' pdf-cell' + (ch==='.'?' clear':' annotated') : ''), style: map.background ? undefined : cellVariation(x, y), onPointerDown:e=>paintStart(e,{x,y}), onClick: () => onCellClick({ x, y }), title: cellName(x, y) + ' · ' + td.n + (td.solid ? '（不可通行）' : '') + (td.difficult ? '（困难地形）' : '') + (td.cover ? '（半掩体 AC+2）' : '') }))
     }
   }
   const m1 = meas.a, m2 = meas.b
   const md = (m1 && m2) ? cellDist(m1, m2) : null
-  const grid = h('div', { ref: gridRef, className: 'dndp-mapgrid' + (map.background?' pdf-background':'') + (!showGrid?' grid-hidden':''), style: { gridTemplateColumns: 'repeat(' + map.w + ', var(--dndp-tile))', '--dndp-tile': tile + 'px', position: 'relative' } },
+  const grid = h('div', { ref: gridRef, className: 'dndp-mapgrid' + (tool==='paint'?' painting':'') + (map.background?' pdf-background':'') + (!showGrid?' grid-hidden':''), onPointerMove:paintMove,onPointerUp:paintEnd,onPointerCancel:paintEnd,style: { gridTemplateColumns: 'repeat(' + map.w + ', var(--dndp-tile))', '--dndp-tile': tile + 'px', position: 'relative' } },
     map.background?h('img',{className:'map-original',src:map.background.url,alt:map.background.source,draggable:false,onError:()=>setErr('PDF 底图缺失，请恢复 library 资源或重新建图。')}):null,
     cells,
     tokens.map(tk => {
@@ -1429,7 +1530,8 @@ function MapPanel(props) {
   }
   const newMap = async () => {
     const id = 'map-' + Date.now().toString(36)
-    const r = await call('map.compose', { name: '探索地图', biome:'ruins', w:32, h:24 })
+    const parts=newSize.split('x'),w=Number(parts[0])||32,h=Number(parts[1])||24
+    const r = await call('map.create', { id:id,name:'新地图',w:w,h:h,terrain:Array(h).fill('.'.repeat(w)),tokens:[] })
     if (r && r.ok) { setMap(r); loadMaps(); setMsg(r.summary || '已新建'); setNameDraft('新地图') } else setMsg('新建失败：' + ((r && r.error) || ''))
   }
   const tools = h('div', { className: 'dndp-maptools' },
@@ -1441,8 +1543,13 @@ function MapPanel(props) {
     (live?.effects||[]).length?h('div',{className:'effect-list'},live.effects.map(e=>h('span',{key:e.id},e.name+(e.concentration?' · 专注':'')+(e.rounds!=null?' · '+e.rounds+' 回合':'')+(e.expiresAt!=null?' · 剩 '+Math.max(0,Math.ceil((e.expiresAt-live.clock)/60))+' 分钟':'')))):null,
     h('button',{className:'dndp-btn tiny',onClick:()=>setPdfOpen(true)},'PDF 原图地图'),
     map.background?h('button',{className:'dndp-btn tiny',onClick:()=>setShowGrid(!showGrid)},showGrid?'隐藏叠加网格':'显示叠加网格'):null,
-    map.background?h('button',{className:'dndp-btn tiny'+(tool==='paint'?' primary':''),onClick:()=>{setTool(tool==='paint'?'move':'paint');setSel(null)}},'标注地形'):null,
-    tool==='paint'?h('select',{className:'dndp-input',style:{width:140},value:paintTile,onChange:e=>setPaintTile(e.target.value)},[['#','墙壁'],['+','门'],['T','半掩体'],[',','困难地形/掩体'],['~','浅水'],['.','清除标注']].map(([v,t])=>h('option',{key:v,value:v},t))):null,
+    h('button',{className:'dndp-btn tiny'+(tool==='paint'?' primary':''),onClick:()=>{setTool('paint');setSel(null);setShapeStart(null)}},'✎ 笔刷'),
+    h('button',{className:'dndp-btn tiny'+(tool==='rect'?' primary':''),onClick:()=>{setTool('rect');setSel(null);setShapeStart(null)}},'▭ 矩形'),
+    h('button',{className:'dndp-btn tiny'+(tool==='fill'?' primary':''),onClick:()=>{setTool('fill');setSel(null);setShapeStart(null)}},'▣ 填充'),
+    ['paint','rect','fill'].includes(tool)?h('select',{className:'dndp-input map-tile-select',value:paintTile,onChange:e=>setPaintTile(e.target.value)},Object.entries(TERRAIN).map(([v,d])=>h('option',{key:v,value:v},(v===' '?'□':v)+' '+d.n))):null,
+    tool==='paint'?h('select',{className:'dndp-input',style:{width:78},value:String(brushSize),onChange:e=>setBrushSize(Number(e.target.value))},[[1,'1×1'],[3,'3×3'],[5,'5×5']].map(x=>h('option',{key:x[0],value:String(x[0])},x[1]))):null,
+    ['paint','rect','fill'].includes(tool)?h('button',{className:'dndp-btn tiny',onClick:()=>restoreTerrain('undo'),title:'Ctrl+Z'},'↶ 撤销'):null,
+    ['paint','rect','fill'].includes(tool)?h('button',{className:'dndp-btn tiny',onClick:()=>restoreTerrain('redo'),title:'Ctrl+Y'},'↷ 重做'):null,
     map.background?h('button',{className:'dndp-btn tiny',onClick:async()=>{const r=await call('map.background.confirm',{confirmed:!map.background.terrainReady});if(r.ok)setMap(r);setMsg(r.summary||r.error)}},map.background.terrainReady?'地形已确认':'确认地形标注完成'):null,
     h('input',{className:'dndp-input',style:{width:110},placeholder:'敌人名称',value:enemyQuery,onChange:e=>setEnemyQuery(e.target.value),'aria-label':'敌人检索'}),
     h('button',{className:'dndp-btn tiny',disabled:!enemyQuery.trim(),onClick:async()=>{const r=await call('mod.statblock',{query:enemyQuery});setEnemyResult(r.ok?r:null);setMsg(r.ok?r.summary:r.error)}},'检索简表'),
@@ -1455,7 +1562,8 @@ function MapPanel(props) {
     nameDraft != null
       ? h('input', { className: 'dndp-input', style: { width: 130, flex: 'none' }, value: nameDraft, autoFocus: true, onChange: e => setNameDraft(e.target.value), onKeyDown: e => { if (e.key === 'Enter') saveName(); if (e.key === 'Escape') setNameDraft(null) }, onBlur: saveName })
       : h('button', { className: 'dndp-btn tiny', title: '改地图名', onClick: () => setNameDraft(map.name || '') }, '✎ ' + (map.name || '未命名')),
-    h('button', { className: 'dndp-btn tiny', title: '新建一张空地图', onClick: newMap }, '＋新建'),
+    h('select',{className:'dndp-input',style:{width:92},value:newSize,onChange:e=>setNewSize(e.target.value),title:'新画布尺寸'},[['24x16','24×16'],['32x24','32×24'],['48x32','48×32'],['64x48','64×48']].map(x=>h('option',{key:x[0],value:x[0]},x[1]))),
+    h('button', { className: 'dndp-btn tiny', title: '新建一张空白地图', onClick: newMap }, '＋空白图'),
     h('span', { className: 'dndp-chip' }, map.w + '×' + map.h + ' 格（每格 5 尺）'),
     h('button', { className: 'dndp-btn tiny' + (tool === 'move' ? ' primary' : ''), onClick: () => setTool('move') }, '移动'),
     h('button', { className: 'dndp-btn tiny' + (tool === 'measure' ? ' primary' : ''), onClick: () => { setTool('measure'); setMeas({ a: null, b: null }) } }, '测距'),
@@ -1474,6 +1582,7 @@ function MapPanel(props) {
     h('span', { className: 'dndp-note' }, tile + 'px'),
     h('button', { className: 'dndp-btn tiny', onClick: load }, '刷新'),
     h('button', { className: 'dndp-btn tiny', onClick: async () => { setMsg('导出中…'); const r = await call('ext.image.map', {}); setMsg(r && r.ok ? r.summary : ('导出失败：' + ((r && r.error) || '需要重启 DSH 以加载 plugins/')) ) } }, '⬇ 导出图片'),
+    h('button',{className:'dndp-btn tiny',title:'在外部浏览器打开 Dungeon Scrawl（可用导出的图片作参考）',onClick:()=>window.open('https://app.dungeonscrawl.com/','_blank','noopener,noreferrer')},'Dungeon Scrawl ↗'),
     props.onToggleFull ? h('button', { className: 'dndp-btn tiny', onClick: props.onToggleFull }, props.full ? '退出全屏' : '⤢ 全屏') : null)
   const legend = h('div', { className: 'dndp-legend' }, h('span', null, '图例：'), (map.legend || Object.keys(TERRAIN).map(k => [k, TERRAIN[k].n])).map((L, i) => h('span', { key: i }, h('span', { className: 'sw g-' + ((TERRAIN[L[0]] || {}).k || 'void') }), L[1])))
   if (props.bare) {
@@ -1486,7 +1595,7 @@ function MapPanel(props) {
       legend)
   }
   const body = [tools, h('div', { key: 'm', style: { padding: '0 10px 10px' } }, h('div', { className: 'dndp-mapwrap', style: { maxHeight: props.full ? 'none' : 420 } }, grid)), msg ? h('div', { key: 'g', className: 'dndp-note hl', style: { padding: '0 12px' } }, msg) : null, err ? h('div', { key: 'e', className: 'dndp-err' }, err) : null, legend,
-    h('div', { key: 't', className: 'dndp-note', style: { padding: '0 12px 12px' } }, '用法：拖动图标移动单位（自动按 5 尺格换算距离并写入战斗记录）；点「测距」后点两格看距离；选中单位会显示其速度范围（蓝色水波纹区）。')]
+    h('div', { key: 't', className: 'dndp-note', style: { padding: '0 12px 12px' } }, '制图：笔刷可按住拖绘，矩形点两次，填充会替换相连的同类地形；Ctrl+Z / Ctrl+Y 撤销重做。战术：拖动图标移动单位；测距点两格；选中单位显示速度范围。')]
   if (props.full) return h('div', { className: 'dndp-overlay' }, h('div', { className: 'dndp-ovhead' }, h('span', { className: 'dndp-ic' }, '🗺'), h('span', null, '战术地图 — ' + (map.name || '未命名')), h('div', { className: 'dndp-sp' }), h('button', { className: 'dndp-btn', onClick: props.onToggleFull }, '关闭（Esc）')), h('div', { className: 'dndp-ovbody' }, body))
   return h('div', { className: 'dndp-root' }, h('div', { className: 'dndp-header' }, h('span', { className: 'dndp-ic' }, '🗺'), h('span', null, '战术地图'), h('div', { className: 'dndp-sp' }), h('button', { className: 'dndp-btn', onClick: props.onBack }, '返回')), h('div', { className: 'dndp-scroll' }, body))
 }

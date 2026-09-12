@@ -23,6 +23,7 @@ else {
     window.webContents.setWindowOpenHandler(({ url }) => {
       // Exported maps can be viewed in a separate, sandboxed application window.
       if (url.startsWith(runtime.url + '/files/data/images/')) return { action: 'allow', overrideBrowserWindowOptions: { webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: true } } };
+      if (new URL(url).origin === 'https://app.dungeonscrawl.com') { shell.openExternal(url); return { action: 'deny' }; }
       return { action: 'deny' };
     });
     window.webContents.on('will-navigate', (event, url) => { if (new URL(url).origin !== runtime.url) event.preventDefault(); });
