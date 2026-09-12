@@ -1,6 +1,6 @@
 {
   "name": "solo-trpg",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
   "type": "module",
   "description": "SoloTRPG — 单人跑团独立运行器（内置规则书/模组/角色卡/战术地图/战斗记录，AI 作为 DM）",
@@ -19,7 +19,7 @@
     "release:local": "node tools/publish-local.mjs",
     "build:release": "npm run build:exe && npm run release:local",
     "build:sea": "node tools/build-exe.mjs",
-    "test:desktop": "node --test tools/desktop.test.mjs tools/settings.test.mjs tools/modules.test.mjs tools/theme.test.mjs tools/adventure.test.mjs tools/pdf-maps.test.mjs tools/gameplay.test.mjs tools/markdown.test.mjs",
+    "test:desktop": "node --test tools/desktop.test.mjs tools/settings.test.mjs tools/modules.test.mjs tools/theme.test.mjs tools/adventure.test.mjs tools/pdf-maps.test.mjs tools/gameplay.test.mjs tools/markdown.test.mjs tools/battle.test.mjs",
     "build:zip": "npm run build:exe && node tools/publish-local.mjs --stage && node tools/archive-release.mjs"
   },
   "engines": {

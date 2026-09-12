@@ -112,3 +112,10 @@ SoloTRPG/
 ## 2026-09-11 工作区整理补充
 
 本机工作区外层只保留日常启动用的 `SoloTRPG.exe` 和 `source/` 开发目录；源码、依赖、构建产物与本地归档均集中在 `source/`。GitHub Actions 已切换到 `source/` 运行，开发者在该目录执行 npm 命令。`npm run build:release` 会生成版本化便携程序，并把当前版本复制到工作区外层的固定入口 `SoloTRPG.exe`。
+
+
+## 0.9.0 战斗重构补充（2026-09-12）
+
+新增 `src/battle.mjs` 作为本地动作计划、预检、投骰续接和可恢复提交边界；新增 `src/ai-prompts.mjs` 按状态组装 DM 提示词与工具白名单；`app/battle-ui.js` / `battle.css` 独立承载战斗页。旧接口仍通过共享命令队列协调。新动作的回执和投影写入 EXE 同级 saves，重启恢复、重复请求不再次结算。HTTP 变更通知驱动页面刷新，并保留轮询恢复。
+
+这是增量拆分，两个 engine 大文件仍保留角色编辑、规则读取及旧面板；未声称完整数据库事务化或全部 5e 规则已经自动化。具体使用、验收与边界见 [BATTLE_09.md](BATTLE_09.md)。

@@ -41,6 +41,8 @@ else {
     if (smoke) {
       await new Promise(r => setTimeout(r, 3500));
       if (process.argv.includes('--ui-smoke')) await require('./ui-smoke.cjs')(window, runtime, home);
+      const battleFile=process.argv.find(a=>a.startsWith('--battle-smoke='))?.slice(15);
+      if(battleFile)await require('./battle-smoke.cjs')(window,runtime,home,battleFile);
       const gameplayFile=process.argv.find(a=>a.startsWith('--gameplay-smoke='))?.slice(17);
       if(gameplayFile)await require('./gameplay-smoke.cjs')(window,runtime,home,gameplayFile);
       const pdfMapFile=process.argv.find(a=>a.startsWith('--pdf-map-smoke='))?.slice(16);

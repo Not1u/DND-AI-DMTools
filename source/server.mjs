@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import {battleTools} from './src/battle.mjs'
+import * as aiPrompts from './src/ai-prompts.mjs'
 import * as campaign from './src/campaign.mjs'
 /**
  * SoloTRPG — 单人跑团独立运行器
@@ -110,8 +112,8 @@ function ensureEngine() {
   let src = fs.readFileSync(HOST_SRC, 'utf8')
   if (src.charCodeAt(0) === 0xfeff) src = src.slice(1)
   const harness = { handle: (n, f) => { rec[n] = f; return () => { delete rec[n] } } }
-  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', 'DND5E_MODULES', 'DND5E_LIBRARY', 'DND5E_COMPOSE', 'DND5E_PDFMAPS', 'DND5E_GAMEPLAY', 'DND5E_GAME_TOOLS', 'DND5E_GAME_PROMPT', 'DND5E_SESSION_ROOT', 'DND5E_SESSION_STORAGE', 'DND5E_CAMPAIGN', src)
-  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE, modules, libraryRoot, composeMap, pdfMaps, installGameplay, [...gameplayTools,...campaign.campaignTools], gameplayPrompt+campaign.campaignPrompt, sessionRoot, sessionStorage, campaign)
+  const factory = new Function('harness', 'ctx', 'console', 'DND5E_ROOT', 'DND5E_WRITE', 'DND5E_EXT', 'DND5E_ASSETS', 'DND5E_MODULES', 'DND5E_LIBRARY', 'DND5E_COMPOSE', 'DND5E_PDFMAPS', 'DND5E_GAMEPLAY', 'DND5E_GAME_TOOLS', 'DND5E_GAME_PROMPT', 'DND5E_SESSION_ROOT', 'DND5E_SESSION_STORAGE', 'DND5E_CAMPAIGN', 'DND5E_AI_PROMPTS', src)
+  const plugin = factory(harness, miniCtx, console, ROOT, writeText, extApi, HERE, modules, libraryRoot, composeMap, pdfMaps, installGameplay, [...gameplayTools,...campaign.campaignTools,...battleTools], gameplayPrompt+campaign.campaignPrompt, sessionRoot, sessionStorage, campaign, aiPrompts)
   if (!plugin || typeof plugin.apply !== 'function') throw new Error('引擎形状不对')
   const d = plugin.apply(miniCtx)
   if (typeof d === 'function') innerDispose = d
@@ -190,16 +192,20 @@ async function handleApi(req, res) {
         writeJson: async (rel, obj) => writeText(path.join(ROOT, rel), JSON.stringify(obj, null, 2)),
         log: (m) => console.log('[plugin] ' + m),
       })
+      if(value?.ok!==false&&!/(?:\.get|\.list|\.preview|\.pending|\.history|\.results|\.search|\.read|\.sheet|\.spells)$/.test(op))announce();
       return sendJson(res, 200, { ok: true, value: value === undefined ? null : value })
     } catch (e) { return sendJson(res, 200, { ok: false, error: String((e && e.message) || e) }) }
   })
 }
 
+const subscribers=new Set();
+const announce=()=>{for(const res of subscribers)res.write('data: changed\n\n')};
 const server = http.createServer(async (req, res) => {
   if (req.headers.origin && req.headers.origin !== 'http://' + req.headers.host) return send(res, 403, 'forbidden origin')
   const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'))
   const p = url.pathname
   try {
+    if(p==='/events'){res.writeHead(200,{'content-type':'text/event-stream','cache-control':'no-cache','connection':'keep-alive'});res.write('data: ready\n\n');subscribers.add(res);const pulse=setInterval(()=>res.write(': heartbeat\n\n'),15000);req.on('close',()=>{clearInterval(pulse);subscribers.delete(res)});return}
     if (/^\/map-images\/[a-f0-9]{64}\.png$/.test(p)) return serveFile(res,pdfMaps.imagePath(p.slice(12,-4)))
     if (p === '/api/modules') {
       if (req.method === 'GET') return sendJson(res, 200, { ok: true, items: await modules.list() })
@@ -263,6 +269,7 @@ const url = 'http://' + BIND + ':' + address.port
 console.log('[solo-trpg] ' + url)
 return { server, url, close: () => new Promise(resolve => {
   if (typeof innerDispose === 'function') innerDispose()
+  for(const res of subscribers)res.end();
   server.close(resolve)
   server.closeAllConnections()
 }) }

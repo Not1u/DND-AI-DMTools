@@ -22,6 +22,8 @@
     },
   }
 
+  window.SoloHost=host;
+  const changes=new EventSource('/events');let refreshTimer;changes.onmessage=()=>{clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>window.dispatchEvent(new Event('solo-state')),60)};
   const styles = {
     insert: function (css) {
       const el = document.createElement('style')
@@ -66,18 +68,21 @@
   }
 
   function App() {
-    const [cur, setCur] = React.useState(preferredId())
+    const [cur, setCur] = React.useState(preferredId());
+    const [pages,setPages]=React.useState([]);
+    React.useEffect(()=>{window.SoloOpenPage=page=>{setPages(old=>old.some(x=>x.id===page.id)?old:[...old,page]);setCur(page.id)};return()=>{delete window.SoloOpenPage}},[]);
+    const allTabs=[...tabs,...pages.map(p=>({...p,closable:true,component:()=>p.kind==='detail'?h('div',{className:'solo-detail-page'},h('h1',null,p.title),p.items.map((item,i)=>h('article',{key:i},h('h2',null,item.name),item.meta?h('small',null,item.meta):null,h('p',null,item.desc||'')))):p.kind==='character'?h(window.SoloCharacterPage,{actorId:p.actorId}):h(window.SoloPanelPage,{panel:p.panel})}))];
     React.useEffect(() => { if (window.SoloMotion) window.SoloMotion.updateTabs() }, [cur])
     activeId = cur
-    const tab = tabs.find((t) => t.id === cur) || tabs[0]
+    const tab = allTabs.find((t) => t.id === cur) || tabs[0]
     return h('div', { className: 'solo-shell' },
       h('div', { className: 'solo-top' },
         h('span', { className: 'logo' }, '⚔ SoloTRPG'),
         h('span', { className: 'dim' }, '单人跑团 · 5e 引擎'),
         h('div', { className: 'sp' }),
-        h('div', { className: 'solo-tabs' }, tabs.map((t) => h('button', {
+        h('div', { className: 'solo-tabs' }, allTabs.map((t) => h('button', {
           key: t.id, className: 'solo-tab' + (tab && t.id === tab.id ? ' on' : ''), onClick: () => setCur(t.id),
-        }, t.title))),
+        },t.title,t.closable?h('span',{className:'solo-tab-close',role:'button','aria-label':'关闭 '+t.title,onClick:e=>{e.stopPropagation();setPages(old=>old.filter(p=>p.id!==t.id));if(cur===t.id)setCur(preferredId())}},'×'):null))),
         h('span', { className: 'dim' }, '独立跑团工作台')),
       h('div', { className: 'solo-body' }, tab ? tab.component() : null))
   }
@@ -102,6 +107,8 @@
       plugin.apply(ctx)
       tabs.push({ id: 'modules', title: '模组库 / 上传', component: () => h(window.SoloModuleLibrary, { call: host.call }) })
       tabs.push({ id: 'appearance', title: '外观', component: () => h(window.SoloAppearance, {}) })
+      tabs.push({id:'battle',title:'战斗专页',component:()=>h(window.SoloBattlePage,{})});
+
     } catch (e) { boot.textContent = 'UI 挂载失败：' + e.message; return }
     if (!tabs.length) { boot.textContent = 'UI 没有注册任何页签'; return }
     boot.style.display = 'none'

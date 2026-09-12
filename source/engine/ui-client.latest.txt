@@ -376,7 +376,7 @@ function tipHide() { clearTimeout(__tipTimer); __tipTimer = setTimeout(() => { i
 function Card(props) {
   const inner = [props.title]
   if (props.sub) inner.push(h('small', { key: 's' }, props.sub))
-  return h('span', { className: 'dndp-cardwrap', onMouseEnter: e => tipShow(e, props.tipTitle || props.title, props.items), onMouseLeave: tipHide, onFocus: e => tipShow(e, props.tipTitle || props.title, props.items), onBlur: tipHide, onKeyDown: e => { if (e.key === 'Escape' && __tip) __tip.style.display = 'none' } }, h('button', { className: 'dndp-opt' + (props.on ? ' sel' : ''), 'aria-describedby': 'solo-detail-tip', disabled: props.disabled, onClick: props.onClick }, inner))
+  return h('span', { className: 'dndp-cardwrap', onMouseEnter: e => tipShow(e, props.tipTitle || props.title, props.items), onMouseLeave: tipHide, onFocus: e => tipShow(e, props.tipTitle || props.title, props.items), onBlur: tipHide, onKeyDown: e => { if (e.key === 'Escape' && __tip) __tip.style.display = 'none' } }, h('button', { className: 'dndp-opt' + (props.on ? ' sel' : ''), 'aria-describedby': 'solo-detail-tip', disabled: props.disabled, onClick: props.onClick }, inner),props.items?.length?h('button',{className:'card-expand',title:'在新页签查看详情',onClick:e=>{e.stopPropagation();if(__tip)__tip.style.display='none';window.SoloOpenPage?.({id:'detail-'+String(props.tipTitle||props.title),title:String(props.tipTitle||props.title),kind:'detail',items:props.items})}},'↗'):null)
 }
 function Pips(props) { const pips = []; for (let i = 0; i < props.max; i++) pips.push(h('span', { key: i, className: 'dndp-pip' })); return h('div', { className: 'dndp-slotrow' }, h('span', { className: 'dndp-slotlv' }, props.lv === 0 ? '戏法' : props.lv + '环'), pips, h('span', { className: 'dndp-slotnum' }, '×' + props.max)) }
 function XpWidget(props) {
@@ -877,7 +877,7 @@ function ManualEdit(props) {
   return h('div', { className: 'dndp-panel' }, kids)
 }function Detail(props) {
   const s = props.s
-  const cells = [['HP', s.hp.cur + '/' + s.hp.max], ['AC', s.ac], ['熟练', '+' + s.pb]].map(x => h('div', { key: x[0], className: 'dndp-stat' }, h('b', null, x[1]), h('span', null, x[0])))
+  const cells = [['HP', s.hp.cur + '/' + s.hp.max], ['临时生命',s.hp.temp||0], ['AC', s.ac], ['熟练', '+' + s.pb]].map(x => h('div', { key: x[0], className: 'dndp-stat' }, h('b', null, x[1]), h('span', null, x[0])))
   if (s.dc) { cells.push(h('div', { key: 'dc', className: 'dndp-stat' }, h('b', null, s.dc), h('span', null, '法术DC'))); cells.push(h('div', { key: 'at', className: 'dndp-stat' }, h('b', null, '+' + s.attack), h('span', null, '法术攻击'))) }
   cells.push(h('div', { key: 'hd', className: 'dndp-stat' }, h('b', null, s.hitDice || '—'), h('span', null, '生命骰')))
   const attrs = AB.map(a => h('div', { key: a, className: 'dndp-ab' }, h('span', { className: 'ab' }, ABF[a]), h('span', { className: 'val' }, fmt(s.mods[a]))))
@@ -1298,6 +1298,7 @@ function mapFloodCells(map, at, t) {
 }
 function MapPanel(props) {
   const [map, setMap] = React.useState(null)
+  const [ink,setInk]=React.useState(true)
   const [err, setErr] = React.useState('')
   const [msg, setMsg] = React.useState('')
   const [tool, setTool] = React.useState('move')
@@ -1486,7 +1487,7 @@ function MapPanel(props) {
   }
   const m1 = meas.a, m2 = meas.b
   const md = (m1 && m2) ? cellDist(m1, m2) : null
-  const grid = h('div', { ref: gridRef, className: 'dndp-mapgrid' + (tool==='paint'?' painting':'') + (map.background?' pdf-background':'') + (!showGrid?' grid-hidden':''), onPointerMove:paintMove,onPointerUp:paintEnd,onPointerCancel:paintEnd,style: { gridTemplateColumns: 'repeat(' + map.w + ', var(--dndp-tile))', '--dndp-tile': tile + 'px', position: 'relative' } },
+  const grid = h('div', { ref: gridRef, className: 'dndp-mapgrid' + (ink?' classic-ink':'') + (tool==='paint'?' painting':'') + (map.background?' pdf-background':'') + (!showGrid?' grid-hidden':''), onPointerMove:paintMove,onPointerUp:paintEnd,onPointerCancel:paintEnd,style: { gridTemplateColumns: 'repeat(' + map.w + ', var(--dndp-tile))', '--dndp-tile': tile + 'px', position: 'relative' } },
     map.background?h('img',{className:'map-original',src:map.background.url,alt:map.background.source,draggable:false,onError:()=>setErr('PDF 底图缺失，请恢复 library 资源或重新建图。')}):null,
     cells,
     tokens.map(tk => {
@@ -1534,7 +1535,7 @@ function MapPanel(props) {
     const r = await call('map.create', { id:id,name:'新地图',w:w,h:h,terrain:Array(h).fill('.'.repeat(w)),tokens:[] })
     if (r && r.ok) { setMap(r); loadMaps(); setMsg(r.summary || '已新建'); setNameDraft('新地图') } else setMsg('新建失败：' + ((r && r.error) || ''))
   }
-  const tools = h('div', { className: 'dndp-maptools' },
+  const tools = h('div', { className: 'dndp-maptools' },h('button',{className:'dndp-btn tiny',onClick:()=>setInk(!ink)},ink?'墨线地图':'彩色地图'),
     h('button',{className:'dndp-btn tiny'+(live?.combat?.active?' primary':''),'aria-label':'切换移动模式',onClick:async()=>{const r=await call('combat.mode',{mode:live?.combat?.active?'free':'turn'});setMsg(r.summary||r.error);if(r.ok){setLive(await call('session.pending',{}));load()}}},live?.combat?.active?'回合制 · 切换自由移动':'自由移动 · 开启回合制'),
     h('button',{className:'dndp-btn tiny',disabled:!!live?.combat?.active,onClick:()=>{window.dispatchEvent(new CustomEvent('solo-dm-request',{detail:{message:'请根据已读模组和当前所在城镇，绘制包含已知地点与 NPC 的示意图。用 dm.action 的 town 动作；不要添加未发现信息。',requestAction:'town'}}));setMsg('已请求 DM 绘制当前城镇，请查看 AI 对话。')}},'城镇示意图'),
     live?.town?.locations?.length?h('div',{className:'town-places'},h('span',null,'想去哪里：'),live.town.locations.map(p=>h('button',{key:p.id,className:'dndp-btn tiny',disabled:!!live.combat?.active,title:p.description,onClick:async()=>{const r=await call('scene.visit',{id:p.id});if(r.ok){window.dispatchEvent(new CustomEvent('solo-dm-request',{detail:{message:r.message}}));setMsg('已向 DM 表达前往 '+p.name+' 的意图。')}else setMsg(r.error)}},p.name))):null,
@@ -1757,6 +1758,7 @@ function PanelFrame(props) {
   const head = h('div', { className: 'dndp-ptitle' + (props.dragging ? ' dragging' : ''), onPointerDown: onTitleDown, title: '按住标题栏拖动可换位置' },
     h('span', null, def.icon), h('span', null, def.title), h('div', { className: 'sp' }),
     h('button', { className: 'dndp-pbtn', title: props.collapsed ? '展开' : '折叠', onPointerDown: e => e.stopPropagation(), onClick: () => props.onCollapse() }, props.collapsed ? '▸' : '▾'),
+    h('button',{className:'dndp-pbtn',title:'在新页签打开',onPointerDown:e=>e.stopPropagation(),onClick:()=>typeof window!=='undefined'&&window.SoloOpenPage?.({id:'panel-'+props.id,title:def.title,kind:'panel',panel:props.id})},'↗'),
     h('button', { className: 'dndp-pbtn', title: props.isMax ? '还原' : '最大化', onPointerDown: e => e.stopPropagation(), onClick: () => props.onMax() }, props.isMax ? '❐' : '⤢'),
     h('button', { className: 'dndp-pbtn', title: '移动 / 关闭', onPointerDown: e => e.stopPropagation(), onClick: openMenu }, '⋯'))
   const items = [
@@ -2284,6 +2286,7 @@ function AIPanel(props) {
   }, [])
   React.useEffect(() => { const el = bodyRef.current; if (el && followBottom.current) el.scrollTop = el.scrollHeight },[msgs.length,busy])
   React.useEffect(()=>{const timer=setInterval(async()=>{try{const r=await call('session.pending',{});if(r.ok)setLive(r);if(r.ready&&!busy&&!resumeLock.current&&Date.now()>retryAt.current){resumeLock.current=true;setBusy(true);try{const reply=await call('session.resume',{});if(!reply.ok){retryAt.current=Date.now()+30000;setMsg('DM 续接失败：'+reply.error+'（30 秒后重试，也可手动发送）');}await load()}finally{resumeLock.current=false;setBusy(false)}}}catch{}},1200);return()=>clearInterval(timer)},[busy])
+  React.useEffect(()=>{if(typeof window==='undefined')return;const refresh=()=>load();window.addEventListener('solo-state',refresh);return()=>window.removeEventListener('solo-state',refresh)},[]);
   const send = async (text,requestAction) => {
     const t = String(text == null ? input : text).trim()
     if (!t || busy) return
@@ -2664,6 +2667,7 @@ function PartyView() {
   ;(list || []).forEach((l, i) => rows.push(h('div', { key: i, className: 'dndp-row', onClick: () => open(l.id) }, h('div', { className: 'dndp-ava' }, (l.name || '?').slice(0, 1)), h('div', { className: 'dndp-main' }, h('div', { className: 'dndp-name' }, l.name), h('div', { className: 'dndp-sub' }, (l.race || '') + (l.cls ? ' · ' + l.cls : ''))), h('span', { className: 'dndp-chip' }, 'L' + l.level), h('span', { className: 'dndp-chip' }, 'HP ' + l.hp + '/' + l.max))))
   return h('div', { className: 'dndp-root ' + themeClassOf(theme), style: themeStyleOf(theme) }, h('div', { className: 'dndp-header' }, h('span', { className: 'dndp-ic' }, '⚔'), h('span', null, 'D&D 5e 角色'), h('div', { className: 'dndp-sp' }), h(UiBadge, null), h('button', { className: 'dndp-btn', onClick: () => setMode('map') }, '🗺 地图'), h('button', { className: 'dndp-btn', onClick: () => setMode('log') }, '🎲 战斗记录'), h('button', { className: 'dndp-btn primary', onClick: () => setMode('build') }, '+ 新建角色')), h('div', { className: 'dndp-scroll' }, rows))
 }
+if(typeof window!=='undefined'){window.SoloComponents={MapPanel,AIPanel,Detail,LogView,CombatPanel,SheetHost,PartyView,DicePanel};window.SoloPanelPage=function({panel}){const Component={map:MapPanel,ai:AIPanel,log:LogView,dice:DicePanel,party:PartyView,roster:PartyView,sheet:PartyView,combat:CombatPanel,settings:SettingsPanel,rules:RulesPanel,stats:StatsPanel,builder:PartyView}[panel];return h('div',{className:'solo-panel-page'},Component?h(Component,{bare:panel==='map'}):h('p',null,'此面板请在工作台中打开。'))}}
 return {
   apply(ctx) {
     const off = ctx.effect(() => {

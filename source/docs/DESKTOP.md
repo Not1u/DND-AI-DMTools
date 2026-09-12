@@ -1,12 +1,12 @@
-# Windows 桌面版 0.7.0
+# Windows 桌面版 0.9.0
 
-> 0.7.0 的回合交互、投骰约定、法术效果与新存档位置详见 [战斗交互说明](GAMEPLAY.md)。
+> 0.9.0 新增[战斗专页、卡片页签和本地动作执行器](BATTLE_09.md)。原有回合交互、投骰约定、法术效果与新存档位置详见 [战斗交互说明](GAMEPLAY.md)。
 
 ## 启动和分发
 
 日常双击仓库外层 `SoloTRPG.exe`。0.5.0 改用免解压启动结构，避免旧便携单文件每次启动提取 Electron 与 PDF 依赖。
 
-发送 `source/dist/SoloTRPG-0.7.0-Windows-x64.zip` 给测试者。完整解压后双击 EXE，不需要安装 Node.js。**不能只发一个 EXE**，必须保留旁边的 `runtime/` 和 `library/`。Windows 10/11 x64；程序尚未签名。
+发送 `source/dist/SoloTRPG-0.9.0-Windows-x64.zip` 给测试者。完整解压后双击 EXE，不需要安装 Node.js。**不能只发一个 EXE**，必须保留旁边的 `runtime/` 和 `library/`。Windows 10/11 x64；程序尚未签名。
 
 ```text
 SoloTRPG.exe                  很小的固定启动入口

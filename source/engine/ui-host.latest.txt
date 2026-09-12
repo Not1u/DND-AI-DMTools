@@ -780,6 +780,7 @@ return {
       return Math.floor(Math.random() * n) + 1
     }
     const rollExpr = (expr, advantage) => {
+      advantage = advantage === "adv" || advantage === "dis" ? advantage : null;
       const raw = String(expr == null ? '1d20' : expr).replace(/\s+/g, '').toLowerCase()
       if (!raw) return { ok: false, error: '骰式为空' }
       if (!/^[0-9d+\-khl]+$/.test(raw)) return { ok: false, error: '不支持的骰式：' + expr }
@@ -1122,7 +1123,8 @@ return {
         if (!tk) return { ok: false, error: '找不到单位：' + a.id }
         const p = a.patch || {}
         for (const k of ['name', 'kind', 'color', 'note', 'statblockId', 'source']) if (p[k] != null) tk[k] = String(p[k])
-        for (const k of ['hp', 'max', 'speed', 'x', 'y', 'size', 'ac', 'dex']) if (p[k] != null && p[k] !== '') tk[k] = Number(p[k])
+        for (const k of ['hp', 'max', 'speed', 'x', 'y', 'size', 'ac', 'dex', 'attackBonus', 'reach']) if (p[k] != null && p[k] !== '') tk[k] = Number(p[k])
+        if(p.damage!=null){if(!/^\d{1,2}d\d{1,3}(?:[+-]\d{1,3})?$/.test(String(p.damage)))throw Error('伤害公式无效');tk.damage=String(p.damage)}
         if (p.saves != null) tk.saves = p.saves
         if (p.hidden != null) tk.hidden = !!p.hidden
         const wr = await writeMap(map)
@@ -1255,6 +1257,8 @@ return {
       const langM = /语言[：:| ]{0,4}([^|]{0,60})/.exec(flat)
       const skillsM = /技能[：:| ]{0,4}([^|]{0,90})/.exec(flat)
       const savesM = /豁免[：:| ]{0,4}([^|]{0,90})/.exec(flat)
+      const numericSaves=Object.fromEntries(Object.entries(abil).map(([k,v])=>[k,modOf(v)]));
+      for(const [label,key] of [['力量','str'],['敏捷','dex'],['体质','con'],['智力','int'],['感知','wis'],['魅力','cha']]){const m=(savesM?.[1]||'').match(new RegExp('(?:'+label+'|'+key+')\\s*([+-]?\\d+)','i'));if(m)numericSaves[key]=Number(m[1])}
       const body = flat.replace(/^.*?(?:特质|Traits|动作|Actions)\s*\|/i, '')
       const actions = body.split(/\|\s*(?=[^|]{2,20}[。.])/).slice(0, 14).map(s => s.trim().replace(/\s*\|+\s*/g, ' ')).filter(Boolean)
       return jclean({
@@ -1265,7 +1269,7 @@ return {
         speed: speedM ? Number(speedM[1]) : null,
         abilities: abil, mods: Object.keys(abil).length ? Object.keys(abil).reduce((o, k) => { o[k] = modOf(abil[k]); return o }, {}) : {},
         cr: crTxt, crValue: crN, pb: pbM ? Number(pbM[1]) : null,
-        saves: savesM ? savesM[1].trim() : null, skills: skillsM ? skillsM[1].trim() : null,
+        saves:numericSaves,savesText:savesM?savesM[1].trim():null, skills: skillsM ? skillsM[1].trim() : null,
         senses: sensesM ? sensesM[1].trim() : null, languages: langM ? langM[1].trim() : null,
         actions: actions, rawChars: t.length,
       })
@@ -1840,15 +1844,16 @@ return {
         if (a.dryRun) {
           const specs = buildToolSpecs(cfg)
           const status = await aiStatusLine()
-          return { ok: true, dryRun: true, tools: specs.length, system: aiSystemPrompt(status, cfg.extraPrompt), status: status, summary: '干跑：' + specs.length + ' 个工具，系统提示 ' + aiSystemPrompt(status, cfg.extraPrompt).length + ' 字' }
+          return { ok: true, dryRun: true, tools: specs.length, system: DND5E_AI_PROMPTS.assemblePrompt({mode:(await readCombat()).active?'combat':'explore',scene:await OPS['scene.get']({}),extra:cfg.extraPrompt}), status: status, summary: '干跑：' + specs.length + ' 个工具，系统提示 ' + aiSystemPrompt(status, cfg.extraPrompt).length + ' 字' }
         }
         if (a.message && !a.prepare && !a.internal) {ai.messages.push({ role: 'user', content: String(a.message), t: nowIso() });await writeAi(ai)}
         const status = await aiStatusLine()
         const campaignContext = await getCampaignContext()
-        const msgs = [{ role: 'system', content: aiSystemPrompt(status, cfg.extraPrompt) + DND5E_GAME_PROMPT + campaignContext + (a.prepare ? (a.keepMap ? '\n保留当前 PDF 原图地图，仅研究对应场景，不调用任何地图写入工具，不放角色或开战。' : '\n现在仅筹备首个场景。查阅模组首章，用 map.compose 新建对应地形。不推进剧情、不开始战斗、不放任何玩家角色或虚构角色。完成后说明来源与待确认项。') : '\n进入战斗前先 mod.statblock 查询敌人，map.token.add/update 写入 statblockId，再 combat.start；没有角色卡绝不虚构玩家。') }]
+        const mode=a.prepare?'prepare':(await readCombat()).active?'combat':'explore';
+        const msgs=[{role:'system',content:DND5E_AI_PROMPTS.assemblePrompt({mode,scene:await OPS['scene.get']({}),context:campaignContext,extra:cfg.extraPrompt,keepMap:a.keepMap})}];
         for (const m of ai.messages.slice(-40)) msgs.push({ role: m.role, content: m.speaker ? m.speaker+'：'+m.content : m.content })
         if(a.prepare||a.internal)msgs.push({role:'user',content:String(a.message||'继续')})
-        const tools = buildToolSpecs(cfg).filter(t => (!a.prepare || /^(mod_|rules_|map_compose$|map_tiles$|map_get$|party_list$|campaign_progression_)/.test(t.function.name)) && !(a.keepMap && t.function.name==='map_compose'))
+        let tools=DND5E_AI_PROMPTS.toolsForMode(buildToolSpecs(cfg),mode).filter(t=>!(a.keepMap&&t.function.name==='map_compose'));
         const steps = []
         let totalUsage = { prompt_tokens: 0, completion_tokens: 0 }
         let reply = ''
@@ -1856,7 +1861,7 @@ return {
         const maxSteps = Math.max(2, Math.min(20, Number(a.maxSteps) || cfg.maxSteps || 6))
         const url = cfg.baseUrl.replace(/\/+$/, '') + '/chat/completions'
         for (let step = 0; step < maxSteps; step++) {
-          if(!a.prepare){const scene=await OPS['scene.get']({});msgs[0].content=aiSystemPrompt(status,cfg.extraPrompt)+DND5E_GAME_PROMPT+campaignContext+'\n权威实时场景（只把用户可见事实用于叙述）：'+JSON.stringify(scene)}
+          if(!a.prepare){const scene=await OPS['scene.get']({});tools=DND5E_AI_PROMPTS.toolsForMode(buildToolSpecs(cfg),scene.combat?.active?'combat':'explore');const battle=await OPS['battle.get']({});scene.battle={actorId:battle.actorId,active:battle.active,slots:battle.slots,abilities:battle.items?.map(({id,name,kind,cost,range,level})=>({id,name,kind,cost,range,level})),recentEvents:battle.events?.slice(-12)};msgs[0].content=DND5E_AI_PROMPTS.assemblePrompt({mode:scene.combat?.active?'combat':'explore',scene,context:campaignContext,extra:cfg.extraPrompt})}
           const body = { model: cfg.model, messages: msgs, temperature: cfg.temperature, tools: tools, tool_choice: forceAction ? {type:'function',function:{name:'dm_action'}} : 'auto' }
           if(textTransport){delete body.tools;delete body.tool_choice;body.messages=msgs.map(m=>({role:m.role==='tool'?'user':m.role,content:(m.role==='tool'?'工具执行结果：':'')+(m.content||'')}));body.messages[0].content+='\n当前接口不接受原生 tools：实际交互必须以 ```dm-action 换行 JSON 换行 ``` 输出。'+(forceAction?'本次 action 必须为 '+forceAction:'')}
           let res, data
@@ -1874,6 +1879,7 @@ return {
           finish = choice.finish_reason || ''
           const parsed=DND5E_CAMPAIGN.extractActions(m.content)
           if(!a.prepare){m.content=parsed.text;for(const error of parsed.errors)steps.push({name:'dm.action',ok:false,summary:'动作格式错误：'+error});if(!m.tool_calls?.length&&parsed.actions.length)m.tool_calls=parsed.actions.map((args,i)=>({id:'compat-'+step+'-'+i,type:'function',function:{name:'dm_action',arguments:JSON.stringify(args)}}))}
+          if(!a.prepare&&!m.tool_calls?.length){const pending=await OPS['session.pending']({});if(!pending.request&&!pending.dice.length){const party=await OPS['party.list']({});const rolls=DND5E_AI_PROMPTS.explicitRolls(m.content,party.items||[]);if(rolls.length){m.tool_calls=rolls.map((args,i)=>({id:'explicit-'+step+'-'+i,type:'function',function:{name:'dm_action',arguments:JSON.stringify(args)}}));m.content=String(m.content).replace(/手动[，,、 ]*报数字|手动，报数字|手动报数/g,'在骰盘投掷，结果自动回传')}}}
           if (m.content) reply += (reply ? '\n' : '') + String(m.content)
           msgs.push(m)
           const calls = m.tool_calls || []

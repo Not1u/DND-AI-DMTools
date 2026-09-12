@@ -51,3 +51,10 @@ git push origin main
 - 修改 host 文件后下次请求热加载；修改 client 和 `app/` 文件后刷新页面。`server.mjs` 或监听配置变更后需重启服务。桌面发布包包含 runtime 程序目录与 library 规则库；修改后重新打包，用户存档不随程序更新覆盖。
 
 当前缺陷、遗留工具限制与重构建议见 `PROJECT_REVIEW.md`。
+
+
+### 0.9.0 战斗改动验证
+
+`npm run test:desktop` 包含本地战斗执行器的隔离行为测试。真实 UI 事件用桌面启动参数 `--desktop-smoke=<独立临时目录> --battle-smoke=<合成角色来源 JSON>`，对应 `desktop/battle-smoke.cjs`；不要传真实 AppData 目录。在线验证需显式 `node tools/live-gameplay-smoke.mjs --live`，只在已有用户授权时使用本机 API 配置，测试角色/地图隔离，测试后清除临时配置中的密钥。
+
+打包过程中不要修改 `desktop/`、`src/`、`app/`、`engine/`、`server.mjs` 或 `package.json`，以免 ASAR 文件偏移失效。构建结束后运行包完整性验证，再做打包版桌面交互检查。
