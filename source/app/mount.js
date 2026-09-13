@@ -71,6 +71,7 @@
     const [cur, setCur] = React.useState(preferredId());
     const [pages,setPages]=React.useState([]);
     React.useEffect(()=>{window.SoloOpenPage=page=>{setPages(old=>old.some(x=>x.id===page.id)?old:[...old,page]);setCur(page.id)};return()=>{delete window.SoloOpenPage}},[]);
+    React.useEffect(()=>{let previous=false,stopped=false;const check=async()=>{try{const r=await host.call('combat.get',{});if(!stopped&&r.ok){if(r.active&&!previous)setCur('battle');previous=!!r.active}}catch{}};check();window.addEventListener('solo-state',check);return()=>{stopped=true;window.removeEventListener('solo-state',check)}},[]);
     const allTabs=[...tabs,...pages.map(p=>({...p,closable:true,component:()=>p.kind==='detail'?h('div',{className:'solo-detail-page'},h('h1',null,p.title),p.items.map((item,i)=>h('article',{key:i},h('h2',null,item.name),item.meta?h('small',null,item.meta):null,h('p',null,item.desc||'')))):p.kind==='character'?h(window.SoloCharacterPage,{actorId:p.actorId}):h(window.SoloPanelPage,{panel:p.panel})}))];
     React.useEffect(() => { if (window.SoloMotion) window.SoloMotion.updateTabs() }, [cur])
     activeId = cur

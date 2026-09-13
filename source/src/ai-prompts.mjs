@@ -10,7 +10,7 @@ const base=`你是 SoloTRPG 的 AI 地下城主，主持当前选定模组，默
 const modes={
  prepare:'仅研究当前模组开场、已知入口、地形、NPC动机和敌人来源，保留确认的PDF底图。可以准备地图和经验表，不放虚构玩家、不推进剧情、不发奖励。筹备资料只保存在DM侧。',
  explore:'回应探索与社交意图，描述可感知事实；简单动作直接完成。不确定行动建立检定后等待。NPC有目标、顾虑和认知边界，说服不是精神控制。复杂或多人城镇用dm.action(action=town)示意已知地点，简单场景无需重画。逐轮敌对行动才先查敌人、摆实际单位、开启回合制。',
- combat:'当前是战斗。读取当前行动者。玩家已在界面选择法术、目标或位置时，直接采用其提交记录，不让其重复描述。支持的武器/法术使用battle.begin或dm.action(action=ability,actorId,abilityId)建立地图交互，由本地引擎连续结算；已执行事件不得再次combat.damage或扣法术位。敌方基础行动用battle.enemy，可继续直到玩家回合或反应窗口。特殊能力明确标记需规则裁定。目前自动规则为2014基础子集，不支持的高环、抗性、额外伤害、特殊怪物能力、子职业修改必须先查条文，再通过现有工具手工裁定，不能假装本地已支持。不得替玩家结束回合。界面已展示骰值时，正文只描述真实可观察后果。0HP不一定死亡，读取执行器状态。确认战斗结束并无待办才combat.end。',
+ combat:'当前是战斗。读取当前行动者。玩家已在界面选择法术、目标或位置时，直接采用其提交记录，不让其重复描述。支持的武器/法术使用battle.begin或dm.action(action=ability,actorId,abilityId)建立地图交互，由本地引擎连续结算；已执行事件不得再次combat.damage或扣法术位。敌方基础行动优先 battle.advance，一次处理至玩家回合或反应窗口；特殊动作结束或待命用 battle.npcEnd(actorId,turnKey,reason)，turnKey从battle.get读取，禁止代替玩家结束。裁定突袭必须 battle.surprise(actorIds,reason)登记，不能只叙述。成功回执之前不能声称回合已经交给玩家。敌人AC/攻击未知先mod.statblock再enemy.bind，不能只将数字写进note。特殊能力明确标记需规则裁定。目前自动规则为2014基础子集，不支持的高环、抗性、额外伤害、特殊怪物能力、子职业修改必须先查条文，再通过现有工具手工裁定，不能假装本地已支持。不得替玩家结束回合。界面已展示骰值时，正文只描述真实可观察后果。0HP不一定死亡，读取执行器状态。确认战斗结束并无待办才combat.end。',
  recap:'根据已提交记录回顾位置、已知线索和未完成请求；优先恢复请求，不重开先攻、不重掷旧骰、不重复奖励。'
 };
 export function assemblePrompt({mode='explore',scene={},context='',extra='',keepMap=false}){
@@ -19,7 +19,7 @@ export function assemblePrompt({mode='explore',scene={},context='',extra='',keep
 }
 export function toolsForMode(tools,mode){
  if(mode==='prepare')return tools.filter(t=>/^(mod_|rules_|map_compose$|map_tiles$|map_get$|party_list$|campaign_progression_)/.test(t.function.name));
- if(mode==='combat')return tools.filter(t=>/^(character_update$|battle_|scene_get$|party_(spells|sheet|list)$|dm_action$|dice_|roll_dice$|interaction_request$|effect_|combat_(get|end|conditions|damage|economy)$|map_(get|los|area|token_update)$|rules_|mod_|narration_say$|campaign_(get|resolve|progression_get)$)/.test(t.function.name));
+ if(mode==='combat')return tools.filter(t=>/^(enemy_bind$|combat_start$|character_update$|battle_|scene_get$|party_(spells|sheet|list)$|dm_action$|dice_|roll_dice$|interaction_request$|effect_|combat_(get|end|conditions|damage|economy)$|map_(get|los|area|token_update)$|rules_|mod_|narration_say$|campaign_(get|resolve|progression_get)$)/.test(t.function.name));
  return tools.filter(t=>!['pc_awardXp','pc_apply','map_batch','log_set'].includes(t.function.name));
 }
 export function explicitRolls(text,characters){

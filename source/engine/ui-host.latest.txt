@@ -1908,6 +1908,8 @@ return {
           const pending=await OPS['session.pending']({});if(pending.request||pending.dice.length){finish='waiting_player';break}
         }
         if (!reply && !steps.length) return {ok:false,error:'模型没有返回文本或工具调用，请检查模型是否支持 Chat Completions。'}
+        if(!steps.some(s=>s.ok&&/^(battle\.(advance|npcEnd|enemy)|dm\.action)$/.test(s.name))&&/(?:我|已经|已|现在|回合).{0,28}(?:跳过|空过|转到你|交给你|移动到了|轮到你)/.test(reply)){const actual=await OPS['combat.get']({});if(actual.active){const turn=actual.order[actual.turnIndex];if(!turn?.pcId&&turn?.kind!=='pc')reply='⚠ 尚无成功的回合推进回执，当前仍是 '+actual.current+'。请使用“让 DM 继续敌方”或当前敌方空过按钮；不能将口头描述视为已执行。'}}
+        const failures=steps.filter(s=>!s.ok);if(failures.length){const actual=await OPS['combat.get']({});reply='⚠ 本次操作未完整执行：'+failures.map(s=>s.summary||s.name).join('；')+'。'+(actual.active?'当前仍以系统先攻为准：'+actual.current+'。':'当前为自由模式。')+' 未成功的移动、伤害或回合推进不能视为已生效。'}
         ai.messages=(await readAi()).messages
         if (!a.prepare && reply) ai.messages.push({ role: 'assistant', content: reply, t: nowIso(), steps: steps.map(s => s.name), actions:steps.map(s=>({name:s.name,ok:s.ok,summary:s.name==='dice.secret'?'DM 判定已记录':s.summary})) })
         else if (!a.prepare && steps.length) ai.messages.push({ role: 'assistant', content: finish==='waiting_player'?'已准备好，请完成下方投骰或地图选择。':'DM 已更新场景。', actions:steps.map(s=>({name:s.name,ok:s.ok,summary:s.name==='dice.secret'?'DM 判定已记录':s.summary})), t: nowIso() })
@@ -2404,6 +2406,7 @@ return {
           const cur = st.order[idx]
           const kept = []
           for (const c of (cur.conditions || [])) {
+            if (/^(surprised|surprise|突袭|受惊|措手不及)$/i.test(c.key||c.name||'')) { kept.push(c); continue }
             if (c.rounds == null) { kept.push(c); continue }
             const left = Number(c.rounds) - 1
             if (left > 0) { kept.push(Object.assign({}, c, { rounds: left })) } else events.push(cur.name + " 的「" + c.name + "」结束了")
@@ -2607,7 +2610,7 @@ return {
     }))
     unreg.push(harness.handle('enemy.bind',async a=>{
       const map=await readMap(),tk=map.tokens.find(t=>t.id===a.tokenId && t.kind==='enemy');if(!tk)return {ok:false,error:'先选择地图上的敌人。'}
-      const sb=await OPS['mod.statblock']({id:a.statblockId,title:a.title||tk.name.replace(/[0-9]+$/,'').trim()});if(!sb.ok)return sb
+      const sb=await OPS['mod.statblock']({id:a.statblockId,title:a.title||tk.name.replace(/[\d０-９]+$/,'').replace(/([\u3400-\u9fff])[A-ZＡ-Ｚ]$/,'$1').trim()});if(!sb.ok)return sb
       Object.assign(tk,{ac:sb.ac,max:sb.hp,hp:tk.hp??sb.hp,dex:sb.mods?.dex??null,saves:sb.saves||sb.mods,statblockId:sb.id,source:sb.book+' / '+sb.title});const wr=await writeMap(map);return {ok:!!wr.ok,summary:'已更新 '+tk.name+' 的简表',token:tk}
     }))
     let preparing=false
@@ -2642,7 +2645,7 @@ return {
       const map=await readMap()
       for(const tk of map.tokens||[]){
         if(tk.kind!=='enemy')continue
-        const sb=await OPS['mod.statblock'](tk.statblockId?{id:tk.statblockId,title:tk.name.replace(/[0-9]+$/,'').trim()}:{query:tk.name.replace(/[\d０-９]+$/,'').trim()})
+        const sb=await OPS['mod.statblock'](tk.statblockId?{id:tk.statblockId,title:tk.name.replace(/[\d０-９]+$/,'').replace(/([\u3400-\u9fff])[A-ZＡ-Ｚ]$/,'$1').trim()}:{query:tk.name.replace(/[\d０-９]+$/,'').replace(/([\u3400-\u9fff])[A-ZＡ-Ｚ]$/,'$1').trim()})
         if(sb.ok){tk.ac=tk.ac??sb.ac;tk.max=tk.max??sb.hp;tk.hp=tk.hp??tk.max;tk.dex=sb.mods?.dex??null;tk.saves=sb.saves||sb.mods;tk.statblockId=sb.id;tk.source=sb.book+' / '+sb.title}
         else tk.source='未检索到可靠数据，请手动核对';
       }
