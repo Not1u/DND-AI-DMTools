@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {createProfiles} from './src/profiles.mjs'
 import {battleTools} from './src/battle.mjs'
 import * as aiPrompts from './src/ai-prompts.mjs'
 import * as campaign from './src/campaign.mjs'
@@ -33,13 +34,16 @@ export async function startServer(options = {}) {
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 let CFG = {}
 try { CFG = JSON.parse(fs.readFileSync(path.join(HERE, 'config.json'), 'utf8')) } catch (e) { }
-const ROOT = options.dataRoot || (CFG.dataRoot ? path.resolve(HERE, CFG.dataRoot) : HERE)
+let ROOT = options.dataRoot || (CFG.dataRoot ? path.resolve(HERE, CFG.dataRoot) : HERE)
 const libraryRoot = options.libraryRoot || HERE
-const sessionRoot=options.sessionRoot || (options.libraryRoot ? path.resolve(options.libraryRoot,'..','saves') : path.join(ROOT,'saves'))
-const sessionStorage=sessionFiles(sessionRoot)
+let sessionRoot=options.sessionRoot || (options.libraryRoot ? path.resolve(options.libraryRoot,'..','saves') : path.join(ROOT,'saves'))
+let sessionStorage=sessionFiles(sessionRoot)
 await migrateSession(ROOT,sessionRoot)
-const modules = createModuleStore(options.libraryRoot || ROOT)
-const pdfMaps = createPdfMapStore(options.libraryRoot || ROOT,modules)
+const moduleRoot=options.libraryRoot||ROOT;
+const profiles=await createProfiles(ROOT,sessionRoot);({dataRoot:ROOT,sessionRoot}=profiles.current());sessionStorage=sessionFiles(sessionRoot);
+let requestsInFlight=0,aiInFlight=0,switching=false;
+const modules = createModuleStore(moduleRoot)
+const pdfMaps = createPdfMapStore(moduleRoot,modules)
 const PORT = Number(options.port ?? process.env.PORT ?? CFG.port ?? 4620)
 const BIND = options.bind || process.env.BIND || CFG.bind || '127.0.0.1'
 const HOST_SRC = path.join(HERE, 'engine', 'ui-host.latest.txt')
@@ -177,7 +181,21 @@ async function handleApi(req, res) {
     try { const p = JSON.parse(body || '{}'); op = String(p.op || ''); args = p.args === undefined ? null : p.args }
     catch (e) { return sendJson(res, 400, { ok: false, error: 'bad json: ' + (e && e.message || e) }) }
     if (!op) return sendJson(res, 400, { ok: false, error: 'op required' })
+    let counted=false,aiCounted=false;
     try {
+      if(op==='profiles.list')return sendJson(res,200,{ok:true,value:profiles.list()});
+      if(op==='profiles.create'||op==='profiles.select'){
+        if(switching||aiInFlight)return sendJson(res,200,{ok:true,value:{ok:false,error:'仍有操作或 AI 请求处理中，请完成后切换存档。'}});
+        switching=true;
+        try{const drainUntil=Date.now()+5000;while(requestsInFlight&&Date.now()<drainUntil)await new Promise(r=>setTimeout(r,20));if(requestsInFlight)throw Error('正在保存操作，请稍后切换');if(op==='profiles.create'&&!(await modules.list()).some(m=>m.id===args?.moduleId))throw Error('请先导入并选择模组');
+          ensureEngine();if(rec['session.save'])await rec['session.save']({});
+          const next=op==='profiles.create'?await profiles.create(args||{}):await profiles.select(args?.id);
+          if(typeof innerDispose==='function')innerDispose();for(const key of Object.keys(rec))delete rec[key];loaded=false;innerDispose=null;
+          ROOT=next.dataRoot;sessionRoot=next.sessionRoot;sessionStorage=sessionFiles(sessionRoot);ensureEngine();announce();
+          return sendJson(res,200,{ok:true,value:{ok:true,id:next.id}});
+        }finally{switching=false}
+      }
+      if(switching)throw Error('存档正在切换，请稍候');requestsInFlight++;counted=true;if(['ai.chat','session.resume','campaign.prepare','campaign.start'].includes(op)){aiInFlight++;aiCounted=true}
       ensureEngine()
       const ext = await loadPlugins()
       if (op === 'ext.list') return sendJson(res, 200, { ok: true, value: { core: Object.keys(rec), plugins: ext.list, pluginOps: Object.keys(ext.ops) } })
@@ -192,9 +210,9 @@ async function handleApi(req, res) {
         writeJson: async (rel, obj) => writeText(path.join(ROOT, rel), JSON.stringify(obj, null, 2)),
         log: (m) => console.log('[plugin] ' + m),
       })
-      if(value?.ok!==false&&!/(?:\.get|\.list|\.preview|\.pending|\.history|\.results|\.search|\.read|\.sheet|\.spells)$/.test(op))announce();
+      if(value?.ok!==false&&!/(?:\.get|\.list|\.preview|\.pending|\.history|\.results|\.search|\.read|\.sheet|\.spells|\.tools|\.usage)$/.test(op))announce();
       return sendJson(res, 200, { ok: true, value: value === undefined ? null : value })
-    } catch (e) { return sendJson(res, 200, { ok: false, error: String((e && e.message) || e) }) }
+    } catch (e) { return sendJson(res, 200, { ok: false, error: String((e && e.message) || e) }) } finally {if(counted)requestsInFlight--;if(aiCounted)aiInFlight--}
   })
 }
 

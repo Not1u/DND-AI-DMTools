@@ -36,10 +36,12 @@ else {
     const errors = [];
     window.webContents.on('console-message', event => { if (event.level === 'error') errors.push(event.message); });
     await window.loadURL(runtime.url);
-    for(let i=0;i<100;i++){if(await window.webContents.executeJavaScript("!!document.querySelector('.dndp-ws')"))break;await new Promise(r=>setTimeout(r,50))}
+    for(let i=0;i<100;i++){if(await window.webContents.executeJavaScript("!!document.querySelector('.home-page,.dndp-ws')"))break;await new Promise(r=>setTimeout(r,50))}
     const startupMs=Date.now()-startupTime;
     if (smoke) {
       await new Promise(r => setTimeout(r, 3500));
+      if(process.argv.includes('--lobby-smoke'))await require('./lobby-smoke.cjs')(window,runtime,home);
+      if(smoke)await window.webContents.executeJavaScript(`[...document.querySelectorAll('.solo-tab')].find(t=>t.textContent==='跑团工作区')?.click()`);
       if (process.argv.includes('--ui-smoke')) await require('./ui-smoke.cjs')(window, runtime, home);
       const battleFile=process.argv.find(a=>a.startsWith('--battle-smoke='))?.slice(15);
       if(battleFile)await require('./battle-smoke.cjs')(window,runtime,home,battleFile);
@@ -51,7 +53,7 @@ else {
       let moduleCheck;
       if (moduleFile) {
         const encoded = (await fs.readFile(moduleFile)).toString('base64');
-        await window.webContents.executeJavaScript(`document.querySelectorAll('.solo-tab')[2].click()`);
+        await window.webContents.executeJavaScript(`[...document.querySelectorAll('.solo-tab')].find(t=>t.textContent==='模组库 / 上传').click()`);
         await new Promise(r => setTimeout(r, 300));
         await window.webContents.executeJavaScript(`(() => {
           const bytes = Uint8Array.from(atob(${JSON.stringify(encoded)}), c => c.charCodeAt(0));

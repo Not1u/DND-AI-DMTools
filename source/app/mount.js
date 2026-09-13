@@ -64,14 +64,14 @@
 
   function preferredId() {
     const ws = tabs.find((t) => /workspace/.test(t.id))
-    return (ws || tabs[0] || {}).id || null
+    return location.hash==='#open-player'?(ws||tabs[0]).id:location.hash==='#open-dm'?'dm':'home'
   }
 
   function App() {
     const [cur, setCur] = React.useState(preferredId());
-    const [pages,setPages]=React.useState([]);
+    const [pages,setPages]=React.useState([]);const previousCombat=React.useRef(false);
     React.useEffect(()=>{window.SoloOpenPage=page=>{setPages(old=>old.some(x=>x.id===page.id)?old:[...old,page]);setCur(page.id)};return()=>{delete window.SoloOpenPage}},[]);
-    React.useEffect(()=>{let previous=false,stopped=false;const check=async()=>{try{const r=await host.call('combat.get',{});if(!stopped&&r.ok){if(r.active&&!previous)setCur('battle');previous=!!r.active}}catch{}};check();window.addEventListener('solo-state',check);return()=>{stopped=true;window.removeEventListener('solo-state',check)}},[]);
+    React.useEffect(()=>{let stopped=false;const check=async()=>{try{const r=await host.call('combat.get',{});if(!stopped&&r.ok){if(r.active&&!previousCombat.current&&cur!=='home'&&cur!=='dm')setCur('battle');previousCombat.current=!!r.active}}catch{}};check();window.addEventListener('solo-state',check);return()=>{stopped=true;window.removeEventListener('solo-state',check)}},[cur]);
     const allTabs=[...tabs,...pages.map(p=>({...p,closable:true,component:()=>p.kind==='detail'?h('div',{className:'solo-detail-page'},h('h1',null,p.title),p.items.map((item,i)=>h('article',{key:i},h('h2',null,item.name),item.meta?h('small',null,item.meta):null,h('p',null,item.desc||'')))):p.kind==='character'?h(window.SoloCharacterPage,{actorId:p.actorId}):h(window.SoloPanelPage,{panel:p.panel})}))];
     React.useEffect(() => { if (window.SoloMotion) window.SoloMotion.updateTabs() }, [cur])
     activeId = cur
@@ -106,6 +106,8 @@
     } catch (e) { boot.textContent = 'UI 源码执行失败：' + e.message; return }
     try {
       plugin.apply(ctx)
+      tabs.unshift({id:'home',title:'主界面',component:()=>h(window.SoloHome,{})});
+      tabs.push({id:'dm',title:'DM 控制台',component:()=>h(window.SoloDMConsole,{})});
       tabs.push({ id: 'modules', title: '模组库 / 上传', component: () => h(window.SoloModuleLibrary, { call: host.call }) })
       tabs.push({ id: 'appearance', title: '外观', component: () => h(window.SoloAppearance, {}) })
       tabs.push({id:'battle',title:'战斗专页',component:()=>h(window.SoloBattlePage,{})});

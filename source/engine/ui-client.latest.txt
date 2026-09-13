@@ -2284,7 +2284,7 @@ function AIPanel(props) {
     call('ai.tools', {}).then(r => { if (r && r.ok) setToolCount(r.count) }).catch(() => { })
   }, [])
   React.useEffect(() => { const el = bodyRef.current; if (el && followBottom.current) el.scrollTop = el.scrollHeight },[msgs.length,busy])
-  React.useEffect(()=>{const timer=setInterval(async()=>{try{const r=await call('session.pending',{});if(r.ok){setLive(r);if(r.resuming)setMsg('DM 正在处理，请稍候（'+Math.floor(r.elapsedMs/1000)+' 秒）');else setMsg(m=>m.startsWith('DM 正在处理')?'':m)}if(r.ready&&!busy&&!resumeLock.current&&Date.now()>retryAt.current){resumeLock.current=true;setBusy(true);try{const reply=await call('session.resume',{});if(reply.ok)setMsg(reply.status==='processing'?'DM 正在处理，请稍候。':'');if(!reply.ok){retryAt.current=Date.now()+30000;setMsg('DM 续接失败：'+reply.error+'（30 秒后重试，也可手动发送）');}await load()}finally{resumeLock.current=false;setBusy(false)}}}catch{}},1200);return()=>clearInterval(timer)},[busy])
+  React.useEffect(()=>{const timer=setInterval(async()=>{try{const r=await call('session.pending',{});if(r.ok){setLive(r);if(r.resuming)setMsg('DM 正在处理，请稍候（'+Math.floor(r.elapsedMs/1000)+' 秒）');else setMsg(m=>m.startsWith('DM 正在处理')?'':m)}if(r.ready&&!busy&&!resumeLock.current&&Date.now()>retryAt.current){resumeLock.current=true;setBusy(true);try{const reply=await call('session.resume',{});if(reply.ok)setMsg(reply.status==='processing'?'DM 正在处理，请稍候。':'');if(!reply.ok){retryAt.current=Date.now()+30000;setMsg('DM 续接失败：'+reply.error+'（已停止自动重试，请手动继续）');}await load()}finally{resumeLock.current=false;setBusy(false)}}}catch{}},1200);return()=>clearInterval(timer)},[busy])
   React.useEffect(()=>{if(typeof window==='undefined')return;const refresh=()=>load();window.addEventListener('solo-state',refresh);return()=>window.removeEventListener('solo-state',refresh)},[]);
   const send = async (text,requestAction) => {
     const t = String(text == null ? input : text).trim()
@@ -2293,7 +2293,7 @@ function AIPanel(props) {
     setInput(''); setBusy(true); setMsg('')
     setMsgs(m => m.concat([{ role: 'user', content: t, t: new Date().toISOString() }]))
     try {
-      const r = await call('ai.chat', { message: t, requestAction })
+      const r = await call(live?.aidm===false?'dm.player':'ai.chat', { message: t, requestAction })
       if (r && r.ok) {
         const steps = (r.steps || []).map(s => '· ' + s.name + (s.ok ? ' ✔' : ' ✘') + (s.summary ? ('  ' + String(s.summary).slice(0, 60)) : '')).join('\n')
         await load()
@@ -2669,7 +2669,7 @@ function PartyView() {
   ;(list || []).forEach((l, i) => rows.push(h('div', { key: i, className: 'dndp-row', onClick: () => open(l.id) }, h('div', { className: 'dndp-ava' }, (l.name || '?').slice(0, 1)), h('div', { className: 'dndp-main' }, h('div', { className: 'dndp-name' }, l.name), h('div', { className: 'dndp-sub' }, (l.race || '') + (l.cls ? ' · ' + l.cls : ''))), h('span', { className: 'dndp-chip' }, 'L' + l.level), h('span', { className: 'dndp-chip' }, 'HP ' + l.hp + '/' + l.max))))
   return h('div', { className: 'dndp-root ' + themeClassOf(theme), style: themeStyleOf(theme) }, h('div', { className: 'dndp-header' }, h('span', { className: 'dndp-ic' }, '⚔'), h('span', null, 'D&D 5e 角色'), h('div', { className: 'dndp-sp' }), h(UiBadge, null), h('button', { className: 'dndp-btn', onClick: () => setMode('map') }, '🗺 地图'), h('button', { className: 'dndp-btn', onClick: () => setMode('log') }, '🎲 战斗记录'), h('button', { className: 'dndp-btn primary', onClick: () => setMode('build') }, '+ 新建角色')), h('div', { className: 'dndp-scroll' }, rows))
 }
-if(typeof window!=='undefined'){window.SoloComponents={MapPanel,AIPanel,Detail,LogView,CombatPanel,SheetHost,PartyView,DicePanel};window.SoloPanelPage=function({panel}){const Component={map:MapPanel,ai:AIPanel,log:LogView,dice:DicePanel,party:PartyView,roster:PartyView,sheet:PartyView,combat:CombatPanel,settings:SettingsPanel,rules:RulesPanel,stats:StatsPanel,builder:PartyView}[panel];return h('div',{className:'solo-panel-page'},Component?h(Component,{bare:panel==='map'}):h('p',null,'此面板请在工作台中打开。'))}}
+if(typeof window!=='undefined'){window.SoloComponents={Wizard,MapPanel,AIPanel,Detail,LogView,CombatPanel,SheetHost,PartyView,DicePanel};window.SoloPanelPage=function({panel}){const Component={map:MapPanel,ai:AIPanel,log:LogView,dice:DicePanel,party:PartyView,roster:PartyView,sheet:PartyView,combat:CombatPanel,settings:SettingsPanel,rules:RulesPanel,stats:StatsPanel,builder:PartyView}[panel];return h('div',{className:'solo-panel-page'},Component?h(Component,{bare:panel==='map'}):h('p',null,'此面板请在工作台中打开。'))}}
 return {
   apply(ctx) {
     const off = ctx.effect(() => {
