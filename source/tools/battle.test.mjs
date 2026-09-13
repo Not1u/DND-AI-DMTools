@@ -58,3 +58,33 @@ test('NPC continuation completes attacks and returns control instead of stalling
 test('unexecuted and failed DM turn claims are replaced with the actual current turn',async()=>{const f=await fixture(true);let failed=false;const provider=http.createServer(async(req,res)=>{for await(const p of req){}res.setHeader('content-type','application/json');res.end(JSON.stringify({choices:[{message:{role:'assistant',content:'我已经跳过地精回合，现在交给你。',...(failed?{tool_calls:[{id:'bad-skip',type:'function',function:{name:'battle_npcEnd',arguments:JSON.stringify({actorId:'hero',turnKey:'1:e',reason:'错误角色'})}}]}:{})}}]}))});await new Promise(r=>provider.listen(0,'127.0.0.1',r));try{await f.ok('settings.set',{baseUrl:'http://127.0.0.1:'+provider.address().port,model:'test',maxSteps:2});const plain=await f.ok('ai.chat',{message:'让敌人空过'});assert.match(plain.reply,/尚无成功/);assert.equal((await f.ok('battle.get')).actorId,'g1');failed=true;const bad=await f.ok('ai.chat',{message:'继续'});assert.match(bad.reply,/未完整执行/);assert.equal((await f.ok('battle.get')).actorId,'g1');}finally{await f.close();await new Promise(r=>provider.close(r))}});
 
 test('initiative requests gate the enemy driver, and surprise remains until the affected turn ends',async()=>{const f=await fixture();try{await f.ok('combat.end');await f.ok('combat.start');let dice=(await f.ok('dice.pending')).pending;assert.ok(dice.some(d=>d.kind==='initiative'));assert.equal((await f.ok('battle.advance')).status,'waiting_player');for(const d of dice)await f.ok('dice.answer',{id:d.id});assert.equal((await f.ok('dice.pending')).pending.length,0);await f.ok('combat.end');await f.ok('combat.start',{entries:[{id:'p',tokenId:'hero',pcId:'hero',kind:'pc',name:'玩家',init:20,hp:50,max:50},{id:'e',tokenId:'g1',kind:'enemy',name:'地精',init:10,hp:50,max:50,conditions:[{key:'surprised',rounds:1}]}]});await f.ok('battle.endTurn');assert.equal((await f.ok('battle.get')).combat.order.find(e=>e.id==='e').conditions[0].key,'surprised');await f.ok('battle.advance');assert.equal((await f.ok('battle.get')).actorId,'hero');}finally{await f.close()}});
+import {meleeProfile,completeAttack} from '../src/combat-state.mjs';
+import {toolsForMode} from '../src/ai-prompts.mjs';
+import {createModuleStore} from '../src/modules.mjs';
+
+test('PDF split attack fragments and alternate hit notation bind without borrowing another creature',()=>{
+ const expected={attackBonus:4,damage:'1d6+2',reach:5};
+ assert.deepEqual(meleeProfile({actions:['弯刀。近战武器攻击：命中+4，触及 5 尺，单一目','标。','伤害：5（1d6+2）。短弓。远程武器攻击：命中+4，伤害1d6+2']}),expected);
+ assert.deepEqual(meleeProfile({actions:['近战武器攻击：＋4命中，触及5尺。伤害（1 d 6 ＋ 2）']}),expected);
+ assert.deepEqual(meleeProfile({actions:['Melee Weapon Attack: +4 to hit, reach 5 ft. Hit: 5 (1d6+2).']}),expected);
+ assert.deepEqual(meleeProfile({actions:['近战武器攻击：命中+4，触及5尺。','另一个怪物 AC：15 HP：7 近战武器攻击：命中+6，触及5尺。伤害2d6+4']}),{});
+ assert.equal(completeAttack({attackBonus:null,damage:'1d6+2',reach:5}),false);
+});
+
+test('imported split statblock repairs old bindings; map replacements and restart preserve attacks; free moves never drive enemies',async()=>{
+ const f=await fixture(true);try{
+  await f.ok('combat.mode',{mode:'free'});
+  const store=createModuleStore(f.root);await store.import('synthetic.md',Buffer.from('地精\n小型类人生物\nAC：15\nHP：7（2d6）\n速度：30尺\n动作\n弯刀。近战武器攻击：命中+4，触及5尺，单一目\n标。\n伤害：5（1d6+2）的挥砍伤害。'));
+  const entry=(await store.entries())[0];assert.ok(entry);
+  await f.ok('map.token.add',{token:{id:'pdf',name:'地精A',kind:'enemy',x:6,y:6,hp:3,max:7,statblockId:entry.id}});
+  const bound=await f.ok('enemy.bind',{tokenId:'pdf',statblockId:entry.id});assert.equal(bound.attackReady,true);assert.equal(bound.token.hp,3);assert.equal(bound.token.damage,'1d6+2');
+  let map=await f.ok('map.get');await f.ok('map.set',map);
+  await f.ok('map.batch',{ops:[{add:{id:'custom',name:'合成测试单位',kind:'enemy',x:8,y:8,attackBonus:6,damage:'2d4+3',reach:10}}]});
+  await f.restart();map=await f.ok('map.get');assert.equal(map.tokens.find(t=>t.id==='pdf').damage,'1d6+2');assert.equal(map.tokens.find(t=>t.id==='custom').attackBonus,6);
+  for(const x of [4,5,6])await f.ok('map.token.move',{id:'hero',x,y:4});
+  const before=await f.ok('combat.get'),hp=(await f.ok('party.sheet',{id:'hero'})).sheet.hp;
+  for(let n=0;n<3;n++)assert.equal((await f.ok('battle.enemy')).status,'exploration');
+  assert.deepEqual(await f.ok('combat.get'),before);assert.deepEqual((await f.ok('party.sheet',{id:'hero'})).sheet.hp,hp);assert.equal((await f.ok('dice.pending')).pending.length,0);
+  const ts=['battle_enemy','battle_advance','battle_npcEnd','battle_surprise','battle_begin','combat_start'].map(name=>({function:{name}}));assert.deepEqual(toolsForMode(ts,'explore').map(t=>t.function.name),['battle_begin','combat_start']);
+ }finally{await f.close()}
+});

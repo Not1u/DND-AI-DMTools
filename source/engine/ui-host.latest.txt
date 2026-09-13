@@ -1043,7 +1043,7 @@ return {
           x: Math.max(0, Math.min(w - 1, Number(tk.x) || 0)), y: Math.max(0, Math.min(h - 1, Number(tk.y) || 0)),
           color: tk.color || null, hp: (tk.hp == null ? null : Number(tk.hp)), max: (tk.max == null ? null : Number(tk.max)),
           speed: (tk.speed == null ? 30 : Number(tk.speed)), size: Math.max(1, Math.min(4, Number(tk.size) || 1)),
-          note: tk.note || '', hidden: !!tk.hidden, ac: tk.ac ?? null, dex: tk.dex ?? null, saves: tk.saves || null, statblockId: tk.statblockId || null, source: tk.source || null,
+          note: tk.note || '', hidden: !!tk.hidden, ac: tk.ac ?? null, dex: tk.dex ?? null, saves: tk.saves || null, statblockId: tk.statblockId || null, source: tk.source || null, attackBonus: tk.attackBonus ?? null, damage: tk.damage || null, reach: tk.reach ?? null,
         })) : (Array.isArray(a.replaceTokens) && a.replaceTokens ? [] : cur.tokens)
         const next = { name: a.name != null ? String(a.name) : cur.name, campaign: a.campaign != null ? String(a.campaign) : cur.campaign, w: w, h: h, cell: Number(a.cell) || cur.cell || 5, terrain: terrain, tokens: tokens, background:normalizeBackground(cur.background), updatedAt: null }
         const wr = await writeMap(next)
@@ -1084,7 +1084,7 @@ return {
           x: Math.max(0, Math.min(map.w - 1, Number(tk.x) || 0)), y: Math.max(0, Math.min(map.h - 1, Number(tk.y) || 0)),
           color: tk.color || null, hp: (tk.hp == null ? null : Number(tk.hp)), max: (tk.max == null ? null : Number(tk.max)),
           speed: (tk.speed == null ? 30 : Number(tk.speed)), size: Math.max(1, Math.min(4, Number(tk.size) || 1)),
-          note: tk.note || '', hidden: !!tk.hidden, ac: tk.ac ?? null, dex: tk.dex ?? null, saves: tk.saves || null, statblockId: tk.statblockId || null, source: tk.source || null,
+          note: tk.note || '', hidden: !!tk.hidden, ac: tk.ac ?? null, dex: tk.dex ?? null, saves: tk.saves || null, statblockId: tk.statblockId || null, source: tk.source || null, attackBonus: tk.attackBonus ?? null, damage: tk.damage || null, reach: tk.reach ?? null,
         }
         map.tokens = map.tokens.filter(t => t.id !== token.id).concat([token])
         const wr = await writeMap(map)
@@ -1909,7 +1909,7 @@ return {
         }
         if (!reply && !steps.length) return {ok:false,error:'模型没有返回文本或工具调用，请检查模型是否支持 Chat Completions。'}
         if(!steps.some(s=>s.ok&&/^(battle\.(advance|npcEnd|enemy)|dm\.action)$/.test(s.name))&&/(?:我|已经|已|现在|回合).{0,28}(?:跳过|空过|转到你|交给你|移动到了|轮到你)/.test(reply)){const actual=await OPS['combat.get']({});if(actual.active){const turn=actual.order[actual.turnIndex];if(!turn?.pcId&&turn?.kind!=='pc')reply='⚠ 尚无成功的回合推进回执，当前仍是 '+actual.current+'。请使用“让 DM 继续敌方”或当前敌方空过按钮；不能将口头描述视为已执行。'}}
-        const failures=steps.filter(s=>!s.ok);if(failures.length){const actual=await OPS['combat.get']({});reply='⚠ 本次操作未完整执行：'+failures.map(s=>s.summary||s.name).join('；')+'。'+(actual.active?'当前仍以系统先攻为准：'+actual.current+'。':'当前为自由模式。')+' 未成功的移动、伤害或回合推进不能视为已生效。'}
+        const failures=steps.filter(s=>!s.ok);if(failures.length){const actual=await OPS['combat.get']({});reply='⚠ 本次操作未完整执行：'+[...new Set(failures.map(s=>String(s.summary||s.name).replace(/[。；;]+$/,'')))].join('；')+'。'+(actual.active?'当前仍以系统先攻为准：'+actual.current+'。':'当前为自由模式。')+' 未成功的移动、伤害或回合推进不能视为已生效。'}
         ai.messages=(await readAi()).messages
         if (!a.prepare && reply) ai.messages.push({ role: 'assistant', content: reply, t: nowIso(), steps: steps.map(s => s.name), actions:steps.map(s=>({name:s.name,ok:s.ok,summary:s.name==='dice.secret'?'DM 判定已记录':s.summary})) })
         else if (!a.prepare && steps.length) ai.messages.push({ role: 'assistant', content: finish==='waiting_player'?'已准备好，请完成下方投骰或地图选择。':'DM 已更新场景。', actions:steps.map(s=>({name:s.name,ok:s.ok,summary:s.name==='dice.secret'?'DM 判定已记录':s.summary})), t: nowIso() })
@@ -2032,7 +2032,7 @@ return {
               id: String(tk.id || ('t' + Math.random().toString(36).slice(2, 8))), name: String(tk.name || '?'), kind: tk.kind || 'enemy',
               x: Math.max(0, Math.min(map.w - 1, Number(tk.x) || 0)), y: Math.max(0, Math.min(map.h - 1, Number(tk.y) || 0)),
               color: tk.color || null, hp: (tk.hp == null ? null : Number(tk.hp)), max: (tk.max == null ? null : Number(tk.max)),
-              speed: (tk.speed == null ? 30 : Number(tk.speed)), size: Math.max(1, Math.min(4, Number(tk.size) || 1)), note: tk.note || '', hidden: !!tk.hidden, ac: tk.ac ?? null, dex: tk.dex ?? null, saves: tk.saves || null, statblockId: tk.statblockId || null, source: tk.source || null,
+              speed: (tk.speed == null ? 30 : Number(tk.speed)), size: Math.max(1, Math.min(4, Number(tk.size) || 1)), note: tk.note || '', hidden: !!tk.hidden, ac: tk.ac ?? null, dex: tk.dex ?? null, saves: tk.saves || null, statblockId: tk.statblockId || null, source: tk.source || null, attackBonus: tk.attackBonus ?? null, damage: tk.damage || null, reach: tk.reach ?? null,
             }
             map.tokens = (map.tokens || []).filter(t => t.id !== token.id).concat([token])
             done.push('+' + token.name + '@' + cellName(token.x, token.y))
