@@ -52,6 +52,18 @@ module.exports=async(window,runtime,home,fixture)=>{
  await until(`!!document.querySelector('.battle-confirm button:first-of-type:not(:disabled)')`);await click('确认执行');
  await until(`!document.querySelector('.battle-confirm')`);assert.equal((await api('map.get')).tokens.find(t=>t.spell==='mageHand').x,8);
  await click('解散法师之手');await until(`!!document.querySelector('.battle-confirm button:first-of-type:not(:disabled)')`);await click('确认执行');await until(`!document.querySelector('.battle-token.effect')`);
- await fs.writeFile(path.join(home,'battle-smoke.json'),JSON.stringify({mageHandPlacement:true,mageHandControl:true,mageHandDismiss:true,temporaryHp:true,sharedAreaDamage:true,areaPreview:true,clearAC:true,cardTabs:true,freeMovement:true,npcTurnKeepsPlayerCard:true,resizeDrag:true,equipmentAC:true,immediateAreaPreview:true,automaticBattleTab:true,surpriseSkip:true,npcLoopReturnsPlayer:true,freeStealth:true,hiddenTokenIds:true},null,2));
+ await api('narration.say',{speaker:'DM',text:'守卫等待你的回答。\n```choices\n["我尝试与守卫交涉","我后退观察"]\n```'});await run(`window.dispatchEvent(new Event('solo-state'))`);
+ await until(`!!document.querySelector('.dm-choice:not(:disabled)')`);
+ await run(`const choice=document.querySelector('.dm-choice:not(:disabled)');choice.click();choice.click()`);
+ await until(`!document.querySelector('.dndp-msg:last-child')?.textContent.includes('正在思考')`);
+ assert.equal((await api('ai.history')).messages.filter(m=>m.role==='user'&&m.content==='我尝试与守卫交涉').length,1);
+ await run(`document.querySelector('.dm-custom').click()`);await wc.insertText('我自定义一个不同的行动');
+ await until(`document.querySelector('textarea[aria-label="自定义行动"]')?.value==='我自定义一个不同的行动'`);await click('发送');await until(`!document.querySelector('.dndp-msg:last-child')?.textContent.includes('正在思考')`);
+ assert.ok((await api('ai.history')).messages.some(m=>m.role==='user'&&m.content==='我自定义一个不同的行动'));
+ await api('combat.damage',{id:'hero',amount:-999});const downMap=await api('map.get'),down=downMap.tokens.find(t=>t.id==='hero');
+ await api('combat.start',{entries:[{id:'p',pcId:'hero',tokenId:'hero',kind:'pc',name:down.name,hp:0,max:down.max,init:10},{id:'e',tokenId:'g1',kind:'enemy',name:'地精',hp:7,max:7,init:20}]});await run(`window.dispatchEvent(new Event('solo-state'))`);
+ await until(`!!document.querySelector('.battle-pause')`);await api('battle.advance');const pausedCount=(await api('battle.get')).events.length;await delay(2800);assert.equal((await api('battle.get')).events.length,pausedCount);
+ await click('敌方暂不行动，推进死亡豁免');await until(`!document.querySelector('.battle-pause')`);await click('死亡豁免');await until(`document.querySelector('.battle-dice')?.textContent.includes('死亡豁免')`);
+ await fs.writeFile(path.join(home,'battle-smoke.json'),JSON.stringify({dmChoices:true,customAction:true,downedPause:true,deathSaveHandoff:true,mageHandPlacement:true,mageHandControl:true,mageHandDismiss:true,temporaryHp:true,sharedAreaDamage:true,areaPreview:true,clearAC:true,cardTabs:true,freeMovement:true,npcTurnKeepsPlayerCard:true,resizeDrag:true,equipmentAC:true,immediateAreaPreview:true,automaticBattleTab:true,surpriseSkip:true,npcLoopReturnsPlayer:true,freeStealth:true,hiddenTokenIds:true},null,2));
  }finally{await new Promise(r=>provider.close(r))}
 };

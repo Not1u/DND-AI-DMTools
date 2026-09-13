@@ -27,3 +27,18 @@ window.SoloRollRequest=function({call,onClose}){
  React.useEffect(()=>{call('party.list',{}).then(r=>{setParty(r.items||[]);setActor(r.items?.[0]?.id||'')}).catch(e=>setError(e.message))},[]);
  return h('div',{className:'roll-request-modal',role:'dialog','aria-label':'补建骰子请求'},h('div',{className:'roll-request-card'},h('h3',null,'补建骰子请求'),h('p',null,'用于 DM 已明确要求投骰、但请求未出现时。请照 DM 给出的公式填写，包含角色加值。'),h('label',null,'角色',h('select',{value:actorId,onChange:e=>setActor(e.target.value)},party.map(p=>h('option',{key:p.id,value:p.id},p.name)))),h('label',null,'骰子公式',h('input',{value:expr,onChange:e=>setExpr(e.target.value),placeholder:'1d20+2'})),h('label',null,'判定用途',h('input',{value:label,onChange:e=>setLabel(e.target.value),placeholder:'例如：说服守卫'})),error?h('p',{role:'alert'},error):null,h('button',{className:'dndp-btn',disabled:busy,onClick:onClose},'取消'),h('button',{className:'dndp-btn primary',disabled:busy||!actorId||!label.trim(),onClick:async()=>{setBusy(true);try{const r=await call('dm.action',{action:'roll',actorId,expr,label});if(!r.ok)throw Error(r.error);onClose()}catch(e){setError(e.message)}finally{setBusy(false)}}},'加入投骰队列')))
 };})();
+
+// Explicit choices stay presentation-only; clicking sends ordinary player text.
+window.SoloDMChoices=function(content){
+ let text=String(content||''),options=[];
+ text=text.replace(/```choices\s*\n([\s\S]*?)```/gi,(block,body)=>{try{const list=JSON.parse(body);if(!Array.isArray(list)||!list.length||list.length>8||list.some(x=>typeof x!=='string'||!x.trim()||x.length>240))return block;options.push(...list.map(x=>x.trim()));return ''}catch{return block}});
+ if(!options.length&&/(?:你怎么选|你选择|请选择|你要如何|你想怎么|你打算|选择一个|可选行动|可选方案)/.test(text)){
+  for(const line of text.replace(/```[\s\S]*?```/g,'').split('\n')){
+   const clean=line.trim().replace(/\*\*/g,'');
+   const row=clean.startsWith('|')?clean.split('|').slice(1,-1).map(x=>x.trim()).filter(Boolean).join('：'):clean;
+   const m=row.match(/^(?:[-*]\s*)?(?:[A-HＡ-Ｈ][、.．:：)）]|[1-8][、.．)）])\s*(.{1,240})$/);
+   if(m&&!/^(?:其他|自定义|自由输入)/.test(m[1]))options.push(m[1]);
+  }
+ }
+ options=[...new Set(options)].slice(0,8);return {text:text.trim(),options:options.length>=2?options:[]};
+};

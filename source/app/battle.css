@@ -26,3 +26,7 @@ html .classic-ink:not(.pdf-background) .dndp-cell{background:#eee7d5;border-colo
 @media(max-width:1000px){.game-hud .battle-layout{grid-template-columns:minmax(0,1fr) 7px minmax(230px,min(var(--battle-sidebar),28vw))}.battle-player-strip{grid-template-columns:30px 72px minmax(108px,1fr) 36px 92px;gap:4px}.battle-portrait{width:29px}.battle-dock-content{padding:7px 6px 0}.battle-ui-scale{display:none}.game-hud .battle-map-heading small{display:none}}
 
 .battle-token.effect circle{fill:#a6d6e7;stroke:#427da5;stroke-dasharray:3 2;filter:drop-shadow(0 0 4px #6ebcdb)}
+
+.battle-pause{padding:12px;border:1px solid var(--solo-accent);border-radius:12px;background:var(--solo-surface)}.battle-pause p{margin:6px 0}.battle-pause button{margin:4px}
+
+.dm-choice-buttons{display:flex;flex-wrap:wrap;gap:8px;padding:8px 0}.dm-choice{white-space:normal;text-align:left;transition:transform .15s,background .15s}.dm-choice:hover:not(:disabled){transform:translateY(-2px)}.dm-custom-label{font-size:12px;color:var(--solo-muted);align-self:center}.dndp-aiinput{flex-wrap:wrap}.dndp-aiinput .dm-custom-label{flex-basis:100%}

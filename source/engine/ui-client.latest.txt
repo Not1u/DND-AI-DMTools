@@ -2274,7 +2274,7 @@ function AIPanel(props) {
   const [moduleId, setModuleId] = React.useState('')
   const reloadAdventure = () => call('campaign.get', {}).then(r=>{if(r.ok){setAdventure(r);setModuleId(r.moduleId||'')}})
   React.useEffect(()=>{reloadAdventure().catch(()=>{})},[])
-  const bodyRef = React.useRef(null)
+  const bodyRef = React.useRef(null),inputRef=React.useRef(null),sendLock=React.useRef(false)
   const followBottom=React.useRef(true),resumeLock=React.useRef(false),retryAt=React.useRef(0)
   const [live,setLive]=React.useState(null)
   const load = () => call('ai.history', {}).then(r => { if (r && r.ok) setMsgs(r.messages || []) }).catch(() => { })
@@ -2288,7 +2288,8 @@ function AIPanel(props) {
   React.useEffect(()=>{if(typeof window==='undefined')return;const refresh=()=>load();window.addEventListener('solo-state',refresh);return()=>window.removeEventListener('solo-state',refresh)},[]);
   const send = async (text,requestAction) => {
     const t = String(text == null ? input : text).trim()
-    if (!t || busy) return
+    if (!t || busy || sendLock.current || live?.resuming) return
+    sendLock.current=true
     setInput(''); setBusy(true); setMsg('')
     setMsgs(m => m.concat([{ role: 'user', content: t, t: new Date().toISOString() }]))
     try {
@@ -2302,7 +2303,7 @@ function AIPanel(props) {
         setMsg('')
       }
     } catch (e) { setMsgs(m => m.concat([{ role: 'assistant', content: '⚠ ' + String(e && e.message || e), err: true }])) }
-    setBusy(false)
+    sendLock.current=false;setBusy(false)
   }
   const sendRef=React.useRef(send);sendRef.current=send;
   React.useEffect(()=>{if(typeof window==='undefined')return;const handler=e=>sendRef.current(e.detail.message,e.detail.requestAction);window.addEventListener('solo-dm-request',handler);return()=>window.removeEventListener('solo-dm-request',handler)},[]);
@@ -2325,10 +2326,11 @@ function AIPanel(props) {
     h('div', { className: 'dndp-chips', style: { marginTop: 6 } }, quick.map((q, i) => h('button', { key: i, className: 'dndp-btn tiny', onClick: () => send(q) }, q)))))
   msgs.forEach((m, i) => {
     const me = m.role === 'user'
+    const choice=!me&&typeof window!=='undefined'&&window.SoloDMChoices?window.SoloDMChoices(m.content):{text:m.content,options:[]}
     list.push(h('div', { key: i, className: 'dndp-msg' + (m.speaker?' npc-speech':'') + (me ? ' me' : '') + (m.err ? ' err' : '') },
       h('div', { className: 'dndp-who' },h('span',{className:'speech-avatar'},me?'你':(m.speaker||'DM').slice(0,2)), me ? '你' : (m.speaker||'DM') + (m.usage ? '（tokens ' + (m.usage.prompt_tokens || 0) + '+' + (m.usage.completion_tokens || 0) + '）' : '')),
-      h('div', { className: 'dndp-bubble' }, !me&&typeof window!=='undefined'&&window.SoloMarkdown?h(window.SoloMarkdown,{text:m.content}):m.content, m.actions?.length?h('details',{className:'dm-actions'},h('summary',null,m.actions.some(a=>!a.ok)?'⚠ 部分动作未执行 · 查看原因':'✓ 已执行 '+m.actions.length+' 项操作'),m.actions.map((a,k)=>h('div',{key:k,className:a.ok?'':'failed'},(a.ok?'✓ ':'✕ ')+a.name+' · '+(a.summary||'完成')))):null),
-      null))
+      h('div', { className: 'dndp-bubble' }, !me&&typeof window!=='undefined'&&window.SoloMarkdown?h(window.SoloMarkdown,{text:choice.text}):m.content, m.actions?.length?h('details',{className:'dm-actions'},h('summary',null,m.actions.some(a=>!a.ok)?'⚠ 部分动作未执行 · 查看原因':'✓ 已执行 '+m.actions.length+' 项操作'),m.actions.map((a,k)=>h('div',{key:k,className:a.ok?'':'failed'},(a.ok?'✓ ':'✕ ')+a.name+' · '+(a.summary||'完成')))):null),
+      !me&&choice.options.length?h('div',{className:'dm-choice-buttons'},choice.options.map((label,k)=>h('button',{key:k,className:'dndp-btn dm-choice',disabled:busy||live?.resuming||i!==msgs.length-1||!!live?.request||!!live?.dice?.length,onClick:()=>send(label)},label)),h('button',{className:'dndp-btn dm-custom',onClick:()=>inputRef.current?.focus()},'自定义行动')):null))
   })
   if (busy) list.push(h('div', { key: 'b', className: 'dndp-msg' }, h('div', { className: 'dndp-who' }, 'DM'), h('div', { className: 'dndp-bubble' }, '正在思考（会先调用工具查资料）…')))
   return h('div', { className: 'dndp-ai' },
@@ -2345,7 +2347,7 @@ function AIPanel(props) {
     h('button',{className:'dndp-btn tiny',onClick:()=>{followBottom.current=true;if(bodyRef.current)bodyRef.current.scrollTop=bodyRef.current.scrollHeight}},'回到最新消息'),
     msg ? h('div', { className: 'dndp-note hl', style: { padding: '2px 10px' } }, msg) : null,
     h('div', { className: 'dndp-aiinput' },
-      h('textarea', { value: input, placeholder: '以玩家身份说点什么（Enter 发送，Shift+Enter 换行）', onChange: e => setInput(e.target.value), onKeyDown: e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } } }),
+      h('label',{className:'dm-custom-label'},'自定义行动'),h('textarea', { ref:inputRef,'aria-label':'自定义行动',value: input, placeholder: '输入你想做的事情，不受选项限制（Enter 发送，Shift+Enter 换行）', onChange: e => setInput(e.target.value), onKeyDown: e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } } }),
       h('button', { className: 'dndp-btn primary', disabled: busy, onClick: () => send() }, busy ? '…' : '发送')))
 }
 

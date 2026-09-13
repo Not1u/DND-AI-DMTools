@@ -120,3 +120,17 @@ test('AI deadline aborts stalled response and releases both resume and chat lock
  try{await f.ok('combat.mode',{mode:'free'});await f.ok('settings.set',{baseUrl:'http://127.0.0.1:'+provider.address().port,model:'test'});await f.ok('battle.explore',{actorId:'hero'});assert.equal((await f.api('session.resume')).ok,false);const pending=await f.ok('session.pending');assert.equal(pending.resuming,false);assert.equal(pending.ready,false);assert.ok(pending.retryAt>Date.now());slow=false;t.mock.restoreAll();assert.ok((await f.ok('ai.chat',{message:'重试'})).reply.includes('连接已恢复'));
  }finally{t.mock.restoreAll();provider.closeAllConnections();await f.close();await new Promise(r=>provider.close(r))}
 });
+
+test('all downed players pause once across reads, resumes and restart; explicit waiting reaches death saves',async()=>{
+ const f=await fixture(true);try{await f.ok('combat.damage',{id:'hero',amount:-50});
+  assert.equal((await f.ok('battle.advance')).status,'waiting_dm');const before=await f.ok('battle.get');assert.ok(before.pause);const count=before.events.length;
+  for(let n=0;n<5;n++){assert.equal((await f.ok('battle.advance')).status,'waiting_dm');assert.equal((await f.ok('session.resume',{continueEnemies:true})).status,'waiting_dm');await f.ok('battle.get')}
+  assert.equal((await f.ok('battle.get')).events.length,count);await f.restart();assert.equal((await f.ok('battle.advance')).status,'waiting_dm');assert.equal((await f.ok('battle.get')).events.length,count);
+  await f.ok('battle.awaitDeathSave');let b=await f.ok('battle.get');assert.equal(b.actorId,'hero');assert.equal(b.pause,null);await f.ok('battle.deathSave');assert.equal((await f.ok('dice.pending')).pending[0].label,'死亡豁免');assert.equal((await f.api('battle.awaitDeathSave')).ok,false);
+ }finally{await f.close()}
+});
+
+test('downed pause clears when a player is healed, and stable/dead party is not forced into death saves',async()=>{
+ const f=await fixture(true);try{await f.ok('combat.damage',{id:'hero',amount:-50});await f.ok('battle.advance');const file=path.join(f.root,'characters/hero.json'),pc=JSON.parse(await fs.readFile(file,'utf8'));pc.battleDeath={stable:true,success:3,failure:0};await fs.writeFile(file,JSON.stringify(pc));await f.restart();assert.equal((await f.api('battle.awaitDeathSave')).ok,false);await f.ok('combat.damage',{id:'hero',amount:30});assert.equal((await f.ok('battle.get')).pause,null);assert.equal((await f.ok('battle.advance')).status,'player_turn');
+ }finally{await f.close()}
+});
