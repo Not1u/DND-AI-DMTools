@@ -1043,7 +1043,7 @@ return {
           x: Math.max(0, Math.min(w - 1, Number(tk.x) || 0)), y: Math.max(0, Math.min(h - 1, Number(tk.y) || 0)),
           color: tk.color || null, hp: (tk.hp == null ? null : Number(tk.hp)), max: (tk.max == null ? null : Number(tk.max)),
           speed: (tk.speed == null ? 30 : Number(tk.speed)), size: Math.max(1, Math.min(4, Number(tk.size) || 1)),
-          note: tk.note || '', hidden: !!tk.hidden, ac: tk.ac ?? null, dex: tk.dex ?? null, saves: tk.saves || null, statblockId: tk.statblockId || null, source: tk.source || null, attackBonus: tk.attackBonus ?? null, damage: tk.damage || null, reach: tk.reach ?? null,
+          note: tk.note || '', hidden: !!tk.hidden, ac: tk.ac ?? null, dex: tk.dex ?? null, saves: tk.saves || null, statblockId: tk.statblockId || null, source: tk.source || null, spell: tk.spell || null, ownerId: tk.ownerId || null, attackBonus: tk.attackBonus ?? null, damage: tk.damage || null, reach: tk.reach ?? null,
         })) : (Array.isArray(a.replaceTokens) && a.replaceTokens ? [] : cur.tokens)
         const next = { name: a.name != null ? String(a.name) : cur.name, campaign: a.campaign != null ? String(a.campaign) : cur.campaign, w: w, h: h, cell: Number(a.cell) || cur.cell || 5, terrain: terrain, tokens: tokens, background:normalizeBackground(cur.background), updatedAt: null }
         const wr = await writeMap(next)
@@ -1084,7 +1084,7 @@ return {
           x: Math.max(0, Math.min(map.w - 1, Number(tk.x) || 0)), y: Math.max(0, Math.min(map.h - 1, Number(tk.y) || 0)),
           color: tk.color || null, hp: (tk.hp == null ? null : Number(tk.hp)), max: (tk.max == null ? null : Number(tk.max)),
           speed: (tk.speed == null ? 30 : Number(tk.speed)), size: Math.max(1, Math.min(4, Number(tk.size) || 1)),
-          note: tk.note || '', hidden: !!tk.hidden, ac: tk.ac ?? null, dex: tk.dex ?? null, saves: tk.saves || null, statblockId: tk.statblockId || null, source: tk.source || null, attackBonus: tk.attackBonus ?? null, damage: tk.damage || null, reach: tk.reach ?? null,
+          note: tk.note || '', hidden: !!tk.hidden, ac: tk.ac ?? null, dex: tk.dex ?? null, saves: tk.saves || null, statblockId: tk.statblockId || null, source: tk.source || null, spell: tk.spell || null, ownerId: tk.ownerId || null, attackBonus: tk.attackBonus ?? null, damage: tk.damage || null, reach: tk.reach ?? null,
         }
         map.tokens = map.tokens.filter(t => t.id !== token.id).concat([token])
         const wr = await writeMap(map)
@@ -1838,6 +1838,7 @@ return {
       aiBusy=true
       try {
         const a = args || {}
+        const deadline=AbortSignal.timeout(120000);
         const ai = await readAi()
         const cfg = ai.config
         const key = aiKeyOf(cfg)
@@ -1862,12 +1863,13 @@ return {
         const maxSteps = Math.max(2, Math.min(20, Number(a.maxSteps) || cfg.maxSteps || 6))
         const url = cfg.baseUrl.replace(/\/+$/, '') + '/chat/completions'
         for (let step = 0; step < maxSteps; step++) {
+          if(deadline.aborted)return {ok:false,error:'DM 本次处理超过120秒，已停止续接。已完成的动作保留，请核对状态后继续。',steps};
           if(!a.prepare){const scene=await OPS['scene.get']({});tools=DND5E_AI_PROMPTS.toolsForMode(buildToolSpecs(cfg),scene.combat?.active?'combat':'explore');const battle=await OPS['battle.get']({});scene.battle={actorId:battle.actorId,active:battle.active,slots:battle.slots,abilities:battle.items?.map(({id,name,kind,cost,range,level})=>({id,name,kind,cost,range,level})),recentEvents:battle.events?.slice(-12)};msgs[0].content=DND5E_AI_PROMPTS.assemblePrompt({mode:scene.combat?.active?'combat':'explore',scene,context:campaignContext,extra:cfg.extraPrompt})}
           const body = { model: cfg.model, messages: msgs, temperature: cfg.temperature, tools: tools, tool_choice: forceAction ? {type:'function',function:{name:'dm_action'}} : 'auto' }
           if(textTransport){delete body.tools;delete body.tool_choice;body.messages=msgs.map(m=>({role:m.role==='tool'?'user':m.role,content:(m.role==='tool'?'工具执行结果：':'')+(m.content||'')}));body.messages[0].content+='\n当前接口不接受原生 tools：实际交互必须以 ```dm-action 换行 JSON 换行 ``` 输出。'+(forceAction?'本次 action 必须为 '+forceAction:'')}
           let res, data
           try {
-            res = await fetch(url, { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, key ? { authorization: 'Bearer ' + key } : {}), body: JSON.stringify(body), signal: AbortSignal.timeout(90000) })
+            res = await fetch(url, { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, key ? { authorization: 'Bearer ' + key } : {}), body: JSON.stringify(body), signal: AbortSignal.any([deadline,AbortSignal.timeout(90000)]) })
             data = await res.json()
           } catch (e) { return { ok: false, error: '请求失败：' + (e && e.message || e), url: url, steps: steps, reply: reply } }
           if (!res.ok || !data || data.error) {
@@ -1886,6 +1888,7 @@ return {
           const calls = m.tool_calls || []
           if (!calls.length){const pending=await OPS['session.pending']({});if(!a.prepare&&!repairAttempted&&!pending.request&&!pending.dice.length&&(forceAction||DND5E_CAMPAIGN.missedRoll(m.content))&&step+1<maxSteps){repairAttempted=true;forceAction=forceAction||'roll';msgs.push({role:'user',content:'你刚才的动作尚未执行。现在必须调用 dm_action，action='+forceAction+'。如为投骰，依据角色与规则填 expr、actorId、label，建立真正的玩家骰子请求；不能仅输出口头提示。'});continue}if(forceAction)steps.push({name:'dm.action',ok:false,summary:'模型未建立请求，请用“补建骰子请求”或重新让 DM 发起。'});break}
           for (const c of calls) {
+            if(deadline.aborted)return {ok:false,error:'DM 本次处理超时，未开始后续动作；已完成动作保留。',steps};
             const fnName = (c.function && c.function.name) || ''
             const opName = opForName(fnName)
             let fnArgs = {}
@@ -2032,7 +2035,7 @@ return {
               id: String(tk.id || ('t' + Math.random().toString(36).slice(2, 8))), name: String(tk.name || '?'), kind: tk.kind || 'enemy',
               x: Math.max(0, Math.min(map.w - 1, Number(tk.x) || 0)), y: Math.max(0, Math.min(map.h - 1, Number(tk.y) || 0)),
               color: tk.color || null, hp: (tk.hp == null ? null : Number(tk.hp)), max: (tk.max == null ? null : Number(tk.max)),
-              speed: (tk.speed == null ? 30 : Number(tk.speed)), size: Math.max(1, Math.min(4, Number(tk.size) || 1)), note: tk.note || '', hidden: !!tk.hidden, ac: tk.ac ?? null, dex: tk.dex ?? null, saves: tk.saves || null, statblockId: tk.statblockId || null, source: tk.source || null, attackBonus: tk.attackBonus ?? null, damage: tk.damage || null, reach: tk.reach ?? null,
+              speed: (tk.speed == null ? 30 : Number(tk.speed)), size: Math.max(1, Math.min(4, Number(tk.size) || 1)), note: tk.note || '', hidden: !!tk.hidden, ac: tk.ac ?? null, dex: tk.dex ?? null, saves: tk.saves || null, statblockId: tk.statblockId || null, source: tk.source || null, spell: tk.spell || null, ownerId: tk.ownerId || null, attackBonus: tk.attackBonus ?? null, damage: tk.damage || null, reach: tk.reach ?? null,
             }
             map.tokens = (map.tokens || []).filter(t => t.id !== token.id).concat([token])
             done.push('+' + token.name + '@' + cellName(token.x, token.y))
@@ -2355,7 +2358,7 @@ return {
         } else {
           const map = await readMap()
           for (const t of (map.tokens || [])) {
-            if (t.hidden || t.kind === "object") continue
+            if (t.hidden || ["object","effect"].includes(t.kind)) continue
             const dex = (t.dex == null ? 0 : Number(t.dex))
             const roll = randInt(20), init = roll + dex
             entries.push({ id: "t-" + t.id, name: t.name, kind: t.kind, init: init, roll: roll, hp: t.hp, max: t.max, conditions: [], econ: {}, tokenId: t.id, pcId: null, note: t.note || "", dex: dex })

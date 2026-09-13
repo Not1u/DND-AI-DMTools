@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url'
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)))
 const SRC_PATH = process.argv[2] ? path.resolve(process.argv[2]) : path.join(ROOT, 'engine', 'ui-client.latest.txt')
 
-let src = fs.readFileSync(SRC_PATH, 'utf8')
+let src = fs.readFileSync(SRC_PATH, 'utf8').replace(/\r\n/g, '\n')
 if (src.charCodeAt(0) === 0xfeff) src = src.slice(1)
 
 const problems = []

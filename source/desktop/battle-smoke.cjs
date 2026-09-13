@@ -8,7 +8,7 @@ module.exports=async(window,runtime,home,fixture)=>{
  const capture=async name=>{await run(`document.getAnimations().forEach(a=>{try{a.finish()}catch{}})`);await wc.capturePage();await delay(300);await fs.writeFile(path.join(home,name+'.png'),(await wc.capturePage()).toPNG())};
  const provider=http.createServer(async(req,res)=>{for await(const p of req){}await delay(200);res.setHeader('content-type','application/json');res.end(JSON.stringify({choices:[{message:{role:'assistant',content:'你掌心的魔力掠过石壁。DM 已读取场景中实际结算的坐标、伤害和资源。'}}]}))});await new Promise(r=>provider.listen(0,'127.0.0.1',r));
  try{
- const pc=JSON.parse(await fs.readFile(fixture,'utf8'));Object.assign(pc,{id:'hero',name:'迷雾法师',race:'human',level:3,classes:[{class:'wizard',level:3}],hp:{current:30,max:30,temp:0},conditions:[],choices:{},abilities:{str:10,dex:14,con:12,int:16,wis:10,cha:10},spellcasting:{ability:'int',cantrips:['acidSplash','fireBolt'],spells:['falseLife','fogCloud']}});
+ const pc=JSON.parse(await fs.readFile(fixture,'utf8'));Object.assign(pc,{id:'hero',name:'迷雾法师',race:'human',level:3,classes:[{class:'wizard',level:3}],hp:{current:30,max:30,temp:0},conditions:[],choices:{},abilities:{str:10,dex:14,con:12,int:16,wis:10,cha:10},spellcasting:{ability:'int',cantrips:['acidSplash','fireBolt','mageHand'],spells:['falseLife','fogCloud']}});
  await fs.writeFile(path.join(home,'campaign/characters/hero.json'),JSON.stringify(pc));await api('settings.set',{baseUrl:'http://127.0.0.1:'+provider.address().port,model:'test-battle'});
  await api('map.create',{name:'旧堡 · 灰岩回廊',w:20,h:15,terrain:Array.from({length:15},(_,y)=>y===0||y===14?'#'.repeat(20):'#'+'.'.repeat(18)+'#'),tokens:[{id:'hero',name:pc.name,kind:'pc',x:4,y:6,hp:30,max:30,ac:12,speed:30},{id:'g1',name:'地精哨兵',kind:'enemy',x:5,y:6,hp:50,max:50,ac:15,saves:{dex:-100},attackBonus:4,damage:'1d6+2',reach:5,speed:30},{id:'g2',name:'地精弓手',kind:'enemy',x:6,y:6,hp:50,max:50,ac:15,saves:{dex:-100}}]});
  await api('combat.start',{entries:[{id:'p',pcId:'hero',tokenId:'hero',kind:'pc',name:pc.name,hp:30,max:30,init:20},{id:'e',tokenId:'g1',kind:'enemy',name:'地精哨兵',hp:50,max:50,init:10}]});
@@ -41,6 +41,17 @@ module.exports=async(window,runtime,home,fixture)=>{
  await run(`[...document.querySelectorAll('.spell-action')].find(b=>b.textContent.includes('潜行')).click()`);await until(`!!document.querySelector('.battle-confirm button:first-of-type:not(:disabled)')`);await click('交给 DM 裁定');await until(`!document.querySelector('.battle-confirm')`);
  assert.ok((await api('session.pending')).completed.some(e=>e.battleAbility==='stealth'));assert.equal((await api('combat.get')).active,false);
  assert.ok(await run(`[...document.querySelectorAll('.battle-token-label')].every(e=>!['g1','g2'].includes(e.textContent))`));await capture('battle-flow-complete');
- await fs.writeFile(path.join(home,'battle-smoke.json'),JSON.stringify({temporaryHp:true,sharedAreaDamage:true,areaPreview:true,clearAC:true,cardTabs:true,freeMovement:true,npcTurnKeepsPlayerCard:true,resizeDrag:true,equipmentAC:true,immediateAreaPreview:true,automaticBattleTab:true,surpriseSkip:true,npcLoopReturnsPlayer:true,freeStealth:true,hiddenTokenIds:true},null,2));
+ await until(`!document.querySelector('.battle-confirm')`);
+ await run(`[...document.querySelectorAll('.spell-action')].find(b=>b.querySelector('b')?.textContent==='法师之手').click()`);
+ await run(`document.querySelector('.ink-cell[x="${7*36}"][y="${6*36}"]')?.dispatchEvent(new MouseEvent('click',{bubbles:true}))`);
+ await until(`!!document.querySelector('.battle-confirm button:first-of-type:not(:disabled)')`);await click('确认执行');
+ await until(`!!document.querySelector('.battle-token.effect')`);assert.equal((await api('map.get')).tokens.find(t=>t.spell==='mageHand').x,7);
+ await run(`document.querySelector('.battle-token.effect').dispatchEvent(new MouseEvent('click',{bubbles:true}))`);
+ await until(`document.querySelector('.battle-confirm')?.textContent.includes('操控法师之手')`);
+ await run(`document.querySelector('.ink-cell[x="${8*36}"][y="${6*36}"]')?.dispatchEvent(new MouseEvent('click',{bubbles:true}))`);
+ await until(`!!document.querySelector('.battle-confirm button:first-of-type:not(:disabled)')`);await click('确认执行');
+ await until(`!document.querySelector('.battle-confirm')`);assert.equal((await api('map.get')).tokens.find(t=>t.spell==='mageHand').x,8);
+ await click('解散法师之手');await until(`!!document.querySelector('.battle-confirm button:first-of-type:not(:disabled)')`);await click('确认执行');await until(`!document.querySelector('.battle-token.effect')`);
+ await fs.writeFile(path.join(home,'battle-smoke.json'),JSON.stringify({mageHandPlacement:true,mageHandControl:true,mageHandDismiss:true,temporaryHp:true,sharedAreaDamage:true,areaPreview:true,clearAC:true,cardTabs:true,freeMovement:true,npcTurnKeepsPlayerCard:true,resizeDrag:true,equipmentAC:true,immediateAreaPreview:true,automaticBattleTab:true,surpriseSkip:true,npcLoopReturnsPlayer:true,freeStealth:true,hiddenTokenIds:true},null,2));
  }finally{await new Promise(r=>provider.close(r))}
 };

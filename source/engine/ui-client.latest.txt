@@ -1370,7 +1370,7 @@ function MapPanel(props) {
     if(live?.combat?.active){if(req?.kind!=='move'||req.actorId!==tk.id){setMsg('战斗中请等待 DM 发起当前角色的移动请求。');return}const r=await call('interaction.preview',{id:req.id,...c});if(r.ok){setChoice(c);setTpl({cells:r.path||[],from:c,label:'移动预览',cellCount:r.path?.length||0});setMsg('预计移动 '+r.feet+' 尺，请确认提交。')}else setMsg(r.error);return}
     const r=await call('map.token.move',{id:tk.id,...c});if(!r.ok)setErr(r.error);else{setMsg(tk.name+' 已移动。');load()}
   }
-  const chooseCell=async c=>{if(req?.kind==='move'){const tk=map.tokens.find(t=>t.id===req.actorId);if(tk)await moveToken(tk,c);return}if(req?.kind==='area'){const r=await call('interaction.preview',{id:req.id,...c});if(r.ok){setChoice(c);setTpl(r);setMsg('范围预览已显示，确认后交给 DM。')}else setMsg(r.error)}}
+  const chooseCell=async c=>{if(req?.kind==='point'){const r=await call('battle.preview',{actorId:req.actorId,abilityId:req.battleAbility,...c});if(r.ok){setChoice(c);setTpl({...r.area,from:c,label:req.label});setMsg(r.summary)}else setMsg(r.error);return}if(req?.kind==='move'){const tk=map.tokens.find(t=>t.id===req.actorId);if(tk)await moveToken(tk,c);return}if(req?.kind==='area'){const r=await call('interaction.preview',{id:req.id,...c});if(r.ok){setChoice(c);setTpl(r);setMsg('范围预览已显示，确认后交给 DM。')}else setMsg(r.error)}}
   const castArea = async (c) => {
     const r = await call('map.area', { shape: areaShape, size: areaSize, from: c, dir: areaDir })
     if (r && r.ok) { setTpl(r); setMsg((r.summary || '') + '（' + areaShape + ' ' + areaSize + ' 尺）') } else setMsg('范围计算失败：' + ((r && r.error) || ''))
@@ -1430,7 +1430,7 @@ function MapPanel(props) {
     window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey)
   },[map&&map.terrain])
   const onCellClick = (c) => {
-    if(req?.kind==='area'||req?.kind==='move'){chooseCell(c);return}
+    if(req?.kind==='area'||req?.kind==='point'||req?.kind==='move'){chooseCell(c);return}
     if(tool==='paint')return
     if(tool==='fill'){saveTerrainCells(mapFloodCells(map,c,paintTile),'区域填充');return}
     if(tool==='rect'){
@@ -1539,7 +1539,7 @@ function MapPanel(props) {
     h('button',{className:'dndp-btn tiny',disabled:!!live?.combat?.active,onClick:()=>{window.dispatchEvent(new CustomEvent('solo-dm-request',{detail:{message:'请根据已读模组和当前所在城镇，绘制包含已知地点与 NPC 的示意图。用 dm.action 的 town 动作；不要添加未发现信息。',requestAction:'town'}}));setMsg('已请求 DM 绘制当前城镇，请查看 AI 对话。')}},'城镇示意图'),
     live?.town?.locations?.length?h('div',{className:'town-places'},h('span',null,'想去哪里：'),live.town.locations.map(p=>h('button',{key:p.id,className:'dndp-btn tiny',disabled:!!live.combat?.active,title:p.description,onClick:async()=>{const r=await call('scene.visit',{id:p.id});if(r.ok){window.dispatchEvent(new CustomEvent('solo-dm-request',{detail:{message:r.message}}));setMsg('已向 DM 表达前往 '+p.name+' 的意图。')}else setMsg(r.error)}},p.name))):null,
     pdfOpen && typeof window!=='undefined' && window.SoloPdfMap ? h(window.SoloPdfMap,{call,onClose:()=>setPdfOpen(false),onCreated:r=>{setMap(r);loadMaps();setMsg('PDF 地图已建立，请校对网格和墙壁。')}}):null,
-    req?h('div',{className:'map-request'},h('b',null,req.label),h('span',null,req.kind==='target'?'点击棋子选择：'+targets.join('、'):req.kind==='area'?'点击地图预览范围':'拖动本回合角色，或点击目的地'),h('button',{className:'dndp-btn primary',disabled:req.kind==='target'?!targets.length:!choice,onClick:async()=>{const r=await call('interaction.answer',{id:req.id,...choice,targetIds:targets});setMsg(r.ok?'已提交，DM 正在分析场面。':r.error);if(r.ok){setChoice(null);setTargets([]);setTpl(null);load();setLive({...live,request:null})}}},'确认提交'),h('button',{className:'dndp-btn',onClick:async()=>{const r=await call('interaction.cancel',{id:req.id});if(r.ok){setLive({...live,request:null});setTpl(null)}}},'取消请求')):null,
+    req?h('div',{className:'map-request'},h('b',null,req.label),h('span',null,req.kind==='target'?'点击棋子选择：'+targets.join('、'):['area','point'].includes(req.kind)?'点击地图选择位置':'拖动本回合角色，或点击目的地'),h('button',{className:'dndp-btn primary',disabled:req.kind==='target'?!targets.length:!choice,onClick:async()=>{const r=await call('interaction.answer',{id:req.id,...choice,targetIds:targets});setMsg(r.ok?'已提交，DM 正在分析场面。':r.error);if(r.ok){setChoice(null);setTargets([]);setTpl(null);load();setLive({...live,request:null})}}},'确认提交'),h('button',{className:'dndp-btn',onClick:async()=>{const r=await call('interaction.cancel',{id:req.id});if(r.ok){setLive({...live,request:null});setTpl(null)}}},'取消请求')):null,
     (live?.effects||[]).length?h('div',{className:'effect-list'},live.effects.map(e=>h('span',{key:e.id},e.name+(e.concentration?' · 专注':'')+(e.rounds!=null?' · '+e.rounds+' 回合':'')+(e.expiresAt!=null?' · 剩 '+Math.max(0,Math.ceil((e.expiresAt-live.clock)/60))+' 分钟':'')))):null,
     h('button',{className:'dndp-btn tiny',onClick:()=>setPdfOpen(true)},'PDF 原图地图'),
     map.background?h('button',{className:'dndp-btn tiny',onClick:()=>setShowGrid(!showGrid)},showGrid?'隐藏叠加网格':'显示叠加网格'):null,
@@ -2284,7 +2284,7 @@ function AIPanel(props) {
     call('ai.tools', {}).then(r => { if (r && r.ok) setToolCount(r.count) }).catch(() => { })
   }, [])
   React.useEffect(() => { const el = bodyRef.current; if (el && followBottom.current) el.scrollTop = el.scrollHeight },[msgs.length,busy])
-  React.useEffect(()=>{const timer=setInterval(async()=>{try{const r=await call('session.pending',{});if(r.ok)setLive(r);if(r.ready&&!busy&&!resumeLock.current&&Date.now()>retryAt.current){resumeLock.current=true;setBusy(true);try{const reply=await call('session.resume',{});if(!reply.ok){retryAt.current=Date.now()+30000;setMsg('DM 续接失败：'+reply.error+'（30 秒后重试，也可手动发送）');}await load()}finally{resumeLock.current=false;setBusy(false)}}}catch{}},1200);return()=>clearInterval(timer)},[busy])
+  React.useEffect(()=>{const timer=setInterval(async()=>{try{const r=await call('session.pending',{});if(r.ok){setLive(r);if(r.resuming)setMsg('DM 正在处理，请稍候（'+Math.floor(r.elapsedMs/1000)+' 秒）');else setMsg(m=>m.startsWith('DM 正在处理')?'':m)}if(r.ready&&!busy&&!resumeLock.current&&Date.now()>retryAt.current){resumeLock.current=true;setBusy(true);try{const reply=await call('session.resume',{});if(reply.ok)setMsg(reply.status==='processing'?'DM 正在处理，请稍候。':'');if(!reply.ok){retryAt.current=Date.now()+30000;setMsg('DM 续接失败：'+reply.error+'（30 秒后重试，也可手动发送）');}await load()}finally{resumeLock.current=false;setBusy(false)}}}catch{}},1200);return()=>clearInterval(timer)},[busy])
   React.useEffect(()=>{if(typeof window==='undefined')return;const refresh=()=>load();window.addEventListener('solo-state',refresh);return()=>window.removeEventListener('solo-state',refresh)},[]);
   const send = async (text,requestAction) => {
     const t = String(text == null ? input : text).trim()

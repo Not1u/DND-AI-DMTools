@@ -88,3 +88,35 @@ test('imported split statblock repairs old bindings; map replacements and restar
   const ts=['battle_enemy','battle_advance','battle_npcEnd','battle_surprise','battle_begin','combat_start'].map(name=>({function:{name}}));assert.deepEqual(toolsForMode(ts,'explore').map(t=>t.function.name),['battle_begin','combat_start']);
  }finally{await f.close()}
 });
+
+test('mage hand creates a noncombat effect, moves by owner action, expires and cannot bypass range or economy',async()=>{
+ const f=await fixture();try{
+  const file=path.join(f.root,'characters/hero.json'),pc=JSON.parse(await fs.readFile(file,'utf8'));pc.spellcasting.cantrips.push('mageHand');await fs.writeFile(file,JSON.stringify(pc));
+  assert.equal((await f.api('battle.preview',{actorId:'hero',abilityId:'mageHand',x:10,y:10})).ok,false);
+  const args={actorId:'hero',abilityId:'mageHand',x:5,y:5};await perform(f,args,'hand-cast');
+  let b=await f.ok('battle.get'),hand=b.map.tokens.find(t=>t.spell==='mageHand');assert.ok(hand);assert.equal(hand.ownerId,'hero');assert.ok(!b.combat.order.some(e=>e.tokenId===hand.id));assert.equal(b.combat.order[0].econ.action,true);assert.equal(b.effects.find(e=>e.tokenId===hand.id).remainingSeconds,60);
+  assert.equal((await f.api('battle.preview',{actorId:'hero',abilityId:'mageHandControl',x:6,y:5})).ok,false);
+  await f.ok('combat.mode',{mode:'free'});await perform(f,{actorId:'hero',abilityId:'mageHandControl',x:6,y:5},'hand-control');assert.equal((await f.ok('map.get')).tokens.find(t=>t.id===hand.id).x,6);
+  assert.equal((await f.api('map.token.move',{id:hand.id,x:11,y:11})).ok,false);
+  await perform(f,args,'hand-recast');b=await f.ok('battle.get');assert.equal(b.map.tokens.filter(t=>t.spell==='mageHand').length,1);assert.notEqual(b.map.tokens.find(t=>t.spell==='mageHand').id,hand.id);
+  await f.restart();assert.equal((await f.ok('battle.get')).map.tokens.filter(t=>t.spell==='mageHand').length,1);
+  await f.ok('session.advance',{seconds:60});assert.equal((await f.ok('map.get')).tokens.filter(t=>t.spell==='mageHand').length,0);
+  const req=await f.ok('battle.begin',{actorId:'hero',abilityId:'mageHand'});assert.equal(req.request.kind,'point');await f.ok('interaction.answer',{id:req.request.id,x:2,y:3});
+  await f.ok('map.token.move',{id:'hero',x:11,y:11});assert.equal((await f.ok('battle.get')).map.tokens.filter(t=>t.spell==='mageHand').length,0);
+ }finally{await f.close()}
+});
+
+test('concurrent DM resume is processing not failure, starts one provider call and clears state',async()=>{
+ const f=await fixture();let calls=0,release,entered;const started=new Promise(r=>entered=r),gate=new Promise(r=>release=r);
+ const provider=http.createServer(async(req,res)=>{for await(const p of req){}calls++;entered();await gate;res.setHeader('content-type','application/json');res.end(JSON.stringify({choices:[{message:{role:'assistant',content:'已读取探索状态。'}}]}))});await new Promise(r=>provider.listen(0,'127.0.0.1',r));
+ try{await f.ok('combat.mode',{mode:'free'});await f.ok('settings.set',{baseUrl:'http://127.0.0.1:'+provider.address().port,model:'test'});await f.ok('battle.explore',{actorId:'hero'});const first=f.ok('session.resume');await started;assert.equal((await f.ok('session.pending')).resuming,true);assert.equal((await f.ok('session.pending')).ready,false);assert.equal((await f.ok('session.resume')).status,'processing');release();await first;assert.equal(calls,1);assert.equal((await f.ok('session.pending')).resuming,false);assert.equal((await f.ok('session.pending')).ready,false);
+ }finally{release();await f.close();await new Promise(r=>provider.close(r))}
+});
+
+test('AI deadline aborts stalled response and releases both resume and chat locks',async t=>{
+ const f=await fixture();let slow=true;
+ const provider=http.createServer(async(req,res)=>{for await(const p of req){}if(slow)return;res.setHeader('content-type','application/json');res.end(JSON.stringify({choices:[{message:{role:'assistant',content:'连接已恢复。'}}]}))});await new Promise(r=>provider.listen(0,'127.0.0.1',r));
+ const timeout=AbortSignal.timeout;t.mock.method(AbortSignal,'timeout',ms=>timeout(ms===120000?100:ms));
+ try{await f.ok('combat.mode',{mode:'free'});await f.ok('settings.set',{baseUrl:'http://127.0.0.1:'+provider.address().port,model:'test'});await f.ok('battle.explore',{actorId:'hero'});assert.equal((await f.api('session.resume')).ok,false);const pending=await f.ok('session.pending');assert.equal(pending.resuming,false);assert.equal(pending.ready,false);assert.ok(pending.retryAt>Date.now());slow=false;t.mock.restoreAll();assert.ok((await f.ok('ai.chat',{message:'重试'})).reply.includes('连接已恢复'));
+ }finally{t.mock.restoreAll();provider.closeAllConnections();await f.close();await new Promise(r=>provider.close(r))}
+});
