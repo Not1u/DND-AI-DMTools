@@ -40,6 +40,7 @@ else {
     const startupMs=Date.now()-startupTime;
     if (smoke) {
       await new Promise(r => setTimeout(r, 3500));
+      if(process.argv.includes('--lan-smoke'))await require('./lan-smoke.cjs')(window,runtime,home);
       if(process.argv.includes('--lobby-smoke'))await require('./lobby-smoke.cjs')(window,runtime,home);
       if(smoke)await window.webContents.executeJavaScript(`[...document.querySelectorAll('.solo-tab')].find(t=>t.textContent==='跑团工作区')?.click()`);
       if (process.argv.includes('--ui-smoke')) await require('./ui-smoke.cjs')(window, runtime, home);

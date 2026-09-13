@@ -1,0 +1,26 @@
+const {BrowserWindow}=require('electron');
+const fs=require('node:fs/promises'),path=require('node:path'),assert=require('node:assert/strict');
+module.exports=async(window,runtime,home)=>{
+ const delay=ms=>new Promise(r=>setTimeout(r,ms));
+ const api=async(op,args={})=>{const r=await(await fetch(runtime.url+'/api',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op,args})})).json();assert.equal(r.ok,true,r.error);assert.equal(r.value.ok,true,r.value.error);return r.value};
+ const pc={schema:'dnd5e.character.v1',id:'lan-phone',name:'手机勇者',level:1,race:'human',classes:[{class:'fighter',level:1}],abilities:{str:15,dex:12,con:14,int:10,wis:10,cha:10},hp:{current:12,max:12,temp:0},inventory:[],equipment:{},conditions:[]};
+ await fs.writeFile(path.join(home,'campaign','characters',pc.id+'.json'),JSON.stringify(pc));
+ await api('controls.set',{aidm:false});await api('map.create',{name:'联机庭院',w:16,h:12,terrain:Array(12).fill('.'.repeat(16)),tokens:[{id:pc.id,name:pc.name,kind:'pc',x:2,y:2,hp:12,max:12,speed:30}]});
+ const dm=window.webContents;dm.setBackgroundThrottling(false);
+ const until=async(w,code)=>{for(let i=0;i<120;i++){if(await w.executeJavaScript(code))return;await delay(100)}throw Error('LAN UI timeout: '+code)};
+ const click=(w,text)=>w.executeJavaScript(`(()=>{const e=[...document.querySelectorAll('button')].find(e=>e.textContent.trim()===${JSON.stringify(text)});if(!e)throw Error('Missing button');e.click()})()`);
+ await dm.executeJavaScript(`[...document.querySelectorAll('.solo-tab')].find(t=>t.textContent==='DM 控制台').click()`);await until(dm,`!!document.querySelector('.lan-console')`);await click(dm,'开启局域网房间');await until(dm,`document.body.textContent.includes('生成玩家邀请')`);
+ await dm.executeJavaScript(`(()=>{const e=document.querySelectorAll('.lan-console select')[1];Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(e,'lan-phone');e.dispatchEvent(new Event('change',{bubbles:true}))})()`);await click(dm,'生成玩家邀请');await until(dm,`!!document.querySelector('.lan-seats input')`);await click(dm,'公开当前整张示意图');await until(dm,`document.body.textContent.includes('当前公开：联机庭院')`);
+ const room=await api('lan.status'),seat=room.seats[0],phone=new BrowserWindow({width:430,height:900,show:false,webPreferences:{nodeIntegration:false,contextIsolation:true,sandbox:true}}),mobile=phone.webContents;mobile.setBackgroundThrottling(false);const errors=[];mobile.on('console-message',event=>{if(event.level==='error')errors.push(event.message)});
+ try{
+ await phone.loadURL('http://127.0.0.1:'+room.port+'/#'+seat.fragment);await until(mobile,`document.querySelector('#name').textContent==='手机勇者'&&document.querySelector('#mapTitle').textContent==='联机庭院'`);
+ await mobile.executeJavaScript(`(()=>{const c=document.querySelector('#map'),r=c.getBoundingClientRect(),size=Number(c.dataset.cell);c.dispatchEvent(new MouseEvent('click',{bubbles:true,clientX:r.left+3.5*size,clientY:r.top+2.5*size}))})()`);await click(mobile,'提交移动');await until(mobile,`document.querySelector('#requests').textContent.includes('移动已生效')`);assert.equal((await api('map.get')).tokens.find(t=>t.id===pc.id).x,3);
+ await mobile.executeJavaScript(`document.querySelector('#intent').value='我向 DM 询问庭院里的守卫';document.querySelector('#action').click()`);await until(dm,`document.querySelector('.lan-console').textContent.includes('询问庭院')`);await click(dm,'接收意图（继续裁定）');await until(mobile,`document.querySelector('#requests').textContent.includes('DM 已接收行动意图')`);
+ await dm.executeJavaScript(`(()=>{const e=document.querySelector('.lan-console textarea');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(e,'守卫向你挥手');e.dispatchEvent(new Event('input',{bubbles:true}))})()`);await click(dm,'发送公开发言');await until(mobile,`document.querySelector('#messages').textContent.includes('守卫向你挥手')`);
+ await api('dice.request',{actorId:pc.id,expr:'1d20+2',label:'手机交涉'});await until(mobile,`!document.querySelector('#diceBox').hidden`);await click(mobile,'投掷并同步');await until(mobile,`document.querySelector('#requests').textContent.includes('手机交涉')`);assert.equal((await api('dice.pending')).pending.length,0);
+ await api('combat.start',{entries:[{id:'p',pcId:pc.id,tokenId:pc.id,kind:'pc',name:pc.name,init:20}]});await until(mobile,`!document.querySelector('#endTurn').disabled`);await click(mobile,'结束我的回合');await until(dm,`document.querySelector('.lan-console').textContent.includes('批准并执行')`);await click(dm,'批准并执行');await until(mobile,`document.querySelector('#turn').textContent.includes('第 2 轮')`);
+ await mobile.reload();await until(mobile,`document.querySelector('#name').textContent==='手机勇者'`);assert.equal(await mobile.executeJavaScript(`document.documentElement.scrollWidth<=innerWidth+1`),true);
+ await fs.writeFile(path.join(home,'lan-mobile.png'),(await mobile.capturePage()).toPNG());await fs.writeFile(path.join(home,'lan-dm.png'),(await dm.capturePage()).toPNG());assert.deepEqual(errors,[]);
+ await fs.writeFile(path.join(home,'lan-smoke.json'),JSON.stringify({dmRoomControls:true,phoneViewport:true,move:true,actionApproval:true,publicReply:true,dice:true,endTurnApproval:true,reconnect:true,errors}));
+ }finally{phone.destroy();await api('lan.stop')}
+};

@@ -1,0 +1,8 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>SoloTRPG 玩家</title><link rel="stylesheet" href="/mobile.css"><script src="/mobile.js" defer></script></head><body>
+<header><small>SOLOTRPG · 玩家端</small><h1 id="name">连接你的跑团桌</h1><p id="connection" role="status">正在连接电脑 DM…</p></header>
+<main><section id="card"><div id="stats"></div><p id="turn"></p><div id="slots"></div></section>
+<section><h2 id="mapTitle">等待 DM 公开地图</h2><p>点击格子选择移动位置；点击棋子选择行动目标。地图可双指缩放页面，或横向滚动。</p><div class="map-scroll"><canvas id="map" width="480" height="320" aria-label="公开战术地图"></canvas></div><p id="selection">尚未选择位置</p><button id="move" disabled>提交移动</button><button id="endTurn" disabled>结束我的回合</button></section>
+<section id="diceBox" hidden><h2>DM 请求投骰</h2><p id="diceLabel"></p><button id="roll">投掷并同步</button></section>
+<section><h2>我想做什么</h2><select id="spell" aria-label="选择法术"><option value="">自定义行动</option></select><textarea id="intent" placeholder="描述行动；选择法术或目标后，可以补充细节。"></textarea><button id="action">提交给 DM</button><p>法术按钮发送行动意图，DM 裁定后结算；提交并不代表已经施法或扣除资源。</p></section>
+<section><h2>我的请求</h2><div id="requests"></div></section><section><h2>跑团对话</h2><div id="messages"></div></section></main>
+<footer>局域网测试版 · 电脑关闭后暂停连接 · 返回浏览器可自动重连</footer></body></html>

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {createLan} from './src/lan.mjs'
 import {createProfiles} from './src/profiles.mjs'
 import {battleTools} from './src/battle.mjs'
 import * as aiPrompts from './src/ai-prompts.mjs'
@@ -185,6 +186,7 @@ async function handleApi(req, res) {
     try {
       if(op==='profiles.list')return sendJson(res,200,{ok:true,value:profiles.list()});
       if(op==='profiles.create'||op==='profiles.select'){
+        if(lan.active())throw Error('请先关闭局域网房间，再切换存档');
         if(switching||aiInFlight)return sendJson(res,200,{ok:true,value:{ok:false,error:'仍有操作或 AI 请求处理中，请完成后切换存档。'}});
         switching=true;
         try{const drainUntil=Date.now()+5000;while(requestsInFlight&&Date.now()<drainUntil)await new Promise(r=>setTimeout(r,20));if(requestsInFlight)throw Error('正在保存操作，请稍后切换');if(op==='profiles.create'&&!(await modules.list()).some(m=>m.id===args?.moduleId))throw Error('请先导入并选择模组');
@@ -197,6 +199,8 @@ async function handleApi(req, res) {
       }
       if(switching)throw Error('存档正在切换，请稍候');requestsInFlight++;counted=true;if(['ai.chat','session.resume','campaign.prepare','campaign.start'].includes(op)){aiInFlight++;aiCounted=true}
       ensureEngine()
+      if(op.startsWith('lan.'))return sendJson(res,200,{ok:true,value:await lan.control(op,args||{})});
+      if(op==='controls.set'&&args?.aidm&&lan.active())throw Error('请先关闭联机房间，再启用 AI 自动主持');
       const ext = await loadPlugins()
       if (op === 'ext.list') return sendJson(res, 200, { ok: true, value: { core: Object.keys(rec), plugins: ext.list, pluginOps: Object.keys(ext.ops) } })
       const isCore = typeof rec[op] === 'function'
@@ -218,6 +222,7 @@ async function handleApi(req, res) {
 
 const subscribers=new Set();
 const announce=()=>{for(const res of subscribers)res.write('data: changed\n\n')};
+const lan=createLan({appRoot:path.join(HERE,'app'),bind:options.lanBind,notify:announce,call:async(op,args)=>{if(switching)throw Error('存档切换中');ensureEngine();return rec[op](args||{})}});
 const server = http.createServer(async (req, res) => {
   if (req.headers.origin && req.headers.origin !== 'http://' + req.headers.host) return send(res, 403, 'forbidden origin')
   const url = new URL(req.url, 'http://' + (req.headers.host || 'localhost'))
@@ -286,6 +291,7 @@ const address = server.address()
 const url = 'http://' + BIND + ':' + address.port
 console.log('[solo-trpg] ' + url)
 return { server, url, close: () => new Promise(resolve => {
+  void lan.close();
   if (typeof innerDispose === 'function') innerDispose()
   for(const res of subscribers)res.end();
   server.close(resolve)
